@@ -1,26 +1,14 @@
 import Link from "next/link";
+import GalleryGrid from "@/components/gallery-logic";
 import { mockData } from "@/mock-data";
-import EquipmentCard from "@/components/equipment-card";
 
-export default function Gallery() {
+export default function EquipmentGallery() {
         return (
             <>
             <div className ="text-2xl"> Gallery Here </div>
-            <div> 
-            <div>
-                <input type="text" placeholder="Search inventory..." />
-            </div>
 
-            <ul>
-                {mockData.map((item, key) => {
-                    return (
-                    <li key = {item.id}>
-                    <EquipmentCard item ={item} /> 
-                    </li> 
-                    );
-                })}
-            </ul>
-            </div>
-            <div> <Link href= {"/scanner"}> Go to Scan Page </Link> </div> </>
+            <GalleryGrid items ={mockData} />
+        
+            <div className="mt-16"> <Link href= {"/scanner"}> Go to Scan Page </Link> </div> </>
         );
 }

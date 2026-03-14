@@ -3,7 +3,7 @@ import Image from "next/image"
 
 export default function EquipmentCard({item}: {item: ItemFields}) {
     return (
-        <div className="mt-8 border w-46 rounded-3xl p-4 shadow-sm"> 
+        <div className="mt-8 border w-46 rounded-3xl p-4 shadow-sm bg-white"> 
             <Image 
                 src = {item.image_url}
                 alt={item.name}
