@@ -19,7 +19,7 @@ export default function Login() {
             </ul>
           </h1>
           
-          <h2 className="text-2xl font-semibold text-black"> Where Helping Families Comes First </h2>
+          <h2 className="text-2xl text-black"> Where Helping Families Comes First </h2>
         
           {/* Login Redirect: EDIT LATER WITH AUTHENTICATION */}
           <Link 

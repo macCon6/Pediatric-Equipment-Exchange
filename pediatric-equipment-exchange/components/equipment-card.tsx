@@ -1,9 +1,11 @@
 import { ItemFields } from "@/mock-item-fields"
 import Image from "next/image"
 
+// All equipment in the gallery page is displayed using its own card component
+
 export default function EquipmentCard({item}: {item: ItemFields}) {
     return (
-        <div className="border rounded-3xl p-4 bg-white"> 
+        <div className="border border-teal-200 rounded-3xl p-4 bg-teal-200"> 
             <Image 
                 src = {item.image_url}
                 alt={item.name}
