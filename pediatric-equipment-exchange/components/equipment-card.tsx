@@ -1,11 +1,14 @@
 import { ItemFields } from "@/mock-item-fields"
 import Image from "next/image"
+import Link from "next/link"
 
 // All equipment in the gallery page is displayed using its own card component
 
 export default function EquipmentCard({item}: {item: ItemFields}) {
     return (
-        <div className="border border-teal-200 rounded-3xl p-4 bg-teal-200"> 
+        <>
+        <Link href={`/equipment/${item.id}`}>
+        <div className="hover:scale-105 hover:cursor-pointer hover:shadow-xl transition duration-100 border border-teal-200 rounded-3xl p-4 bg-teal-200"> 
             <Image 
                 src = {item.image_url}
                 alt={item.name}
@@ -16,6 +19,9 @@ export default function EquipmentCard({item}: {item: ItemFields}) {
                 />
         <h1 className = "text-lg font-semibold mt-2"> {item.name} </h1>
         <p className = "text-sm"> {item.status} </p>
+        <p className = "text-sm"> {item.condition} </p>
         </div>
+        </Link>
+        </>
     )
 }

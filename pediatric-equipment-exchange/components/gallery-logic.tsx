@@ -16,22 +16,23 @@ export default function GalleryGrid( {items}: Props) {
     // find the items whose name/description match the search term
     const itemMatches = items.filter((item) => {
         const searchIgnoreCase = searchTerm.toLowerCase();
-        const matchName = item.name.toLowerCase().includes(searchIgnoreCase);
-        return matchName;
+        const nameMatches = item.name.toLowerCase().includes(searchIgnoreCase);
+        return nameMatches;
     });
 
     return (
             <>
             <div> 
-                <div className = "px-4">
+                {/* Search bar */}
+                <div className = "px-4 text-lg bg-white border rounded-3xl">
                     <input type="text" 
                         value = {searchTerm} // set the searchTerm variable to the user input
                         onChange={e => setSearchTerm(e.target.value)}
-                        placeholder="Search inventory..." />
+                        placeholder = "Search inventory..." />
                 </div>
 
                 {/* All equipment cards are being displayed in this grid */}
-                <div className = "mt-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 bg-white p-6 border-whiet rounded-3xl">
+                <div className = "mt-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 bg-white p-6 rounded-3xl">
 
                     {/* Creating an equipment-card component for each item */}
                     {itemMatches.map((item) => {
@@ -39,10 +40,10 @@ export default function GalleryGrid( {items}: Props) {
                         <div key = {item.id}>
                         <EquipmentCard item ={item} /> 
                         </div> 
-                        );
-                    })
-                    }
+                        ); 
+                      }) 
+                    } 
                 </div> 
-                </div>
+            </div>
             </>)
 }

@@ -23,7 +23,7 @@ export default function Login() {
         
           {/* Login Redirect: EDIT LATER WITH AUTHENTICATION */}
           <Link 
-            className="flex h-12 w-full items-center justify-center rounded-full bg-rose-400 px-5 transition-colors hover:border-transparent hover:bg-rose-300  md:w-[158px] text-white"
+            className="flex h-12 w-full items-center justify-center rounded-full bg-rose-400 px-5 transition-colors hover:border-transparent hover:bg-rose-300  md:w-[158px] text-black"
             href="/equipment-gallery"
           >
             Login

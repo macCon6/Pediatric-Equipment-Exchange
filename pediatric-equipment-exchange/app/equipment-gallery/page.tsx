@@ -5,7 +5,7 @@ import SideBar from "@/components/sidebar";
 export default function EquipmentGallery() {
         return (
             <>
-            <div className = "flex h-screen">
+            <div className = "flex min-h-screen">
                  <SideBar />
                 
                 <main className = "flex-1 bg-teal-200">

@@ -1,9 +1,10 @@
 export interface ItemFields {
     id: number
     name: string
-    category: string
+    condition: string
     description?: string
     size: string
+    color: string
     status: string
     donor: string
     image_url: string
