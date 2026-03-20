@@ -24,7 +24,7 @@ export default function GalleryGrid( {items}: Props) {
             <>
             <div> 
                 {/* Search bar */}
-                <div className = "px-8 text-xl bg-white border-2 border-[#132540] rounded-3xl md:h-9 w-153" >
+                <div className = "px-8 text-xl bg-white border-2 border-[#132540] rounded-3xl md:h-9 md:w-153" >
                     <input type="text" 
                         value = {searchTerm} // set the searchTerm variable to the user input
                         onChange={e => setSearchTerm(e.target.value)}

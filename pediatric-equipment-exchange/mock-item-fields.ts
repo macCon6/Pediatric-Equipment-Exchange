@@ -1,6 +1,8 @@
 export interface ItemFields {
     id: number
     name: string
+    category: string
+    subcategory?: string
     condition: string
     description?: string
     size: string
