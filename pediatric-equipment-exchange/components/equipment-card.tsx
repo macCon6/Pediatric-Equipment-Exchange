@@ -7,7 +7,7 @@ import Link from "next/link"
 export default function EquipmentCard({item}: {item: ItemFields}) {
     return (
         <>
-        <Link href={`/equipment/${item.id}`}>
+        <Link href={`/items/${item.id}`}>
         <div className="hover:scale-105 hover:cursor-pointer hover:shadow-xl transition duration-100 border border-[#99d9d9] rounded-3xl p-4 bg-[#99d9d9]"> 
             <Image 
                 src = {item.image_url}
