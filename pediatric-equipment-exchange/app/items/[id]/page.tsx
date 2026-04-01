@@ -1,22 +1,20 @@
-// 
-
 import EquipmentDetails from "@/components/equipment-details";
-import { mockData } from "@/mock-data";
+import { createClient } from "@supabase/supabase-js";
 
-interface Props {
-  params: Promise<{ id: number }>;
-}
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+export default async function Item({ params }: { params: { id: string } }) {
+  const { data: item, error } = await supabase
+    .from("equipment")
+    .select("*")
+    .eq("id", Number(params.id))
+    .single();
 
-export default async function Item({ params }: Props) {
+  if (!item) {
+    return <div>Item not found</div>;
+  }
 
-    const {id} = await params;
-    const item = mockData.find(i => i.id == id);
-
-    if(!item)  {
-        return <div> Item not found </div>
-    }
-
-    return (
-       <EquipmentDetails item = {item} />
-    )
+  return <EquipmentDetails item={item} />;
 }

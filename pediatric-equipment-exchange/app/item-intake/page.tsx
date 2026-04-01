@@ -13,7 +13,7 @@ import {
 } from "@/item-field-options";
 import { useState } from "react";
 
-//  Supabase client
+// Supabase client
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -28,6 +28,37 @@ export default function ItemIntake() {
   } = useForm<ItemFields>();
 
   const [open, setOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+
+  //  Upload image to Supabase Storage
+  const handleImageUpload = async (event: any) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+
+    const fileName = `${Date.now()}-${file.name}`;
+
+    const { error } = await supabase.storage
+      .from("equipment-images")
+      .upload(fileName, file);
+
+    if (error) {
+      console.error("Upload error:", error.message);
+      setUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage
+      .from("equipment-images")
+      .getPublicUrl(fileName);
+
+    setImageUrl(data.publicUrl);
+    console.log("Uploaded image:", data.publicUrl);
+
+    setUploading(false);
+  };
 
   // Form submit → inserts into Supabase
   const onSubmit: SubmitHandler<ItemFields> = async (data) => {
@@ -44,7 +75,7 @@ export default function ItemIntake() {
         color: data.color,
         status: data.status,
         donor: data.donor,
-        image_url: "",
+        image_url: imageUrl, // NOW CONNECTED
         qr_code_url: "",
       },
     ]);
@@ -53,7 +84,8 @@ export default function ItemIntake() {
       console.error("Error inserting:", error.message);
     } else {
       console.log("Item added successfully!");
-      reset(); // clears form after submit
+      reset();
+      setImageUrl(""); // clear image
     }
   };
 
@@ -79,12 +111,32 @@ export default function ItemIntake() {
 
       {/* Main content */}
       <div className="flex flex-col md:flex-row w-full gap-3 px-10 py-10">
-        {/* Left side */}
+        {/* LEFT SIDE */}
         <div className="flex-1 flex-col gap-3 md:flex">
+          {/* Upload box */}
           <div className="flex-1 border-2 rounded-2xl border-teal-800 bg-white p-3">
-            <p className="text-2xl text-center">Upload images</p>
+            <p className="text-2xl text-center mb-3">Upload images</p>
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="block mx-auto"
+            />
+
+            {uploading && (
+              <p className="text-center mt-2">Uploading...</p>
+            )}
+
+            {imageUrl && (
+              <img
+                src={imageUrl}
+                className="mt-4 w-full h-40 object-cover rounded-lg"
+              />
+            )}
           </div>
 
+          {/* QR box (still placeholder) */}
           <div className="flex-1 border-2 rounded-2xl border-teal-800 bg-white p-3">
             <p className="text-2xl text-center">
               Click to generate QR code
@@ -93,7 +145,7 @@ export default function ItemIntake() {
           </div>
         </div>
 
-        {/* Form section */}
+        {/* FORM */}
         <div className="flex-1 md:w-[400px] max-w-full border-2 border-teal-800 bg-white rounded-2xl overflow-y-auto">
           <form
             onSubmit={handleSubmit(onSubmit)}
@@ -101,7 +153,7 @@ export default function ItemIntake() {
           >
             <input
               placeholder="*Item Name*"
-              className="bg-rose-400 border border-rose-900 rounded-3xl text-black text-center px-6 py-2 text-2xl"
+              className="bg-rose-400 border border-rose-900 rounded-3xl text-center px-6 py-2 text-2xl"
               {...register("name", { required: "Name is required!" })}
             />
             <p className="text-red-600 text-sm">
