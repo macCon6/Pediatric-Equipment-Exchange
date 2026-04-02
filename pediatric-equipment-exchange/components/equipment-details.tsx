@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { ItemFields } from "@/field_interfaces";
 import Image from "next/image";
@@ -9,8 +9,6 @@ import {useForm, SubmitHandler} from "react-hook-form";
 import { CATEGORY_OPTIONS, SUBCATEGORY_OPTIONS, CONDITION_OPTIONS, COLOR_OPTIONS } from "@/item-field-options";
 
 export default function EquipmentDetails({ item }: { item: ItemFields })  {
-
-  const [open, setOpen] = useState(false); // for mobile menu
 
   const [statusPageOpen, setStatusPageOpen] = useState(false); // for changing the status
 
@@ -71,20 +69,7 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
     <>
     <div className="flex min-h-screen w-full bg-[#51b6b6]">
 
-        {/* Mobile Menu Button*/}
-        <button 
-            onClick={() => setOpen(true)}
-            className="md:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded shadow">
-            ☰
-        </button>
-
-        {/* Overlay (click to close) */}
-        {open && (
-            <div className="fixed inset-0 bg-black/50 z-30 md:hidden"
-            onClick={() => setOpen(false)}
-            />
-        )}
-        <SideBar isOpen={open} onClose={() => setOpen(false)} />
+        <SideBar />
         
         {/* Main Content */}
         <div className="flex-1 p-8 py-15 mb-10 w-full h-full">
@@ -97,7 +82,7 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
             {/* Left Column - Image array that can be clicked through*/}
             <div className="bg-white p-6 rounded-lg flex flex-col items-center justify-center min-h-[25rem]">
               <Image 
-                src={item.image_urls[imageIndex]}
+                src={item.image_urls?.[0] ? item.image_urls[0]: "/missing-image.png"}
                 alt={item.name}
                 width={250}
                 height={150}
@@ -107,13 +92,13 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
               {/* Buttons to click through the images */}
               <div className="flex justify-between w-full mt-6">
                 <button className="text-6xl text-rose-400 flex items-center justify-center hover:opacity-70 hover:cursor-pointer disabled:text-gray-300 disabled:cursor-not-allowed"
-                  onClick={handlePrevImage} disabled={item.image_urls.length===1}> ◀ </button>
+                  onClick={handlePrevImage} disabled={item.image_urls? item.image_urls.length===1 : true}> ◀ </button>
 
                   {/* Track which image */}
-                  <p className="text-black"> {imageIndex + 1} of {item.image_urls.length} </p>
+                  <p className="text-black"> {imageIndex + 1} of {item.image_urls? item.image_urls.length : "1"} </p>
 
                 <button className="text-6xl text-rose-400 flex items-center justify-center hover:opacity-70 hover:cursor-pointer disabled:text-gray-300 disabled:cursor-not-allowed"
-                  onClick={handleNextImage} disabled={item.image_urls.length===1}> ▶ </button>
+                  onClick={handleNextImage} disabled={item.image_urls? item.image_urls.length===1 : true}> ▶ </button>
               </div>
             </div> 
 

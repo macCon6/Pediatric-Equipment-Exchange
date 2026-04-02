@@ -20,10 +20,10 @@ export default function EquipmentCard({item}: {item: ItemFields}) {
 
         <div className="hover:scale-105 cursor-pointer hover:shadow-2xl shadow-xl transition duration-100 border border-[#99d9d9] rounded-3xl p-4 bg-[#99d9d9]"> 
             <Image 
-                src = {item.image_urls[0]}
+                src = {item.image_urls?.[0] ? item.image_urls[0]: "/missing-image.png"}
                 alt={item.name}
-                width = {150}
-                height = {150}
+                width = {180}
+                height = {100}
                 className="rounded-lg mx-auto"
                 priority 
                 />

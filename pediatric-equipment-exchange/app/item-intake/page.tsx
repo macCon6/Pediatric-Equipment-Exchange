@@ -68,7 +68,7 @@ export default function ItemIntake() {
         },
         body: JSON.stringify({
           ...data,
-          image_url: imageUrl,
+          image_urls: imageUrl,
         }),
       });
 
@@ -89,23 +89,8 @@ export default function ItemIntake() {
 
   return (
     <div className="flex min-h-screen w-full bg-[#51b6b6]">
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded shadow"
-      >
-        ☰
-      </button>
 
-      {/* Overlay */}
-      {open && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
-          onClick={() => setOpen(false)}
-        />
-      )}
-
-      <SideBar isOpen={open} onClose={() => setOpen(false)} />
+      <SideBar />
 
       {/* Main content */}
       <div className="flex flex-col md:flex-row w-full gap-3 border-teal-800S px-10 py-10">
@@ -207,10 +192,12 @@ export default function ItemIntake() {
             </select>
             <p className="text-red-600 text-sm">{errors.condition?.message}</p>
 
-            <input
+            <textarea
               placeholder="Item description"
               className="bg-rose-400 border border-black rounded-3xl placeholder-black text-black text-center px-6 py-2 hover:shadow-xl"
               {...register("description")}
+              rows={6}
+              cols={20}
             />
 
             <input
