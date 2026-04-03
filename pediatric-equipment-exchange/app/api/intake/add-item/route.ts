@@ -21,7 +21,9 @@ export async function POST(req: Request) {
         color: body.color,
         status: body.status,
         donor: body.donor,
-        image_url: body.image_url || "",
+        image_urls: Array.isArray(body.image_urls)
+      ? body.image_urls
+      : null,
         qr_code_url: "",
       },
     ]);

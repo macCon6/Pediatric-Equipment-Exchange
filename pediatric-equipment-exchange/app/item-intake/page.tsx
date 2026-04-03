@@ -68,8 +68,8 @@ export default function ItemIntake() {
         },
         body: JSON.stringify({
           ...data,
-          image_urls: imageUrl,
-        }),
+          image_urls: imageUrl && imageUrl.trim() !== "" ? [imageUrl] : null,
+        })
       });
 
       const result = await res.json();

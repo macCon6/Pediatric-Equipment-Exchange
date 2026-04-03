@@ -50,7 +50,9 @@ export const COLOR_OPTIONS = [
     "Black",
     "White",
     "Silver",
-    "Gold"
+    "Gold",
+    "Tan",
+    "Gray"
 ] as const;
 
 export type Condition = typeof CONDITION_OPTIONS[number];
