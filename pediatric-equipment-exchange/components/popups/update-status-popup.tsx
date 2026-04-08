@@ -4,9 +4,9 @@
 
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import Popup from "@/components/popup"; 
+import Popup from "@/components/popups/popup"; 
+import Toast from "@/components/popups/toast";
 import { STATUS_OPTIONS } from "@/item-field-options";
-import Link from "next/link";
 
 interface reservationForm {
     name: string;
@@ -21,14 +21,14 @@ interface UpdateStatusProps {
     equipment_id: string;
     staff_member: string,
     distribution_id: string,
-    waiver_signed: boolean,
     current_status: string,
     onStatusChange: (updatedStatus: string) => void, // need this to trigger a re-render of the "current status" box
     isOpen: boolean, // to show the popup
     onClose: () => void, // to close the popup
+    showToast: (message: string, type: "success" | "error") => void
 }
 
-export default function UpdateStatusPopup({equipment_id, staff_member, distribution_id, waiver_signed, current_status, isOpen, onClose, onStatusChange}: UpdateStatusProps) {
+export default function UpdateStatusPopup({equipment_id, staff_member, distribution_id, current_status, isOpen, onClose, onStatusChange, showToast}: UpdateStatusProps) {
 
     // the reservation form using react-hook-form
     const {register, handleSubmit, reset, formState: {errors}} = useForm<reservationForm>();
@@ -48,7 +48,7 @@ export default function UpdateStatusPopup({equipment_id, staff_member, distribut
         if (target_status === "Reserved" && current_status === "Available") {
             setReservationFormOpen(true); 
         } else {
-            await updateEquipmentStatus(equipment_id, target_status, current_status, waiver_signed, distribution_id, staff_member);
+            await updateEquipmentStatus(equipment_id, target_status, current_status, distribution_id, staff_member);
             onClose();
         }
     };
@@ -57,7 +57,6 @@ export default function UpdateStatusPopup({equipment_id, staff_member, distribut
         equipment_id: string,
         target_status: string,
         current_status: string,
-        waiver_signed: boolean,
         distribution_id: string,
         staff_member: string,
         reservationFormData?: reservationForm) => {
@@ -73,26 +72,26 @@ export default function UpdateStatusPopup({equipment_id, staff_member, distribut
                 equipment_id: equipment_id,
                 target_status: target_status, 
                 current_status: current_status,
-                waiver_signed: waiver_signed,
                 distribution_id: distribution_id, 
                 staff_member: staff_member,
                 reservationFormData: reservationFormData
             }),
         });
+
         const statusResponse = await res.json();
         console.log(statusResponse);
 
         if (!statusResponse.success) {
-            alert("Error: " + statusResponse.error);
+            showToast(statusResponse.error, "error");
             return;
         }
-        alert("Status updated successfully");
+        showToast("Status updated!", "success");
         onStatusChange(target_status); // re-render the current status
     }   
 
     // for submitting the reservation form (target status is "Reserved" since the form only shows in that case)
     const onSubmit: SubmitHandler<reservationForm> = async (data: reservationForm) => {
-        await updateEquipmentStatus(equipment_id, "Reserved", current_status, waiver_signed, distribution_id, staff_member, data);
+        await updateEquipmentStatus(equipment_id, "Reserved", current_status, distribution_id, staff_member, data);
         setReservationFormOpen(false);
         onClose(); // close the popup
     } 
@@ -106,7 +105,6 @@ export default function UpdateStatusPopup({equipment_id, staff_member, distribut
             case "In Processing": return "bg-sky-400";
     }
   }
-
 
     return (
         <>
@@ -126,7 +124,8 @@ export default function UpdateStatusPopup({equipment_id, staff_member, distribut
             <p className= "text-xl mb-4"> Select which status to update to: </p>
         
             <div className="flex flex-col gap-10"> 
-                {STATUS_OPTIONS.filter(status_option => status_option !== current_status).map(status_option => (
+                {/* Got rid of the Allocated button because staff should do that through the waiver page after signature */}
+                {STATUS_OPTIONS.filter(status_option => status_option !== current_status && status_option !== "Allocated").map(status_option => (
                     // create the status buttons
                         <button key={status_option}
                         onClick={() => handleTargetStatusChange(status_option)}

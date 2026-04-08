@@ -8,7 +8,7 @@ const supabase = createClient(
 
 export default async function Item(details: { params: any }) {
 
-   const { id } = await details.params; // unwrap the Promise
+  const { id } = await details.params; // unwrap the Promise
 
   const equipment_id = id; 
 

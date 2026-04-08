@@ -27,7 +27,6 @@ export default function ItemIntake() {
     formState: { errors },
   } = useForm<ItemFields>();
 
-  const [open, setOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [uploading, setUploading] = useState(false);
 

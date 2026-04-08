@@ -2,6 +2,9 @@
 // This will update a status, and may also add entries in the distributions or recipients table depending on the transition
 // And may edit an entry in the distributions table depending on the transition
 
+// NOTE: This route has been changed to NOT handle changing a status to "Allocated"
+// Instead, that will be done after a waiver has been successfully signed
+
 import {createClient} from "@supabase/supabase-js";
 import { Status } from "@/item-field-options";
 
@@ -12,7 +15,7 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
 
-  const {equipment_id, target_status, current_status, waiver_signed, distribution_id, staff_member, reservationFormData} = await req.json();
+  const {equipment_id, target_status, current_status, distribution_id, staff_member, reservationFormData} = await req.json();
 
   // helper functions
 
@@ -62,19 +65,6 @@ export async function POST(req: Request) {
     return data;
   };
 
-  // update allocated_at status in Distributions table (item is physically picked up  by family)
-  const updateAllocatedAt = async () => {
-    if (!distribution_id) throw new Error("Cannot return item, entry in distributions table not found");
-    const { data, error } = await supabase
-      .from("distributions")
-      .update({ allocated_at: new Date().toISOString() })
-      .eq("id", distribution_id)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
-  };
-
   // update returned_at status in Distributions table
   const updateReturnedAt = async () => {
     if (!distribution_id) throw new Error("Cannot return item, entry in distributions table not found");
@@ -88,8 +78,6 @@ export async function POST(req: Request) {
     return data;
   };
 
-  // try to update the status
-  try {
    /* VALID TRANSITIONS:
     AVAILABLE:
         -> Reserved = reserving an item, must start an entry in Distributions and Recipients tables
@@ -98,6 +86,8 @@ export async function POST(req: Request) {
 
     RESERVED:
         -> Available = item wasn't picked up, complete the entry in Distributions table (update returned_at)
+
+        // !! NO LONGER VALID - HANDLED IN SIGN-WAIVER ROUTE INSTEAD !!
         -> Allocated = Item was picked up, update Distributions table (update allocated_at). REQUIRES WAIVER SIGNATURE
 
     ALLOCATED:
@@ -106,7 +96,7 @@ export async function POST(req: Request) {
 
     IN PROCESSING:
         -> Available = maintenance done, just update status  */
-
+  try {
     let result: any;
     switch (target_status) { // decide what to do depending on what the target status is 
 
@@ -164,24 +154,12 @@ export async function POST(req: Request) {
             }
         }
       } else {
-        throw new Error(`Cannot go from ${current_status} to Reserved, Only Available items can be Reserved`);
+        throw new Error(`Only Available items can be Reserved`);
       }
       break;
 
-    case "Allocated":
-      if (current_status === "Reserved") { // reserved -> allocated, family physically picks up item. Check waiver signature, update allocated_at entry in distributions table
-        if (!waiver_signed) throw new Error("Waiver must be signed before allocation");
-        try {
-          result = await updateEquipmentStatus("Allocated");
-          await updateAllocatedAt(); // only gets here if updateEquipmentStatus doesn't throw
-        } catch(error) {
-          console.log("Failed to update allocated_at field, rolling back to original status");
-          await updateEquipmentStatus(current_status);
-        }
-      } else {
-        throw new Error(`Cannot go from ${current_status} to Allocated, Items must be Reserved before allocation`);
-      }
-      break;
+    // the Allocated case has been deleted as that is no longer a valid target status
+      
     } // end of switch
 
     return new Response(JSON.stringify({success: true, result}), {status: 200});

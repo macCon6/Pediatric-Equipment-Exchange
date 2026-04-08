@@ -4,10 +4,11 @@ import { ItemFields } from "@/field_interfaces";
 import Image from "next/image";
 import { useState, useEffect } from 'react';
 import SideBar from "@/components/sidebar";
-import UpdateStatusPopup from "@/components/update-status-popup";
+import UpdateStatusPopup from "@/components/popups/update-status-popup";
 import {useForm, SubmitHandler} from "react-hook-form";
 import { CATEGORY_OPTIONS, SUBCATEGORY_OPTIONS, CONDITION_OPTIONS, COLOR_OPTIONS } from "@/item-field-options";
 import Link from "next/link";
+import Toast from "@/components/popups/toast";
 
 export default function EquipmentDetails({ item }: { item: ItemFields })  {
 
@@ -17,6 +18,15 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
   const [isEditing, setIsEditing] = useState(false); // for editing item details, will use a form from react-hook-form
   const [itemDetails, setItemDetails] = useState(item); // to immediately show the new item details if they get changed
   const { register, handleSubmit} = useForm({ defaultValues: item }) // form for editing details
+
+  //for success/failure messages
+  const [toastMessage, setToastMessage] = useState(""); 
+  const [toastType, setToastType] = useState<"error" | "success">("error");
+
+  const showToast = (message: string, type: "success" | "error") => { // this is to send down to the update-status-popup
+    setToastMessage(message);  
+    setToastType(type);        
+  };
 
   // have to send distribution info to update-status-popup in case the item is being returned
   const [distribution, setDistribution] = useState<any>(null);
@@ -36,15 +46,16 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
 
       if (!res.ok) {
         console.error(result.error);
-        alert("Update failed");
+        showToast("Failed to save edits", "error");
       } else {
-        alert("Item updated succesfully!");
         setItemDetails(data);
         setIsEditing(false);
       }
     } catch (err) {
       console.error("Request failed:", err);
+      showToast("Failed to save edits", "error");
     }
+    showToast("Edits saved successfully!", "success");
   };
   
   // fetch the distribution info once item details page is opened
@@ -82,8 +93,10 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
 
   return (
     <>
+    {/* Show any toast popups */}
+    {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
+    
     <div className="flex min-h-screen w-full bg-[#51b6b6]">
-
         <SideBar />
 
         {/* Main Content */}
@@ -147,7 +160,7 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
 
                     <li className="flex items-center justify-center gap-3 mb-6 text-3xl text-black">
                       <strong>Item Name:</strong>
-                      <input className="border rounded px-2 py-1 text-center text-3xl leading-tight"
+                      <input className="border rounded px-2 py-1 text-3xl leading-tight w-full"
                       {...register("name")} /> 
                     </li>
 
@@ -225,12 +238,21 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
                 <h1 className="text-3xl text-center text-black font-bold font-mono"> Current Status: </h1> 
                 <span className={`${getStatusColor()} text-center text-white text-xl font-bold font-mono border rounded-xl p-3 w-full`}> {mostRecentStatus} </span>
                 
-                {/* Update status button + sign/view waiver if status is reserved or allocated */}
+                {/* Update status button + view recipient/waiver button if available*/}
+
+                <div className="flex flex-wrap items-center gap-4 mt-3">
                   <button className="bg-rose-400 hover:bg-rose-300 hover:cursor-pointer border rounded-3xl text-white text-xl p-3 font-mono"  
                     onClick={ () => setStatusPageOpen(true) }> Update </button> 
-                  {(mostRecentStatus === "Reserved" || mostRecentStatus === "Allocated") &&
-                    <p className="text-red-400 italic"> You have a waiver available for view <Link href= {`/items/${item.id}/waiver`} className="underline text-blue-400"> here. </Link> </p>}
-              </div>
+                </div>
+                
+                {/* //TO-DO: Open the recipient info on click, right now opens the status popup  */}
+                 {(mostRecentStatus === "Reserved" || mostRecentStatus === "Allocated") && ( <>
+                    <button className="bg-rose-400 hover:bg-rose-300 hover:cursor-pointer border rounded-3xl text-white text-xl p-3 font-mono"  
+                      onClick={ () => setStatusPageOpen(true) }> View Recipient Info </button> 
+                      <span className="text-red-400 italic"> You have a waiver available <Link href= {`/items/${item.id}/waiver`} className="underline text-blue-400"> here. </Link> </span> </>
+                  )}
+              
+             </div>
             </div>
           </div>
         </div>
@@ -242,11 +264,11 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
             staff_member = {"1d9992f0-753a-43db-943d-7ed30741aff9"} 
             //
             distribution_id = {distribution?.id}
-            waiver_signed = {distribution?.waiver_signed ?? false}
             current_status = {mostRecentStatus}
             onStatusChange = {(updated_status) => setMostRecentStatus(updated_status)} // to re-render the "current status" box to the new status
             isOpen = { statusPageOpen }
             onClose = { () => setStatusPageOpen(false)}
+            showToast={showToast}
           />  
     </div>
     </>

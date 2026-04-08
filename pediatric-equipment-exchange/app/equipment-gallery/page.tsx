@@ -1,29 +1,26 @@
-"use client";
+// i have changed this to be a server component and directly pull from supabase 
+// instead of using an API for getting the equipment
+// because duplicate tabs and pressing the back button caused an infinite spinner
 
 import GalleryGrid from "@/components/gallery-logic";
 import SideBar from "@/components/sidebar";
-import { useState, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 
-export default function EquipmentGallery() {
+export default async function EquipmentGallery() {
 
-    const [items, setItems] = useState([]);
-    const [loading, setLoading] = useState(true);
-    
-    // useEffect ensures that the fetch is done before we get to the stuff in the return statemnt
-    useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                const res = await fetch(`/api/equipment`);
-                const data = await res.json();
-                setItems(data);
-                console.log(data);
-                setLoading(false);
-            } catch(error) {
-                throw new Error("COuld not fetch equipment")
-            }
+    const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    const { data:items, error } = await supabase
+        .from("equipment")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+        if (error) {
+            throw new Error("COuld not fetch equipment: " + error.message);
         }
-        fetchItems(); 
-    }, []);
 
     return (
         <div className = "flex min-h-screen w-full bg-[#51b6b6]">
@@ -32,7 +29,7 @@ export default function EquipmentGallery() {
                 <div className ="text-2xl p-3"> Gallery Here </div>
                     {/* Passes the itmes to the gallery-logic component */}
                     <div className = "flex-1 p-6">
-                        <GalleryGrid items ={items} loading={loading}/>
+                        <GalleryGrid items ={items} loading={false}/>
                     </div>
                 </main>
             </div>  
