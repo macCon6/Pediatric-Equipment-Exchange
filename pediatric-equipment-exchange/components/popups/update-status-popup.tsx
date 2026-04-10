@@ -19,7 +19,7 @@ interface reservationForm {
 
 interface UpdateStatusProps {
     equipment_id: string;
-    staff_member: string,
+    reserved_by: string,
     distribution_id: string,
     current_status: string,
     onStatusChange: (updatedStatus: string) => void, // need this to trigger a re-render of the "current status" box
@@ -28,7 +28,7 @@ interface UpdateStatusProps {
     showToast: (message: string, type: "success" | "error") => void
 }
 
-export default function UpdateStatusPopup({equipment_id, staff_member, distribution_id, current_status, isOpen, onClose, onStatusChange, showToast}: UpdateStatusProps) {
+export default function UpdateStatusPopup({equipment_id, reserved_by, distribution_id, current_status, isOpen, onClose, onStatusChange, showToast}: UpdateStatusProps) {
 
     // the reservation form using react-hook-form
     const {register, handleSubmit, reset, formState: {errors}} = useForm<reservationForm>();
@@ -48,7 +48,7 @@ export default function UpdateStatusPopup({equipment_id, staff_member, distribut
         if (target_status === "Reserved" && current_status === "Available") {
             setReservationFormOpen(true); 
         } else {
-            await updateEquipmentStatus(equipment_id, target_status, current_status, distribution_id, staff_member);
+            await updateEquipmentStatus(equipment_id, target_status, current_status, distribution_id, reserved_by);
             onClose();
         }
     };
@@ -58,7 +58,7 @@ export default function UpdateStatusPopup({equipment_id, staff_member, distribut
         target_status: string,
         current_status: string,
         distribution_id: string,
-        staff_member: string,
+        reserved_by: string,
         reservationFormData?: reservationForm) => {
 
         const confirmed = window.confirm(`Are you sure you want to change status to "${target_status}"?`);
@@ -73,7 +73,7 @@ export default function UpdateStatusPopup({equipment_id, staff_member, distribut
                 target_status: target_status, 
                 current_status: current_status,
                 distribution_id: distribution_id, 
-                staff_member: staff_member,
+                reserved_by: reserved_by,
                 reservationFormData: reservationFormData
             }),
         });
@@ -91,7 +91,7 @@ export default function UpdateStatusPopup({equipment_id, staff_member, distribut
 
     // for submitting the reservation form (target status is "Reserved" since the form only shows in that case)
     const onSubmit: SubmitHandler<reservationForm> = async (data: reservationForm) => {
-        await updateEquipmentStatus(equipment_id, "Reserved", current_status, distribution_id, staff_member, data);
+        await updateEquipmentStatus(equipment_id, "Reserved", current_status, distribution_id, reserved_by, data);
         setReservationFormOpen(false);
         onClose(); // close the popup
     } 
@@ -145,12 +145,12 @@ export default function UpdateStatusPopup({equipment_id, staff_member, distribut
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full">
                     <input 
                         className=" bg-rose-200 border border-rose-600 rounded-3xl placeholder-black text-black text-center px-6 py-2 text-xl"
-                        placeholder= "Recipient Family Name" 
+                        placeholder= "Recipient Name" 
                         {...register("name", { required: "Name is required!"})} />
                         <p className="text-red-600 text-sm"> {errors.name?.message} </p>
                     <input 
                         className=" bg-rose-200 border border-rose-600 rounded-3xl placeholder-black text-black text-center px-6 py-2 text-xl"
-                        placeholder= "Recipient Contact Name"
+                        placeholder= "Contact Name"
                         {...register("contact_name", {required: "Contact is required!"}) }/>
                         <p className="text-red-600 text-sm"> {errors.contact_name?.message} </p>
                     <input
@@ -159,17 +159,17 @@ export default function UpdateStatusPopup({equipment_id, staff_member, distribut
                         {...register("organization") } />
                     <input 
                         className=" bg-rose-200 border border-rose-600 rounded-3xl placeholder-black text-black text-center px-6 py-2 text-xl"
-                        placeholder= "Recipient Email"
+                        placeholder= "Contact Email"
                         {...register("email", {required: "Email is required!"}) }/>
                         <p className="text-red-600 text-sm"> {errors.email?.message} </p>
                     <input 
                         className=" bg-rose-200 border border-rose-600 rounded-3xl placeholder-black text-black text-center px-6 py-2 text-xl"
-                        placeholder= "Recipient Phone Number" 
+                        placeholder= "Contact Phone Number" 
                         {...register("phone", {required: "Phone number is required!"}) }/>
                         <p className="text-red-600 text-sm"> {errors.phone?.message} </p>
                     <input
                         className=" bg-rose-200 border border-rose-600 rounded-3xl placeholder-black text-black text-center px-6 py-2 text-xl"
-                        placeholder= "PT/Volunteer Notes"
+                        placeholder= "PT Notes"
                         {...register("notes")}/>
                     <input 
                         type="submit" 

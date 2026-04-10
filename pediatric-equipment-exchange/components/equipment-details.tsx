@@ -9,10 +9,12 @@ import {useForm, SubmitHandler} from "react-hook-form";
 import { CATEGORY_OPTIONS, SUBCATEGORY_OPTIONS, CONDITION_OPTIONS, COLOR_OPTIONS } from "@/item-field-options";
 import Link from "next/link";
 import Toast from "@/components/popups/toast";
+import RecipientInfoPopup from "@/components/popups/recipient-info-popup";
 
 export default function EquipmentDetails({ item }: { item: ItemFields })  {
 
   const [statusPageOpen, setStatusPageOpen] = useState(false); // for changing the status
+  const [recipientPageOpen, setRecipientPageOpen] = useState(false); // show recipient info
   const [mostRecentStatus, setMostRecentStatus] = useState(item.status); // to immediately show the updated status if it gets changed
   const [imageIndex, setImageIndex] = useState(0); // for scrolling through images
   const [isEditing, setIsEditing] = useState(false); // for editing item details, will use a form from react-hook-form
@@ -50,17 +52,16 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
       } else {
         setItemDetails(data);
         setIsEditing(false);
+        showToast("Edits saved successfully!", "success");
       }
     } catch (err) {
       console.error("Request failed:", err);
       showToast("Failed to save edits", "error");
     }
-    showToast("Edits saved successfully!", "success");
   };
   
   // fetch the distribution info once item details page is opened
   useEffect(() => {
-    if (!item?.id || distribution) return; 
     const fetchDistributionEntry = async () => {
       const res = await fetch(`/api/distributions/${item.id}`);
       const data = await res.json();
@@ -68,8 +69,8 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
       console.log("Distribution data:", data);
     }
     fetchDistributionEntry(); 
-  }, [item?.id, distribution]);
-
+  }, [item.id]);
+  
   // helpers to scroll through images; wrap around when end of array is reached
   const handlePrevImage = () => {
     if (imageIndex > 0) { setImageIndex(imageIndex - 1); }
@@ -244,11 +245,10 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
                   <button className="bg-rose-400 hover:bg-rose-300 hover:cursor-pointer border rounded-3xl text-white text-xl p-3 font-mono"  
                     onClick={ () => setStatusPageOpen(true) }> Update </button> 
                 </div>
-                
-                {/* //TO-DO: Open the recipient info on click, right now opens the status popup  */}
+              
                  {(mostRecentStatus === "Reserved" || mostRecentStatus === "Allocated") && ( <>
                     <button className="bg-rose-400 hover:bg-rose-300 hover:cursor-pointer border rounded-3xl text-white text-xl p-3 font-mono"  
-                      onClick={ () => setStatusPageOpen(true) }> View Recipient Info </button> 
+                      onClick={ () => setRecipientPageOpen(true) }> View Recipient Info </button> 
                       <span className="text-red-400 italic"> You have a waiver available <Link href= {`/items/${item.id}/waiver`} className="underline text-blue-400"> here. </Link> </span> </>
                   )}
               
@@ -261,7 +261,7 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
       <UpdateStatusPopup
             equipment_id = {item.id}
             // UPDATE LATER: to be the staff member's id from authenticated session ; this is just Dawn's id in the profile table
-            staff_member = {"1d9992f0-753a-43db-943d-7ed30741aff9"} 
+            reserved_by = {"1d9992f0-753a-43db-943d-7ed30741aff9"} 
             //
             distribution_id = {distribution?.id}
             current_status = {mostRecentStatus}
@@ -270,6 +270,13 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
             onClose = { () => setStatusPageOpen(false)}
             showToast={showToast}
           />  
+
+        {/* Popup when recipient info is clicked */}
+       <RecipientInfoPopup
+            recipient = {distribution?.recipient}
+            isOpen = { recipientPageOpen }
+            onClose = { () => setRecipientPageOpen(false)}
+          />   
     </div>
     </>
   );

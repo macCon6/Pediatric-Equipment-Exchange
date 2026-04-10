@@ -18,12 +18,17 @@ export const CATEGORY_OPTIONS = [
     "Gait Trainer",
     "Forearm Crutches",
     "Adaptive Tricycle",
-    "Adaptive Tray"
+    "Adaptive Tray",
+    "Walking Frame",
+    "Guardian",
+    "Pacer",
+    "Other"
 ] as const;
 
 export const SUBCATEGORY_OPTIONS = [
     "Supine",
     "Prone",
+    "Posterior",
     "Multi",
     "Mobile",
     "Manual Rigid",
@@ -48,6 +53,7 @@ export const COLOR_OPTIONS = [
     "Purple",
     "Pink",
     "Black",
+    "Brown",
     "White",
     "Silver",
     "Gold",

@@ -1,6 +1,8 @@
 // get the active distribution for a piece of equipment, if there is one
 // aka the row in the distribution table where == equipment_id & returned_at = null 
 
+// updated to also grab the recipient info instead of a creating a new route for GET recipient
+
 import {createClient} from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -15,14 +17,17 @@ export async function GET(req: Request, details: { params: any }) {
     const equipment_id = id; 
 
     const { data, error } = await supabase
-    .from("distributions")
-    .select("*")
-    .eq("equipment_id", equipment_id)
-    .is("returned_at", null)
+        .from("distributions")
+        .select("*, recipient:recipient_id(*)") //can get the recipient cause recipient_id is a foreign key
+        .eq("equipment_id", equipment_id)
+        .is("returned_at", null)
+        .maybeSingle(); // if there's no distribution, it'll just return null. Otherwise returns the single active one
 
+    console.log("rows:", data, "error:", error);
+        
     if (error) {
         return new Response(JSON.stringify({error: error.message}), {status:500});
     }
 
-    return new Response(JSON.stringify(data[0] ?? null), {status:200});
+    return new Response(JSON.stringify(data), {status:200});
 }

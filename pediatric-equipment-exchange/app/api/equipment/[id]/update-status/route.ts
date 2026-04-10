@@ -15,7 +15,7 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
 
-  const {equipment_id, target_status, current_status, distribution_id, staff_member, reservationFormData} = await req.json();
+  const {equipment_id, target_status, current_status, distribution_id, reserved_by, reservationFormData} = await req.json();
 
   // helper functions
 
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       .insert({
         equipment_id,
         recipient_id,
-        staff_member,
+        reserved_by,
         notes: reservationFormData?.notes ?? null,
       })
       .select()

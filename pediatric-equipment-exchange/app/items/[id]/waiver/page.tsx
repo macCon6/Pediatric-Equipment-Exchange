@@ -6,8 +6,8 @@ import { createClient } from "@supabase/supabase-js";
 import WaiverClient from "../waiver-client/page";
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY! //server only
 );
 
 export default async function WaiverPage( details: { params: any } ) {

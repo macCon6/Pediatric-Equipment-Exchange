@@ -3,14 +3,12 @@
 import EquipmentCard from "@/components/equipment-card";
 import { ItemFields } from "@/field_interfaces";
 import { useState } from "react";
-import LoadingWheel from "@/components/loading-wheel";
 
 interface Props {
     items: ItemFields[];
-    loading: boolean;
 }
 
-export default function GalleryGrid( {items, loading}: Props) {
+export default function GalleryGrid( {items}: Props) {
 
     // useState React Hook makes a state variable, searchTerm
     const[searchTerm, setSearchTerm] = useState<string>("");
@@ -35,16 +33,13 @@ export default function GalleryGrid( {items, loading}: Props) {
 
                 {/* show the wheel if loading, otherwise show the cards */}
                 <div className = "mt-4 bg-white p-6 rounded-3xl min-h-[200px]">
-                    {loading ? ( <LoadingWheel /> ) 
-                        : (
-                        /* All equipment cards are being displayed in this grid */
-                        <div className = "mt-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 bg-white p-6 rounded-3xl">
+                    {/* All equipment cards are being displayed in this grid  */}
+                    <div className = "mt-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 bg-white p-6 rounded-3xl">
                         {/* Creating an equipment-card component for each item */}
                             {itemMatches.map((item) => (
                                 <EquipmentCard key={item.id} item ={item}/>
                             ))}
-                        </div>
-                    )}
+                    </div>    
                 </div> 
             </div>
             </>)

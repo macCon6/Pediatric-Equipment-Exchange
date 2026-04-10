@@ -19,7 +19,7 @@ export default async function EquipmentGallery() {
         .order("created_at", { ascending: false });
 
         if (error) {
-            throw new Error("COuld not fetch equipment: " + error.message);
+            throw new Error("Could not fetch equipment: " + error.message);
         }
 
     return (
@@ -29,7 +29,7 @@ export default async function EquipmentGallery() {
                 <div className ="text-2xl p-3"> Gallery Here </div>
                     {/* Passes the itmes to the gallery-logic component */}
                     <div className = "flex-1 p-6">
-                        <GalleryGrid items ={items} loading={false}/>
+                        <GalleryGrid items ={items}/>
                     </div>
                 </main>
             </div>  
