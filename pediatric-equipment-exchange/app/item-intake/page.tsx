@@ -1,5 +1,6 @@
 "use client";
 
+import QrCodeDisplay from "@/components/qr-code-display";
 import SideBar from "@/components/sidebar";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ItemFields } from "@/field_interfaces";
@@ -29,6 +30,7 @@ export default function ItemIntake() {
 
   const [open, setOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [createdItemId, setCreatedItemId] = useState("");
   const [uploading, setUploading] = useState(false);
 
   //  Upload image
@@ -78,6 +80,7 @@ export default function ItemIntake() {
         console.error(result.error);
         alert("Failed to add item");
       } else {
+        setCreatedItemId(result.id ?? "");
         alert("Item added successfully!");
         reset();
         setImageUrl("");
@@ -131,12 +134,18 @@ export default function ItemIntake() {
             )}
           </div>
 
-          {/* QR section (unchanged) */}
+          {/* QR section */}
           <div className="flex-1 border-3 rounded-2xl border-teal-800 bg-white p-3">
-            <p className="text-2xl text-center">
-              Click to generate QR code
-            </p>
-            <div className="w-40 h-40 mx-auto border rounded-lg bg-white flex items-center justify-center"></div>
+            {createdItemId ? (
+              <QrCodeDisplay itemId={createdItemId} />
+            ) : (
+              <>
+                <p className="text-2xl text-center">Submit an item to generate its QR code</p>
+                <div className="mt-4 flex h-40 w-40 mx-auto items-center justify-center rounded-lg border bg-white text-center text-sm text-gray-500">
+                  QR code will appear here
+                </div>
+              </>
+            )}
           </div>
         </div>
 
