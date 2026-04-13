@@ -1,12 +1,10 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 export async function POST(req: Request) {
+
+  const supabase = await createClient();
+  
   try {
     const body = await req.json();
     const normalizedBarcode = typeof body.barcode_value === "string" ? body.barcode_value.trim() : ""; // Normalize the barcode value by trimming whitespace. If it's not a string, default to an empty string.

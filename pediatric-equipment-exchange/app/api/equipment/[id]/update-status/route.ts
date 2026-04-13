@@ -5,15 +5,12 @@
 // NOTE: This route has been changed to NOT handle changing a status to "Allocated"
 // Instead, that will be done after a waiver has been successfully signed
 
-import {createClient} from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
 import { Status } from "@/item-field-options";
 
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY! //server only
-);
-
 export async function POST(req: Request) {
+
+  const supabase = await createClient();
 
   const {equipment_id, target_status, current_status, distribution_id, reserved_by, reservationFormData} = await req.json();
 

@@ -1,11 +1,9 @@
-import {createClient} from "@supabase/supabase-js";
-
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY! //server only
-);
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
+
+  const supabase = await createClient();
+  
   try {
     const { username, password, fullName, role } = await req.json();
 
@@ -13,6 +11,15 @@ export async function POST(req: Request) {
     if (!username || !password || !fullName) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
+        { status: 400 }
+      );
+    }
+
+    // new check to ensure every user has a valid role 
+    const allowedRoles = ["admin", "physical_therapist", "volunteer"]
+    if(!allowedRoles.includes(role)) {
+      return new Response (
+        JSON.stringify({ error: "Invalid role"}),
         { status: 400 }
       );
     }
@@ -32,9 +39,8 @@ export async function POST(req: Request) {
         },
       });
 
-    console.log("Auth createUser response:", authData, authError);
-
     if (authError) {
+      console.error("Auth error: ", authError.message);
       return new Response(
         JSON.stringify({ error: authError.message || "Auth error" }),
         { status: 400 }
@@ -60,9 +66,6 @@ export async function POST(req: Request) {
           role: role || "volunteer",
           username: cleanUsername, // make sure this column exists
         })
-        .select();
-
-    console.log("Profiles insert response:", profileData, profileError);
 
     if (profileError) {
       return new Response(
@@ -74,9 +77,10 @@ export async function POST(req: Request) {
     }
 
     return new Response(
-      JSON.stringify({ authData, profileData }),
+      JSON.stringify({success: true, userId}),
       { status: 200 }
     );
+
   } catch (err: any) {
     console.error("Unexpected error:", err);
     return new Response(

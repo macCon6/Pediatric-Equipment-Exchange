@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Login() {
+export default function Landing() {
   return (
     /* Full screen background */
     <div className="flex min-h-screen items-center justify-center bg-white font-sans">
@@ -15,13 +15,11 @@ export default function Login() {
             alt="Beyond the Horizon Logo" 
             className="w-full h-auto"
           />
-
-          {/*<h2 className="text-2xl font-montserrat text-black">Where Helping Families Comes First</h2>*/}
         
           {/* Login Redirect */}
           <Link 
             className="flex h-12 w-full items-center justify-center rounded-full bg-[#5a9e3a] px-5 transition-colors hover:border-transparent hover:bg-[#4a8a2e] md:w-[158px] text-xl text-white"
-            href="/equipment-gallery"
+            href="/login-page"
           >
             Login
           </Link>

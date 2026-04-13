@@ -1,14 +1,11 @@
 // this will be the api route to update everything except the Status in the item details
 // just in case thye want to change the name, condition, etc.
 
-import {createClient} from "@supabase/supabase-js";
-
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY! //server only
-);
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
+
+  const supabase = await createClient();
 
   const {equipment_id, newFieldsForm} = await req.json();
   const normalizedBarcode = typeof newFieldsForm.barcode_value === "string" ? newFieldsForm.barcode_value.trim() : ""; // Normalize the barcode value by trimming whitespace. If it's not a string, default to an empty string.

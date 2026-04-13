@@ -12,7 +12,8 @@ import {
 } from "@/item-field-options";
 import { useEffect, useRef, useState } from "react";
 import Toast from "@/components/popups/toast";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
+
 import {
   Html5QrcodeScanType,
   Html5QrcodeScanner,
@@ -20,10 +21,7 @@ import {
 } from "html5-qrcode";
 
 // Supabase client (ONLY for image upload)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+const supabase = createClient();
 
 export default function ItemIntake() {
   const {

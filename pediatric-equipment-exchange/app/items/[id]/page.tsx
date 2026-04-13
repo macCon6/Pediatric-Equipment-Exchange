@@ -1,12 +1,9 @@
 import EquipmentDetails from "@/components/equipment-details";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { createClient } from "@/lib/supabase/server"
 
 export default async function Item(details: { params: any }) {
+
+  const supabase = await createClient();
 
   const { id } = await details.params; // unwrap the Promise
 

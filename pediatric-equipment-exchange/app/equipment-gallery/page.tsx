@@ -4,14 +4,11 @@
 
 import GalleryGrid from "@/components/gallery-logic";
 import SideBar from "@/components/sidebar";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function EquipmentGallery() {
 
-    const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = await createClient();
 
     const { data:items, error } = await supabase
         .from("equipment")

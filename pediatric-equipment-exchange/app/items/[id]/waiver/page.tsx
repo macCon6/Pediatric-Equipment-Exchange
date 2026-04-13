@@ -2,15 +2,12 @@
 // because react-pdf (used to display the waiver) does not allow SSR, 
 // have to fetch everything here and send it to a client page
 
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
 import WaiverClient from "../waiver-client/page";
 
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY! //server only
-);
-
 export default async function WaiverPage( details: { params: any } ) {
+  
+  const supabase = await createClient();
 
   const { id } = await details.params; // unwrap the Promise
 

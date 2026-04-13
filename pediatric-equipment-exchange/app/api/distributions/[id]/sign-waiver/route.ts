@@ -5,15 +5,12 @@
 
 // ALSO UPDATES THE EQUIPMENT STATUS TO ALLOCATED ONCE SUCCESSFUL
 
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
 import { PDFDocument } from "pdf-lib";
 
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY! //server only
-);
-
 export async function POST(req: Request) {
+
+  const supabase = await createClient();
 
   const {distribution_id, template_url, signature_data_url} = await req.json();
 

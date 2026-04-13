@@ -3,14 +3,11 @@
 
 // updated to also grab the recipient info instead of a creating a new route for GET recipient
 
-import {createClient} from "@supabase/supabase-js";
-
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY! //server only
-);
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET(req: Request, details: { params: any }) {
+
+    const supabase = await createClient();
 
     const { id } = await details.params; // unwrap the Promise
 
@@ -22,8 +19,6 @@ export async function GET(req: Request, details: { params: any }) {
         .eq("equipment_id", equipment_id)
         .is("returned_at", null)
         .maybeSingle(); // if there's no distribution, it'll just return null. Otherwise returns the single active one
-
-    console.log("rows:", data, "error:", error);
         
     if (error) {
         return new Response(JSON.stringify({error: error.message}), {status:500});
