@@ -11,6 +11,8 @@ export interface ItemFields {
     color: string
     donor: string
     image_urls: string[]
+    barcode_value?: string | null
+    qr_code_url: string
     created_at: string
     location: string
     barcode_number: number

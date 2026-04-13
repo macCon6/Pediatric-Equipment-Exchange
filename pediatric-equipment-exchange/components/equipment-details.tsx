@@ -50,7 +50,15 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
         console.error(result.error);
         showToast("Failed to save edits", "error");
       } else {
-        setItemDetails(data);
+        alert("Item updated succesfully!");
+        setItemDetails((currentItem) => ({
+          ...currentItem,
+          ...data,
+          barcode_value:
+            typeof data.barcode_value === "string" && data.barcode_value.trim() !== ""
+              ? data.barcode_value.trim()
+              : null,
+        }));
         setIsEditing(false);
         showToast("Edits saved successfully!", "success");
       }
@@ -148,6 +156,7 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
                   <li><strong>Size:</strong> {itemDetails.size? itemDetails.size : "N/A"}</li>
                   <li><strong>Color:</strong> {itemDetails.color}</li>
                   <li><strong>Description:</strong> {itemDetails.description? itemDetails.description : "N/A"}</li>
+                  <li><strong>Barcode:</strong> {itemDetails.barcode_value ? itemDetails.barcode_value : "Not attached"}</li>
                 </ul>
                 <button className="text-md mt-auto hover:cursor-pointer hover:opacity-70" onClick={()=>setIsEditing(true)}> ✎ Edit Details </button>
                 </>
@@ -222,6 +231,14 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
                         rows={5}
                         cols={50}
                         {...register("description")} /> 
+                    </li>
+
+                    <li className="flex items-center gap-3">
+                      <strong> Barcode: </strong>
+                      <input className="border rounded px-2 py-1 text-center text-lg leading-tight"
+                        placeholder="Scan or type barcode"
+                        {...register("barcode_value")}
+                      />
                     </li>
                     <div className="mt-auto flex justify-between min-h-[3rem]">
                       <button className="font-sans text-[#686dd3] font-arial text-sm mt-auto hover:cursor-pointer hover:opacity-70"

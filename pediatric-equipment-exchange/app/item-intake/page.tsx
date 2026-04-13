@@ -10,10 +10,14 @@ import {
   SUBCATEGORY_OPTIONS,
   COLOR_OPTIONS,
 } from "@/item-field-options";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Toast from "@/components/popups/toast";
-
 import { createClient } from "@supabase/supabase-js";
+import {
+  Html5QrcodeScanType,
+  Html5QrcodeScanner,
+  Html5QrcodeSupportedFormats,
+} from "html5-qrcode";
 
 // Supabase client (ONLY for image upload)
 const supabase = createClient(
@@ -30,9 +34,66 @@ export default function ItemIntake() {
   } = useForm<ItemFields>();
 
   const [imageUrls, setImageUrls] = useState<string[]>([]); // allow multiple image uploads
+  const [barcodeValue, setBarcodeValue] = useState("");
+  const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false); 
   const [uploading, setUploading] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("error");
+  const barcodeScannerRef = useRef<Html5QrcodeScanner | null>(null);
+
+  // Barcode scanner effect
+  useEffect(() => { // Initialize barcode scanner when the scanner is opened. Cleanup on close or unmount.
+    if (!barcodeScannerOpen) return;
+
+    const scanner = new Html5QrcodeScanner( 
+      "attach-barcode-reader",
+      {
+        fps: 10,
+        qrbox: { width: 220, height: 220 },
+        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.CODE_128, // currently used barcode format
+          Html5QrcodeSupportedFormats.CODE_39,
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.EAN_8,
+          Html5QrcodeSupportedFormats.UPC_A,
+          Html5QrcodeSupportedFormats.UPC_E,
+          Html5QrcodeSupportedFormats.ITF,
+          Html5QrcodeSupportedFormats.QR_CODE,
+        ],
+      },
+      false
+    );
+
+    barcodeScannerRef.current = scanner;
+
+    scanner.render( //
+      async (decodedText) => {
+        const normalizedCode = decodedText.trim();
+        if (!normalizedCode) return;
+
+        setBarcodeValue(normalizedCode);
+        setBarcodeScannerOpen(false);
+
+        try {
+          await scanner.clear();
+        } catch {
+          // Ignore scanner clear errors on close.
+        }
+      },
+      () => {
+        // Expected while camera is searching.
+      }
+    );
+
+    return () => {
+      if (barcodeScannerRef.current) {
+        void barcodeScannerRef.current.clear().catch(() => {
+          // Ignore scanner clear errors on unmount.
+        });
+      }
+    };
+  }, [barcodeScannerOpen]);
 
   //  Upload image
   const handleImageUpload = async (e: any) => {
@@ -78,7 +139,8 @@ export default function ItemIntake() {
         },
         body: JSON.stringify({
           ...data,
-          image_urls: imageUrls.length > 0? imageUrls : null
+          image_urls: imageUrls.length > 0? imageUrls : null,
+          barcode_value: barcodeValue.trim() === "" ? null : barcodeValue.trim(),
         })
       });
 
@@ -92,6 +154,8 @@ export default function ItemIntake() {
         setToastMessage("Item added succesfully!");
         reset();
         setImageUrls([]);
+        setBarcodeValue("");
+        setBarcodeScannerOpen(false);
       }
     } catch (err) {
       console.error("Request failed:", err);
@@ -123,7 +187,7 @@ export default function ItemIntake() {
               multiple
             />
 
-            {/* styled button (matches your UI) */}
+            {/* styled button */}
             <label
               htmlFor="fileUpload"
               className="bg-[] border border-black rounded-3xl px-6 py-2 cursor-pointer hover:bg-[#4a8a2e]"
@@ -144,10 +208,53 @@ export default function ItemIntake() {
                     className="mt-4 w-full h-64 object-cover rounded-lg"
                   /> 
                   ))
-                }
+                } 
               </div>
-            )} 
+            )}
+          
             
+
+          {/* Barcode attachment section */}
+          <div className="flex-1 border-3 rounded-2xl border-teal-800 bg-white p-3">
+            <p className="text-2xl text-center">Attach Barcode</p>
+            <p className="mt-2 text-center text-sm text-gray-700">
+              Scan a barcode label or type it manually.
+            </p>
+
+            <input
+              value={barcodeValue}
+              onChange={(e) => setBarcodeValue(e.target.value)}
+              placeholder="Barcode value"
+              className="mt-4 w-full rounded-2xl border border-black px-4 py-2 text-center"
+            />
+
+            <div className="mt-3 flex gap-2"> 
+              <button
+                type="button"
+                className="flex-1 rounded-2xl border border-black bg-rose-400 px-4 py-2 text-black hover:bg-rose-300"
+                onClick={() => setBarcodeScannerOpen((current) => !current)}
+              >
+                {barcodeScannerOpen ? "Close Scanner" : "Scan Barcode"}
+              </button>
+
+              <button 
+                type="button"
+                className="rounded-2xl border border-black bg-white px-4 py-2 text-black hover:bg-gray-100"
+                onClick={() => setBarcodeValue("")}
+              >
+                Clear
+              </button>
+            </div>
+
+            {barcodeScannerOpen && (
+              <div className="mt-4 rounded-lg border bg-white p-2">
+                <div id="attach-barcode-reader" className="w-full" />
+              </div>
+            )}
+
+            <p className="mt-3 text-center text-sm text-[#132540]">
+              Attached value: <span className="font-semibold">{barcodeValue.trim() === "" ? "None" : barcodeValue.trim()}</span>
+            </p>
           </div>
         </div>
 
@@ -274,5 +381,6 @@ export default function ItemIntake() {
         </div>
       </div>
     </div>
+  </div>
   );
 }
