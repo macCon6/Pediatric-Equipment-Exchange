@@ -97,13 +97,13 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
     {/* Show any toast popups */}
     {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
     
-    <div className="flex min-h-screen w-full bg-[#51b6b6]">
+    <div className="flex min-h-screen w-full bg-[#FFC94A]">
         <SideBar />
 
         {/* Main Content */}
         <div className="flex-1 p-8 py-15 mb-10 w-full h-full">
 
-          <h1 className="text-white text-2xl mb-8 text-center bg-rose-400 font-mono">Equipment Details</h1>
+          <h1 className="text-white text-2xl mb-8 text-center bg-[#5a9e3a] font-mono">Equipment Details</h1>
         
           {/* Outer grid with 2 columns  */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -242,12 +242,12 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
                 {/* Update status button + view recipient/waiver button if available*/}
 
                 <div className="flex flex-wrap items-center gap-4 mt-3">
-                  <button className="bg-rose-400 hover:bg-rose-300 hover:cursor-pointer border rounded-3xl text-white text-xl p-3 font-mono"  
+                  <button className="bg-[#5a9e3a] hover:bg-[#4a8a2e] hover:cursor-pointer border rounded-3xl text-white text-xl p-3 font-mono"  
                     onClick={ () => setStatusPageOpen(true) }> Update </button> 
                 </div>
               
                  {(mostRecentStatus === "Reserved" || mostRecentStatus === "Allocated") && ( <>
-                    <button className="bg-rose-400 hover:bg-rose-300 hover:cursor-pointer border rounded-3xl text-white text-xl p-3 font-mono"  
+                    <button className="bg-[#5a9e3a] hover:bg-[#4a8a2e] hover:cursor-pointer border rounded-3xl text-white text-xl p-3 font-mono"  
                       onClick={ () => setRecipientPageOpen(true) }> View Recipient Info </button> 
                       <span className="text-red-400 italic"> You have a waiver available <Link href= {`/items/${item.id}/waiver`} className="underline text-blue-400"> here. </Link> </span> </>
                   )}
