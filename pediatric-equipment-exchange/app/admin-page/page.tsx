@@ -33,13 +33,13 @@ export default function AdminPage({ items }: Props) {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-[#51b6b6]">
+    <div className="flex min-h-screen w-full bg-[#FFC94A]">
 
       <SideBar  />
 
       {/* Main Content */}
       <main className="flex-1 p-8 py-15 mb-10 w-full h-full">
-        <h1 className="text-white text-2xl mb-8 text-center bg-rose-400 font-mono">
+        <h1 className="text-white text-2xl mb-8 text-center bg-[#5a9e3a] font-mono">
           Admin Page
         </h1>
 
@@ -84,7 +84,7 @@ export default function AdminPage({ items }: Props) {
               <button
                 onClick={() => setIsAdmin(!isAdmin)}
                 className={`w-12 h-6 flex items-center rounded-full p-1 transition ${
-                  isAdmin ? "bg-rose-400" : "bg-gray-300"
+                  isAdmin ? "bg-[#5a9e3a]" : "bg-gray-300"
                 }`}
               >
                 <div
@@ -97,7 +97,7 @@ export default function AdminPage({ items }: Props) {
 
             <button
               onClick={handleCreateUser}
-              className="bg-rose-400 text-black rounded-full px-5 p-2 mt-2"
+              className="bg-[#5a9e3a] text-black rounded-full px-5 p-2 mt-2"
             >
               Create User
             </button>

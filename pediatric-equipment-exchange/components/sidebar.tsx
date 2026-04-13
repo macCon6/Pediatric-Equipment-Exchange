@@ -56,7 +56,7 @@ export default function SideBar() {
                 </li>
 
                 <li> <Link 
-            className="flex h-8 w-full items-center justify-center rounded-full bg-rose-400 px-5 transition-colors hover:border-transparent hover:bg-rose-300 md:w-[80px] text-m text-black"
+            className="flex h-8 w-full items-center justify-center rounded-full bg-[#5a9e3a] px-5 transition-colors hover:border-transparent hover:bg-[#4a8a2e] md:w-[80px] text-m text-white"
             href="/"
           >
             Signout

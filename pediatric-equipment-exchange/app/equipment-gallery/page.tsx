@@ -23,9 +23,9 @@ export default async function EquipmentGallery() {
         }
 
     return (
-        <div className = "flex min-h-screen w-full bg-[#51b6b6]">
+        <div className = "flex min-h-screen w-full bg-[#FFC94A]">
             <SideBar />
-            <main className = "flex-1 bg-[#51b6b6]">
+            <main className = "flex-1 bg-[#FFC94A]">
                 <div className ="text-2xl p-3"> Gallery Here </div>
                     {/* Passes the itmes to the gallery-logic component */}
                     <div className = "flex-1 p-6">

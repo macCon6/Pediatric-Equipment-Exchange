@@ -99,7 +99,7 @@ export default function ItemIntake() {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-[#51b6b6]">
+    <div className="flex min-h-screen w-full bg-[#FFC94A]">
       {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
       <SideBar />
       
@@ -126,7 +126,7 @@ export default function ItemIntake() {
             {/* styled button (matches your UI) */}
             <label
               htmlFor="fileUpload"
-              className="bg-rose-400 border border-black rounded-3xl px-6 py-2 cursor-pointer hover:bg-rose-300"
+              className="bg-[] border border-black rounded-3xl px-6 py-2 cursor-pointer hover:bg-[#4a8a2e]"
             >
               Choose Image
             </label>
@@ -160,14 +160,14 @@ export default function ItemIntake() {
 
             <input
               placeholder="*Item Name*"
-              className="bg-rose-400 border border-rose-900 rounded-3xl placeholder-black text-black text-center px-6 py-2 text-3xl hover:shadow-xl"
+              className="bg-[#5a9e3a] border border-[#4a8a2e] rounded-3xl placeholder-black text-black text-center px-6 py-2 text-3xl hover:shadow-xl"
               {...register("name", { required: "Name is required!" })}
             />
             <p className="text-red-600 text-sm">{errors.name?.message}</p>
 
             <select
               {...register("category", { required: "Category is required!" })}
-              className="bg-rose-400 border border-black rounded-3xl text-black text-center px-6 py-2 hover:shadow-xl"
+              className="bg-[#5a9e3a] border border-black rounded-3xl text-black text-center px-6 py-2 hover:shadow-xl"
             >
               <option value="">Select a category</option>
               {CATEGORY_OPTIONS.map((category) => (
@@ -180,7 +180,7 @@ export default function ItemIntake() {
 
             <select
               {...register("subcategory")}
-              className="bg-rose-400 border border-black rounded-3xl text-black text-center px-6 py-2 hover:shadow-xl"
+              className="bg-[#5a9e3a] border border-black rounded-3xl text-black text-center px-6 py-2 hover:shadow-xl"
             >
               <option value="">Select a subcategory</option>
               {SUBCATEGORY_OPTIONS.map((subcategory) => (
@@ -192,7 +192,7 @@ export default function ItemIntake() {
 
             <select
               {...register("condition", { required: "Condition is required!" })}
-              className="bg-rose-400 border border-black rounded-3xl text-black text-center px-6 py-2 hover:shadow-xl"
+              className="bg-[#5a9e3a] border border-black rounded-3xl text-black text-center px-6 py-2 hover:shadow-xl"
             >
               <option value="">Select item condition</option>
               {CONDITION_OPTIONS.map((condition) => (
@@ -205,7 +205,7 @@ export default function ItemIntake() {
 
             <textarea
               placeholder="Item description"
-              className="bg-rose-400 border border-black rounded-3xl placeholder-black text-black text-center px-6 py-2 hover:shadow-xl"
+              className="bg-[#5a9e3a] border border-black rounded-3xl placeholder-black text-black text-center px-6 py-2 hover:shadow-xl"
               {...register("description")}
               rows={6}
               cols={20}
@@ -213,13 +213,13 @@ export default function ItemIntake() {
 
             <input
               placeholder="Size"
-              className="bg-rose-400 border border-black rounded-3xl placeholder-black text-black text-center px-6 py-2 hover:shadow-xl"
+              className="bg-[#5a9e3a] border border-black rounded-3xl placeholder-black text-black text-center px-6 py-2 hover:shadow-xl"
               {...register("size")}
             />
 
             <select
               {...register("color", { required: "Color is required!" })}
-              className="bg-rose-400 border border-black rounded-3xl text-black text-center px-6 py-2 hover:shadow-xl"
+              className="bg-[#5a9e3a] border border-black rounded-3xl text-black text-center px-6 py-2 hover:shadow-xl"
             >
               <option value="">Select a color</option>
               {COLOR_OPTIONS.map((color) => (
@@ -232,7 +232,7 @@ export default function ItemIntake() {
 
             <select
               {...register("status", { required: "Status is required!" })}
-              className="bg-rose-400 border border-black rounded-3xl text-black text-center px-6 py-2 hover:shadow-xl"
+              className="bg-[#5a9e3a] border border-black rounded-3xl text-black text-center px-6 py-2 hover:shadow-xl"
             >
               <option value="">Select item status</option>
               {STATUS_OPTIONS.filter((status) => status!=="Reserved" && status !== "Allocated").map((status) => (
@@ -245,13 +245,13 @@ export default function ItemIntake() {
 
             <input
               placeholder="Donor name"
-              className="bg-rose-400 border border-black rounded-3xl placeholder-black text-black text-center px-6 py-2 hover:shadow-xl"
+              className="bg-[#5a9e3a] border border-black rounded-3xl placeholder-black text-black text-center px-6 py-2 hover:shadow-xl"
               {...register("donor")}
             />
 
              <input
               placeholder="Location"
-              className="bg-rose-400 border border-black rounded-3xl placeholder-black text-black text-center px-6 py-2 hover:shadow-xl"
+              className="bg-[#5a9e3a] border border-black rounded-3xl placeholder-black text-black text-center px-6 py-2 hover:shadow-xl"
               {...register("location", { required: "Location is required!" })}
             />
             <p className="text-red-600 text-sm">{errors.location?.message}</p>
@@ -259,7 +259,7 @@ export default function ItemIntake() {
              <input
               type="number"
               placeholder="Barcode Number"
-              className="bg-rose-400 border border-black rounded-3xl placeholder-black text-black text-center px-6 py-2 hover:shadow-xl"
+              className="bg-[#5a9e3a] border border-black rounded-3xl placeholder-black text-black text-center px-6 py-2 hover:shadow-xl"
               {...register("barcode_number", { required: "Barcode number is required!" })}
             />
             <p className="text-red-600 text-sm">{errors.barcode_number?.message}</p>
@@ -267,7 +267,7 @@ export default function ItemIntake() {
             <input
               type="submit"
               value="Submit"
-              className="bg-rose-400 border border-black rounded-3xl px-6 py-2 text-2xl hover:bg-rose-300 cursor-pointer"
+              className="bg-[#5a9e3a] border border-black rounded-3xl px-6 py-2 text-2xl hover:hover:bg-[#4a8a2e] cursor-pointer"
             />
 
           </form>
