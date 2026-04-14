@@ -1,62 +1,71 @@
-
 import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin"; 
 
 export async function POST(req: Request) {
-
   const supabase = await createClient();
   
   try {
-    // get authetnicatd user 
-    const { 
-      data: { user }, 
-      error: userError } = await supabase.auth.getUser();
-    
-    if(!user || userError) { ///not authenticated
-       return new Response(
+    // 🔐 1. REQUIRE LOGGED-IN USER
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error || !data?.user) {
+      return new Response(
         JSON.stringify({ error: "Unauthorized" }),
         { status: 401 }
       );
     }
 
-    const { username, password, fullName, role } = await req.json();
+    // 🔒 2. REQUIRE ADMIN ROLE
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", data.user.id)
+      .single();
 
-    // Validate input
-    if (!username || !password || !fullName) {
+    if (profileError || profile?.role !== "admin") {
+      return new Response(
+        JSON.stringify({ error: "Forbidden: Admins only" }),
+        { status: 403 }
+      );
+    }
+
+    // 📦 3. GET REQUEST DATA
+    const { email, username, password, fullName, role } = await req.json();
+
+    // ✅ 4. VALIDATE INPUT
+    if (!email || !password || !fullName) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
         { status: 400 }
       );
     }
 
-    // new check to ensure every user has a valid role 
-    const allowedRoles = ["admin", "physical_therapist", "volunteer"]
-    if(!allowedRoles.includes(role)) {
-      return new Response (
-        JSON.stringify({ error: "Invalid role"}),
+    const allowedRoles = ["admin", "physical_therapist", "volunteer"];
+    if (!allowedRoles.includes(role)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid role" }),
         { status: 400 }
       );
     }
 
-    const cleanUsername = username.toLowerCase().trim();
-    const email = `${cleanUsername}@paec.com`;
+    const cleanUsername = username?.toLowerCase().trim();
 
-    // Create auth user
+    // 👤 5. CREATE AUTH USER
     const { data: authData, error: authError } =
       await supabaseAdmin.auth.admin.createUser({
-        email,
+        email: email.trim(),
         password,
+        email_confirm: true,
         user_metadata: {
           username: cleanUsername,
-          role: role || "volunteer",
+          role,
           fullName,
         },
       });
 
     if (authError) {
-      console.error("Create Auth User error: ", authError.message);
       return new Response(
-        JSON.stringify({ error: authError.message || "Create Auth User error" }),
+        JSON.stringify({ error: authError.message }),
         { status: 400 }
       );
     }
@@ -65,38 +74,35 @@ export async function POST(req: Request) {
 
     if (!userId) {
       return new Response(
-        JSON.stringify({ error: "User ID not returned from Supabase" }),
+        JSON.stringify({ error: "User ID not returned" }),
         { status: 500 }
       );
     }
 
-    // Insert into profiles table
-    const { data: profileData, error: profileError } =
-      await supabase
-        .from("profiles")
-        .insert({
-          id: userId,
-          full_name: fullName,
-          role: role || "volunteer",
-          username: cleanUsername, // make sure this column exists
-        })
+    // 🧾 6. INSERT INTO PROFILES TABLE
+    const { error: profileInsertError } =
+      await supabase.from("profiles").insert({
+        id: userId,
+        full_name: fullName,
+        role,
+        username: cleanUsername,
+        email: email.trim(),
+      });
 
-    if (profileError) {
+    if (profileInsertError) {
       return new Response(
-        JSON.stringify({
-          error: profileError.message || "Database error creating profile",
-        }),
+        JSON.stringify({ error: profileInsertError.message }),
         { status: 400 }
       );
     }
 
+    // ✅ SUCCESS
     return new Response(
-      JSON.stringify({success: true, userId}),
+      JSON.stringify({ success: true, userId }),
       { status: 200 }
     );
 
   } catch (err: any) {
-    console.error("Unexpected error:", err);
     return new Response(
       JSON.stringify({ error: err.message || "Unknown error" }),
       { status: 500 }

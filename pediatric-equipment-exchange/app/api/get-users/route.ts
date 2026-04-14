@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
-
   const supabase = await createClient();
   
   const { data, error } = await supabase
@@ -15,5 +14,8 @@ export async function GET() {
     );
   }
 
-  return new Response(JSON.stringify(data), { status: 200 });
+  return new Response(
+    JSON.stringify({ users: data }), // ✅ IMPORTANT
+    { status: 200 }
+  );
 }
