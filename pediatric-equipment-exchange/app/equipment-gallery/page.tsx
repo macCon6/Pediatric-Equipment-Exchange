@@ -2,7 +2,7 @@
 // instead of using an API for getting the equipment
 // because duplicate tabs and pressing the back button caused an infinite spinner
 
-import GalleryGrid from "@/components/gallery-logic";
+import GalleryGrid from "@/components/gallery-grid";
 import SideBar from "@/components/sidebar";
 import { createClient } from "@/lib/supabase/server";
 

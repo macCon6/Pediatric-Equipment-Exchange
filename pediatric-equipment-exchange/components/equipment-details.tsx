@@ -128,14 +128,14 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
               />
               {/* Buttons to click through the images */}
               <div className="flex justify-between w-full mt-6">
-                <button className="text-6xl text-rose-400 flex items-center justify-center hover:opacity-70 hover:cursor-pointer disabled:text-gray-300 disabled:cursor-not-allowed"
-                  onClick={handlePrevImage} disabled={itemDetails.image_urls? itemDetails.image_urls.length===1 : true}> ◀ </button>
+                <button className="text-6xl text-green-600 flex items-center justify-center hover:text-orange-200 hover:cursor-pointer disabled:text-gray-300 disabled:cursor-not-allowed"
+                  onClick={handlePrevImage} disabled={itemDetails.image_urls? itemDetails.image_urls.length===1 : true}> ← </button>
 
                   {/* Track which image */}
                   <p className="text-black"> {imageIndex + 1} of {itemDetails.image_urls? itemDetails.image_urls.length : "1"} </p>
 
-                <button className="text-6xl text-rose-400 flex items-center justify-center hover:opacity-70 hover:cursor-pointer disabled:text-gray-300 disabled:cursor-not-allowed"
-                  onClick={handleNextImage} disabled={itemDetails.image_urls? itemDetails.image_urls.length===1 : true}> ▶ </button>
+                <button className="text-6xl text-green-600 flex items-center justify-center hover:text-orange-200 hover:cursor-pointer disabled:text-gray-300 disabled:cursor-not-allowed"
+                  onClick={handleNextImage} disabled={itemDetails.image_urls? itemDetails.image_urls.length===1 : true}> → </button>
               </div>
             </div> 
 

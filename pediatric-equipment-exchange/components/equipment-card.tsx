@@ -18,21 +18,31 @@ export default function EquipmentCard({item}: {item: ItemFields}) {
         <>
         <Link href={`/items/${item.id}`}>
 
-            <div className="hover:scale-105 cursor-pointer hover:shadow-2xl shadow-xl transition duration-100 border border-[#FFC94A] rounded-3xl p-4 bg-[#FFE09A] h-full">
-                <Image 
-                    src = {item.image_urls?.[0] ? item.image_urls[0]: "/missing-image.png"}
-                    alt={item.name}
-                    width = {180}
-                    height = {100}
-                    className="rounded-lg mx-auto"
-                    priority 
-                />
-                <h1 className = "text-lg font-semibold text-center text-[#132540] leading-none mt-3 mb-3"> {item.name} </h1>
+            <div className="hover:scale-105 cursor-pointer hover:shadow-2xl shadow-xl transition duration-100 border border-[#FFC94A] rounded-3xl bg-[#FFE09A] h-full">
             
-                <div className={`inline-flex flex-1 shadow-md rounded-4xl mt-2 ${getStatusColor()}`}> 
-                    <p className = {`text-center text-sm font-bold m-2 text-white font-mono tracking-wide`}> {item.status} </p>
+            <div> 
+                <Image 
+                    src = {item.image_urls?.[0] ? item.image_urls[0]: "/missing-image-placeholder.png"}
+                    alt={item.name}
+                    width = {350}
+                    height = {250}
+                    //on desktop make smaller width, on mobile full width
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+                    className="mx-auto p-4 border rounded-3xl aspect-3/4 "
+                    loading="lazy"
+                />
+            </div>
+
+                {/* Make titles clamp at 2 lines */}
+                <h1 className = "px-1 py-1 text-md font-semibold text-center text-[#132540] line-clamp-2"> {item.name} </h1>
+             
+                {/* Box for makig the status/condition layout fit */}
+                <div className="flex flex-col gap-3 p-2 items-center "> 
+                    <div className={`px-4 py-2 rounded-full shadow-md text-sm text-center font-bold text-white tracking-wide font-mono ${getStatusColor()}`}> 
+                        {item.status}
+                    </div>
+                    <p className = "text-sm text-[#132540] italic text-center"> {item.condition} </p>
                 </div>
-                <p className = "px-2 text-sm text-[#132540] italic mt-3"> {item.condition} </p>
             </div>
         
         </Link>

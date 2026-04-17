@@ -4,8 +4,18 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
 
   const supabase = await createClient();
+
+  const { data, error } = await supabase.auth.getUser();
+  
+  if (error || !data?.user) { // only allow intake if logged in
+    return new Response(
+        JSON.stringify({ error: "Must be logged in to add items!" }),
+        { status: 401 }
+    );
+  }
   
   try {
+    
     const body = await req.json();
     const normalizedBarcode = typeof body.barcode_value === "string" ? body.barcode_value.trim() : ""; // Normalize the barcode value by trimming whitespace. If it's not a string, default to an empty string.
 
@@ -27,31 +37,29 @@ export async function POST(req: Request) {
             : null,
           location: body.location,
           barcode_value: normalizedBarcode === "" ? null : normalizedBarcode,
-          qr_code_url: "",
         },
       ])
       .select("id")
       .single();
 
-    if (error) {
-      if (error.code === "23505") { // Unique violation error code from Supabase/PostgreSQL when barcode_value conflicts with another item.
+    if (error) throw error; // throw the supabase error 
+
+    return NextResponse.json({ message: "Item added!", id: data.id });
+
+  } catch (error: any) {
+
+    // catch Supabase errors
+
+    if (error.code === "23505") { // Unique violation error code from Supabase/PostgreSQL when barcode_value conflicts with another item.
         return NextResponse.json(
           { error: "Barcode is already attached to another item." },
           { status: 409 }
         );
       }
-
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ message: "Item added!", id: data.id });
-  } catch (err) {
-    return NextResponse.json(
-      { error: "Invalid request" },
-      { status: 400 }
+    
+    return NextResponse.json( 
+      { error: error.message || "Database error" },
+      { status: 500 }
     );
   }
 }
