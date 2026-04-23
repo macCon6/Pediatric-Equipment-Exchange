@@ -33,6 +33,13 @@ export default function GalleryGrid( {items}: Props) {
              
             {/* All equipment cards are being displayed in this grid  */}
             <div className = "mt-4 grid grid-cols-2 md:grid-cols-4 gap-6 bg-white p-8 rounded-3xl">
+                {items.length===0 &&
+                    <div className = "flex flex-col gap-6 bg-orange-100 border p-6 border border-gray-100 shadow-lg rounded-3xl col-span-4 m-10 justify-self-center">
+                        <span className="text-orange-700 font-semibold underline text-xl text-center"> No Items Found!  </span>
+                        <span className="text-orange-700 text-center text-xl tracking-wide"> Use the "Add Item" tab to add equipment! </span>
+                    </div>
+                    
+                }
                 {/* Creating an equipment-card component for each item */}
                 {itemMatches.map((item) => (
                     <EquipmentCard key={item.id} item ={item}/>

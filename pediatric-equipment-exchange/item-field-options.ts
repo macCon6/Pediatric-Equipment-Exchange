@@ -15,9 +15,9 @@ export const CATEGORY_OPTIONS = [
     "Medical Stroller",
     "Activity Chair",
     "Walker",
-    "Gait Trainer",
+    "Gait Trainer/Supported Stepping Device",
     "Forearm Crutches",
-    "Adaptive Tricycle",
+    "Adaptive Bicycle/Tricycle",
     "Adaptive Tray",
     "Walking Frame",
     "Guardian",
@@ -40,7 +40,8 @@ export const SUBCATEGORY_OPTIONS = [
 export const STATUS_OPTIONS = [
     "Available",
     "In Processing",
-    "Reserved",
+    "Reserved - Needs Signature",
+    "Reserved - Ready for Pickup",
     "Allocated"
 ] as const;
 

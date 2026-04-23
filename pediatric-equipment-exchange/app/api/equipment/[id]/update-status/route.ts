@@ -1,167 +1,101 @@
 // For updating an item's status
-// This will update a status, and may also add entries in the distributions or recipients table depending on the transition
-// And may edit an entry in the distributions table depending on the transition
-
-// NOTE: This route has been changed to NOT handle changing a status to "Allocated"
-// Instead, that will be done after a waiver has been successfully signed
+// All of the logic for validating transitions have been moved into Supabase functions.
+// They functions perform updates/inserts atomically, so no need for rollback logic here.
 
 import { createClient } from "@/lib/supabase/server";
-import { Status } from "@/item-field-options";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
 
   const supabase = await createClient();
 
-  const {equipment_id, target_status, current_status, distribution_id, reserved_by, reservationFormData} = await req.json();
+  // check that the user is logged in 
+  const { data, error } = await supabase.auth.getUser();
+    if (error || !data?.user) {
+      return NextResponse.json(
+        ({ error: "Must be logged in to edit items!" }),
+        { status: 401 }
+      );
+    }
+  
+  // get the info of the user and throw error early if no profile / correct role
+  // but, the rpc function itself will check user role and id
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", data.user.id)
+    .single();
 
-  // helper functions
+  if (profileError || !profile) {
+    return NextResponse.json(
+      ({ error: "Forbidden: Could not fetch profile" }),
+      { status: 403 }
+    );
+  }
 
-  // update status in equipment table
-  const updateEquipmentStatus = async (target_status: Status) => {
-    const { data, error } = await supabase
-      .from("equipment")
-      .update({ status: target_status })
-      .eq("id", equipment_id)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
-  };
 
-  // create an entry in recipient table
-  const createRecipient = async (reservationFormData: any) => {
-    if (!reservationFormData) throw new Error("Reservation form empty");
-    const { data: recipient, error } = await supabase
-      .from("recipient")
-      .insert({
-        name: reservationFormData.name,
-        contact_name: reservationFormData.contact_name,
-        organization: reservationFormData.organization,
-        email: reservationFormData.email,
-        phone: reservationFormData.phone
-      })
-      .select()
-      .single();
-    if (error) throw error;
-    return recipient.id; // need this for creating/editing an entry in the Distributions table
-  };
-
-  // create an entry in distributions table (item is reserved)
-  const createDistribution = async (recipient_id: string) => {
-    const { data, error } = await supabase
-      .from("distributions")
-      .insert({
-        equipment_id,
-        recipient_id,
-        reserved_by,
-        notes: reservationFormData?.notes ?? null,
-      })
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
-  };
-
-  // update returned_at status in Distributions table
-  const updateReturnedAt = async () => {
-    if (!distribution_id) throw new Error("Cannot return item, entry in distributions table not found");
-    const { data, error } = await supabase
-      .from("distributions")
-      .update({ returned_at: new Date().toISOString() })
-      .eq("id", distribution_id)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
-  };
+  const {distribution_id, equipment_id, target_status, reservationFormData, cancellationReason} = await req.json();
 
    /* VALID TRANSITIONS:
+
     AVAILABLE:
-        -> Reserved = reserving an item, must start an entry in Distributions and Recipients tables
+        -> Reserved (Needs Signature) = reserving an item, must start an entry in Distributions and Recipients tables
+            * Therapist & Admin only!!
         -> In Processing = maintenance, just update status
+
         *NOTE: available items cannot go straight to Allocated because the Reserved status handles entering recipient info
 
-    RESERVED:
-        -> Available = item wasn't picked up, complete the entry in Distributions table (update returned_at)
+    RESERVED - NEEDS SIGNATURE:
+        -> Available = cancelled reservation, complete the entry in Distributions table (update returned_at)
+            * Admin & Therapist who reserved it only!!
 
-        // !! NO LONGER VALID - HANDLED IN SIGN-WAIVER ROUTE INSTEAD !!
+        -> Reserved (Ready for Pickup) = Waiver was signed, update waiver fields in Distributions table
+            * Admin & Therapist who reserved it only!!
+    
+    RESERVED - READY FOR PICKUP:
+        -> Available = item wasn't picked up, complete the entry in Distributions table (update returned_at)
+            * Admin & Therapist who reserved it only!!
+
         -> Allocated = Item was picked up, update Distributions table (update allocated_at). REQUIRES WAIVER SIGNATURE
+            * Admin, Therapists, Volunteers
 
     ALLOCATED:
         -> Available = item has been returned, complete the entry in Distributions table (update returned_at)
+            * Admin, Therapists, Volunteers
         -> In Processing = item has been returned but needs maintenance, complete the entry in Distributions table (update returned_at)
+            * Admin, Therapists, Volunteers
 
     IN PROCESSING:
         -> Available = maintenance done, just update status  */
-  try {
-    let result: any;
-    switch (target_status) { // decide what to do depending on what the target status is 
 
-    case "Available":
-      // if allocated -> available or reserved -> available, it means the item is being returned
-      if (current_status === "Allocated" || current_status === "Reserved") {
-        try {
-          result = await updateEquipmentStatus("Available");
-          await updateReturnedAt(); // only gets here if updateEquipmentStatus doesn't throw
-        } catch(error) {
-          console.log("Failed to update returned_at field, rolling back to original status");
-          await updateEquipmentStatus(current_status); // rollback to original status
-        }
-      }
-      else {
-        result = await updateEquipmentStatus("Available"); // in processing -> available
-      }
-      break;
+    const { data: newStatus, error: transitionError } = await supabase.rpc("update_status", {
+      p_distribution_id: distribution_id ?? null,
+      p_equipment_id: equipment_id,
+      p_target_status: target_status,
+      p_reservation_data: reservationFormData ?? null,
+      p_cancellation_reason: cancellationReason ?? null,
+      p_waiver_template_id: null,
+      p_signed_waiver_url: null
+    });
 
-    case "In Processing":
-      if (current_status === "Available") { // available -> in processing
-        result = await updateEquipmentStatus("In Processing");
-      } else if (current_status === "Allocated") { // allocated -> in processing means the item is being returned
-          try {
-            result = await updateEquipmentStatus("In Processing");
-            await updateReturnedAt(); // only gets here if updateEquipmentStatus doesn't throw
-          } catch(error) {
-            console.log("Failed to update returned_at field, rolling back to original status");
-            await updateEquipmentStatus(current_status);
-        }
-      } else {
-        throw new Error( `Cannot go from Reserved to In Processing, make item Available first`);
-      }
-      break;
+    if (transitionError) { 
+      console.error("Status transition failed:", transitionError);
+      switch(transitionError.code) {
 
-    case "Reserved":
-      if (current_status === "Available") { // available -> reserved, create recipient data based on reservation form info & start distribution entry
+        case "P0001": // 400 bad request error
+          return NextResponse.json({ error: transitionError.message }, { status: 400 }); 
 
-        // handle deleting the recipient/distribution information if one of them fails
-        let created_recipient:any=null;
-        let created_distribution:any=null;
-        try {
-          await updateEquipmentStatus("Reserved");
-          created_recipient = await createRecipient(reservationFormData); //only creates if updateEquipmentStatus doesn't throw error
-          result = await createDistribution(created_recipient); // only creates if createRecipient doesn't throw error
-          created_distribution = result.id;
-        } catch(error) {
-            console.log("Error reserving item, rolling back to original status");
-            await updateEquipmentStatus(current_status);
-            if(created_recipient) { // pass the newly created id's to the table to delete them since an erorr happened
-              await supabase.from("recipient").delete().eq("id", created_recipient);
-            }
-            if(created_distribution) {
-              await supabase.from("distributions").delete().eq("id", created_distribution);
-            }
-        }
-      } else {
-        throw new Error(`Only Available items can be Reserved`);
-      }
-      break;
-
-    // the Allocated case has been deleted as that is no longer a valid target status
+        case "P0002": // 404 not found error
+          return NextResponse.json({ error: transitionError.message }, { status: 404 });
       
-    } // end of switch
+        case "42501": // 403 permission denied error
+          return NextResponse.json({ error: transitionError.message }, { status: 403 });
+        
+        default: // server error
+          return NextResponse.json({ error: transitionError.message }, { status: 500 })
 
-    return new Response(JSON.stringify({success: true, result}), {status: 200});
-  } // end of try block
-
-  catch (error: any) {
-    return new Response(JSON.stringify({success: false, error: error.message}), {status: 400}); }
+      }
+    }
+    
+    return NextResponse.json({ message: `Status updated to ${newStatus}!` }, { status: 200 });  
 }

@@ -7,10 +7,11 @@ interface Props {
     // allow parents to open & close the pop-up without needing state in this component
     isOpen: boolean,
     onClose: () => void, 
-    children: ReactNode // for putting things inside of the pop-up
+    children: ReactNode, // for putting things inside of the pop-up
+    sizingClassName: string // allow custom styling when extending the popup
 }
 
-export default function Popup ({isOpen, onClose, children}: Props) {
+export default function Popup ({isOpen, onClose, children, sizingClassName}: Props) {
     return (
         <>
         {isOpen &&
@@ -21,11 +22,10 @@ export default function Popup ({isOpen, onClose, children}: Props) {
             {/* Flex container for popup box */}
             <div className="fixed inset-0 z-40 flex items-center justify-center">
                 {/* // popup contents */}
-                <div className="z-50
-                      bg-white rounded-xl p-10
-                      w-full md:w-4/5 lg:w-2/3 max-w-5xl
-                      h-4/5 overflow-y-auto
-                      border border-teal-600"
+                <div className={`z-50
+                      bg-white rounded-xl p-6
+                      overflow-y-auto
+                      border border-teal-600 ${sizingClassName}`}
                       >
                 <button className = "text-black text-3xl" onClick={onClose}> X </button>
                 {children}

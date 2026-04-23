@@ -13,13 +13,18 @@ import RecipientInfoPopup from "@/components/popups/recipient-info-popup";
 
 export default function EquipmentDetails({ item }: { item: ItemFields })  {
 
-  const [statusPageOpen, setStatusPageOpen] = useState(false); // for changing the status
-  const [recipientPageOpen, setRecipientPageOpen] = useState(false); // show recipient info
+  // for status changes
   const [mostRecentStatus, setMostRecentStatus] = useState(item.status); // to immediately show the updated status if it gets changed
-  const [imageIndex, setImageIndex] = useState(0); // for scrolling through images
+  const [statusPageOpen, setStatusPageOpen] = useState(false); // for changing the status
+
+  // for editing item details
   const [isEditing, setIsEditing] = useState(false); // for editing item details, will use a form from react-hook-form
   const [itemDetails, setItemDetails] = useState(item); // to immediately show the new item details if they get changed
   const { register, handleSubmit} = useForm({ defaultValues: item }) // form for editing details
+  
+  // misc.
+  const [imageIndex, setImageIndex] = useState(0); // for scrolling through images
+  const [recipientPageOpen, setRecipientPageOpen] = useState(false); // show recipient info
 
   //for success/failure messages
   const [toastMessage, setToastMessage] = useState(""); 
@@ -50,7 +55,6 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
         console.error(result.error);
         showToast("Failed to save edits", "error");
       } else {
-        alert("Item updated succesfully!");
         setItemDetails((currentItem) => ({
           ...currentItem,
           ...data,
@@ -94,7 +98,8 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
   const getStatusColor = () => {
     switch(mostRecentStatus) {
       case "Available": return "bg-green-400";
-      case "Reserved":  return "bg-yellow-500";
+      case "Reserved - Needs Signature":  return "bg-yellow-400";
+      case "Reserved - Ready for Pickup":  return "bg-yellow-600";
       case "Allocated": return "bg-red-800";
       case "In Processing": return "bg-sky-400";
     }
@@ -156,6 +161,7 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
                   <li><strong>Size:</strong> {itemDetails.size? itemDetails.size : "N/A"}</li>
                   <li><strong>Color:</strong> {itemDetails.color}</li>
                   <li><strong>Description:</strong> {itemDetails.description? itemDetails.description : "N/A"}</li>
+                  <li><strong>Location:</strong> {itemDetails.location}</li>
                   <li><strong>Barcode:</strong> {itemDetails.barcode_value ? itemDetails.barcode_value : "Not attached"}</li>
                 </ul>
                 <button className="text-md mt-auto hover:cursor-pointer hover:opacity-70" onClick={()=>setIsEditing(true)}> ✎ Edit Details </button>
@@ -234,12 +240,21 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
                     </li>
 
                     <li className="flex items-center gap-3">
+                      <strong> Location: </strong>
+                      <textarea className="border rounded px-2 py-1 text-center focus:ring text-lg leading-tight"
+                        rows={5}
+                        cols={50}
+                        {...register("location")} /> 
+                    </li>
+
+                    <li className="flex items-center gap-3">
                       <strong> Barcode: </strong>
                       <input className="border rounded px-2 py-1 text-center text-lg leading-tight"
                         placeholder="Scan or type barcode"
                         {...register("barcode_value")}
                       />
                     </li>
+
                     <div className="mt-auto flex justify-between min-h-[3rem]">
                       <button className="font-sans text-[#686dd3] font-arial text-sm mt-auto hover:cursor-pointer hover:opacity-70"
                         onClick={()=>setIsEditing(false)}> Cancel Edit </button>
@@ -263,10 +278,10 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
                     onClick={ () => setStatusPageOpen(true) }> Update </button> 
                 </div>
               
-                 {(mostRecentStatus === "Reserved" || mostRecentStatus === "Allocated") && ( <>
+                 {(mostRecentStatus.startsWith("Reserved") || mostRecentStatus === "Allocated") && ( <>
                     <button className="bg-[#5a9e3a] hover:bg-[#4a8a2e] hover:cursor-pointer border rounded-3xl text-white text-xl p-3 font-mono"  
                       onClick={ () => setRecipientPageOpen(true) }> View Recipient Info </button> 
-                      <span className="text-red-400 italic"> You have a waiver available <Link href= {`/items/${item.id}/waiver`} className="underline text-blue-400"> here. </Link> </span> </>
+                      <span className="text-red-400 italic"> A waiver has been assigned to this reservation. View <Link href= {`/items/${item.id}/waiver`} className="underline text-blue-400"> here. </Link> </span> </>
                   )}
               
              </div>
@@ -277,9 +292,6 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
       {/* Popup when Update Status button is clicked */}
       <UpdateStatusPopup
             equipment_id = {item.id}
-            // UPDATE LATER: to be the staff member's id from authenticated session ; this is just Dawn's id in the profile table
-            reserved_by = {"1d9992f0-753a-43db-943d-7ed30741aff9"} 
-            //
             distribution_id = {distribution?.id}
             current_status = {mostRecentStatus}
             onStatusChange = {(updated_status) => setMostRecentStatus(updated_status)} // to re-render the "current status" box to the new status

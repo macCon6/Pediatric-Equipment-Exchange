@@ -17,7 +17,7 @@ export default function Toast({message, type, onClose}: Props) {
     }, [onClose]);
 
     return (
-        <div className= {`font-mono z-50 fixed top-8 right-20 py-6 px-10 rounded shadow-lg text-3xl text-white ${type === "success"? "bg-green-500" : "bg-red-500"}`}>
+        <div className= {`z-50 fixed top-8 right-20 py-6 px-10 rounded shadow-lg text-3xl text-white ${type === "success"? "bg-green-500" : "bg-red-500"}`}>
             <button className="absolute top-2 right-2 text-xl text-white" onClick={onClose}> X </button>
             <p> {message} </p>
         </div>

@@ -8,15 +8,23 @@ export async function POST(req: Request) {
   const { data, error } = await supabase.auth.getUser();
   
   if (error || !data?.user) { // only allow intake if logged in
-    return new Response(
-        JSON.stringify({ error: "Must be logged in to add items!" }),
+    return NextResponse.json(
+        ({ error: "Must be logged in to add items!" }),
         { status: 401 }
     );
   }
-  
+
   try {
     
     const body = await req.json();
+    
+    if (!body.barcode_value) { 
+      return NextResponse.json(
+        ({ error: "Please attach a barcode!" }),
+        { status: 400 }
+      );
+    }
+
     const normalizedBarcode = typeof body.barcode_value === "string" ? body.barcode_value.trim() : ""; // Normalize the barcode value by trimming whitespace. If it's not a string, default to an empty string.
 
     const { data, error } = await supabase

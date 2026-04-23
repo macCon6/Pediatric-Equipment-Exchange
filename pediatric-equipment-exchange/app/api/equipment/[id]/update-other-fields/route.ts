@@ -20,6 +20,7 @@ export async function POST(req: Request) {
       size: newFieldsForm.size,
       color: newFieldsForm.color,
       description: newFieldsForm.description,
+      location: newFieldsForm.location,
       barcode_value: normalizedBarcode === "" ? null : normalizedBarcode
     })
     .eq ("id", equipment_id)
