@@ -1,7 +1,6 @@
 
 "use client";
 
-import SideBar from "@/components/sidebar";
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { 
@@ -69,7 +68,6 @@ export default function Scanner() { // Implements a QR code and barcode scanner 
 
     return (
         <div className="flex min-h-screen w-full bg-[#51b6b6]">
-            <SideBar />
 
             <main className="flex-1 p-4 md:p-8">
                 <h1 className="text-2xl font-semibold text-[#132540]">Scan Equipment</h1>

@@ -3,7 +3,6 @@
 // because duplicate tabs and pressing the back button caused an infinite spinner
 
 import GalleryGrid from "@/components/gallery-grid";
-import SideBar from "@/components/sidebar";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function EquipmentGallery() {
@@ -21,7 +20,6 @@ export default async function EquipmentGallery() {
 
     return (
         <div className = "flex min-h-screen w-full bg-[#FFC94A]">
-            <SideBar />
             <main className = "flex-1 bg-[#FFC94A]">
                 <div className ="text-2xl p-3"> Gallery Here </div>
                     {/* Passes the itmes to the gallery-logic component */}

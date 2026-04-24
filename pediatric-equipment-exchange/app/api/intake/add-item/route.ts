@@ -1,17 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { getUserAndRole } from "@/lib/data-access-layer";
 
 export async function POST(req: Request) {
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase.auth.getUser();
-  
-  if (error || !data?.user) { // only allow intake if logged in
-    return NextResponse.json(
-        ({ error: "Must be logged in to add items!" }),
-        { status: 401 }
-    );
+  const { user } = await getUserAndRole();
+
+  if (!user) { // only allow intake if logged in
+    return NextResponse.json({ error: "Unauthorized"},
+      {status: 401 });
   }
 
   try {

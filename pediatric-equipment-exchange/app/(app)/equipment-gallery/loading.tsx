@@ -1,11 +1,9 @@
-import SideBar from "@/components/sidebar"
 import LoadingWheel from "@/components/loading-wheel";
 
 export default function Loading() {
   return (
     // recreating how the gallery looks to put the spinner inside of it 
     <div className = "flex min-h-screen w-full bg-[#FFC94A]">
-        <SideBar />
         <main className = "flex-1 bg-[#FFC94A] m-6">
             <div className ="text-2xl p-3"> Gallery Here </div>
             {/* Search bar */}

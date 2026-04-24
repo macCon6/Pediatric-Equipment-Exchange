@@ -1,20 +1,12 @@
 import { ItemFields } from "@/field_interfaces"
 import Image from "next/image"
 import Link from "next/link"
+import { getStatusColor } from "@/utils/status-colors"
 
 // All equipment in the gallery page is displayed using its own card component
 
 export default function EquipmentCard({item}: {item: ItemFields}) {
-     // give different statuses different colors
-    const getStatusColor = () => {
-        switch(item.status) {
-            case "Available": return "bg-green-400";
-            case "Reserved - Needs Signature":  return "bg-yellow-400";
-            case "Reserved - Ready for Pickup":  return "bg-yellow-600";
-            case "Allocated": return "bg-red-800";
-            case "In Processing": return "bg-sky-400";
-        }
-    }
+    
     return (
         <>
         <Link href={`/items/${item.id}`}>
@@ -39,7 +31,7 @@ export default function EquipmentCard({item}: {item: ItemFields}) {
              
                 {/* Box for makig the status/condition layout fit */}
                 <div className="flex flex-col gap-3 p-2 items-center "> 
-                    <div className={`px-4 py-2 rounded-full shadow-md text-sm text-center font-bold text-white tracking-wide font-mono ${getStatusColor()}`}> 
+                    <div className={`px-4 py-2 rounded-full shadow-md text-sm text-center font-bold text-white tracking-wide font-mono ${getStatusColor(item.status)}`}> 
                         {item.status}
                     </div>
                     <p className = "text-sm text-[#132540] italic text-center"> {item.condition} </p>

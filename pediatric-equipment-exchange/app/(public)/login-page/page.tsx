@@ -23,6 +23,7 @@ export default function Login() {
     }
 
     router.push("/equipment-gallery"); //go to gallery on successful login
+    router.refresh();
   }
 
   return (

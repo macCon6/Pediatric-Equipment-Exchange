@@ -1,6 +1,5 @@
 "use client";
 
-import SideBar from "@/components/sidebar";
 import { useEffect, useRef, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ItemFields } from "@/field_interfaces";
@@ -208,7 +207,6 @@ export default function ItemIntake() {
   return (
     <div className="flex min-h-screen w-full bg-[#FFC94A]">
       {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
-      <SideBar />
       
       {/* Main content, back rectangle*/}
       <div className="flex flex-col md:flex-row w-full gap-6 p-4 md:p-10">

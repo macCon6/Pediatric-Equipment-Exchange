@@ -1,16 +1,10 @@
 "use client";
 
-import SideBar from "@/components/sidebar";
 import { useState } from "react";
-import UsersList from "@/components/user-list";
-import AllocatedEquipment from "@/components/allocated-equipment";
-import { ItemFields } from "@/field_interfaces";
+import UsersList from "@/components/dashboards/admin/user-list";
 
-interface Props {
-  items: ItemFields[];
-}
+export default function EditUsers() {
 
-export default function AdminPage({ items }: Props) {
   const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -65,10 +59,7 @@ export default function AdminPage({ items }: Props) {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-[#FFC94A]">
-      <SideBar />
-
-      <main className="flex-1 p-8 py-15 mb-10 w-full h-full">
+  <>
         {/*  SUCCESS POPUP */}
         {successMessage && (
           <div className="fixed top-6 right-6 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-xl text-lg">
@@ -82,10 +73,6 @@ export default function AdminPage({ items }: Props) {
             {errorMessage}
           </div>
         )}
-
-        <h1 className="text-white text-2xl mb-8 text-center bg-[#5a9e3a] font-mono">
-          Admin Page
-        </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Create User Box */}
@@ -168,12 +155,8 @@ export default function AdminPage({ items }: Props) {
             <UsersList refreshTrigger={refreshUsers} />
           </div>
 
-          {/* Allocated Equipment */}
-          <div className="bg-white rounded-lg p-4 h-[50vh] overflow-y-auto md:col-span-2">
-            <AllocatedEquipment items={items} />
-          </div>
-        </div>
-      </main>
+  
     </div>
+    </>
   );
 }

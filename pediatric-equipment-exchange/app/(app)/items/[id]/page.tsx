@@ -47,15 +47,23 @@ export default async function Item(details: { params: any }) {
     item = legacyMatch;
   }
 
+  // fetch the active distribution entry here if it exists, instead of using useEffect in equipment details component to get it
+  const { data: distribution, error: distributionError } = await supabase
+    .from("distributions")
+    .select("*")
+    .eq("equipment_id", id)
+    .is("returned_at", null)
+    .maybeSingle();
+
   if (!item) {
     return (
-      <div className="flex flex-1 bg-teal-700 h-screen justify-center items-center"> 
-        <div className="flex bg-white w-1/2 h-1/2 items-center justify-center"> 
-          <p className="text-6xl text-red-400 text-center font-mono"> Item not found! ☹ </p>
+      <div className="flex flex-1 bg-[#FFC94A] h-screen justify-center items-center"> 
+        <div className="flex bg-orange-100 p-6 border border-gray-100 shadow-lg  rounded-3xl w-3/4 mb-10 md:mr-20 md:mb-20 h-1/2 items-center justify-center"> 
+          <p className="text-4xl text-orange-600 tracking-wide text-center "> Item not found </p>
         </div>
       </div>
     )
   }
 
-  return <EquipmentDetails item={item} />;
+  return <EquipmentDetails item={item} activeDistribution={distribution} />;
 }

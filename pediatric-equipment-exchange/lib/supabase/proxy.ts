@@ -38,30 +38,25 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: If you remove getClaims() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
+
   const { data } = await supabase.auth.getClaims()
 
   const user = data?.claims
+  console.log("USER: ", user);
 
-  if (request.nextUrl.pathname.startsWith('/api')) {
-    return NextResponse.next()
-  }
+  // to implement the "guest view" for families
 
-  // to implement the "view only" for families
-  // WE CAN UNCOMMENT THIS WHEN WE HAVE OUR LOGIN PAGE SETUP FOR TESTING
-  // if we uncomment it now then these urls are the only ones any authenticated user would be able to see
-  
-/*   const publicRoutes = ['/', '/login-page', '/auth', '/equipment-gallery', '/items']
-  
-  const isPublic = publicRoutes.some((route) =>
-    request.nextUrl.pathname === route ||
-    request.nextUrl.pathname.startsWith(route + '/')
-  )
+  const publicRoutes = ['/', '/login-page', '/equipment-gallery', '/items']
 
+  const isPublic = publicRoutes.some((route) => 
+    request.nextUrl.pathname === route ||  request.nextUrl.pathname.startsWith(route + '/') ) 
+
+  //redirect to login page if not authenticated (aka guest) and accesses a non-public route
   if (!user && !isPublic) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login-page' //redirect to login page if not authenticated and accesses a private route
-    return NextResponse.redirect(url)
-  } */
+    const url = request.nextUrl.clone();
+    url.pathname = '/login-page';
+    return NextResponse.redirect(url);
+  }  
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:
