@@ -1,30 +1,23 @@
 import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin"; 
+import { getUserAndRole } from "@/lib/data-access-layer";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  
   const supabase = await createClient();
   
   try {
-    // 🔐 1. REQUIRE LOGGED-IN USER
-    const { data, error } = await supabase.auth.getUser();
 
-    if (error || !data?.user) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401 }
-      );
+    const { user, role: currentRole } = await getUserAndRole();
+
+    if (!user) { 
+      return NextResponse.json({ error: "Unauthorized"},
+        {status: 401 });
     }
 
-    // 🔒 2. REQUIRE ADMIN ROLE
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", data.user.id)
-      .single();
-
-    if (profileError || profile?.role !== "admin") {
-      return new Response(
-        JSON.stringify({ error: "Forbidden: Admins only" }),
+    if (currentRole !== "admin") {
+      return NextResponse.json({ error: "Forbidden: Admins only" },
         { status: 403 }
       );
     }
@@ -34,16 +27,14 @@ export async function POST(req: Request) {
 
     // ✅ 4. VALIDATE INPUT
     if (!email || !password || !fullName) {
-      return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
+      return NextResponse.json({ error: "Missing required fields" },
         { status: 400 }
       );
     }
 
     const allowedRoles = ["admin", "physical_therapist", "volunteer"];
     if (!allowedRoles.includes(role)) {
-      return new Response(
-        JSON.stringify({ error: "Invalid role" }),
+      return NextResponse.json({ error: "Invalid role" },
         { status: 400 }
       );
     }
@@ -64,8 +55,7 @@ export async function POST(req: Request) {
       });
 
     if (authError) {
-      return new Response(
-        JSON.stringify({ error: authError.message }),
+      return NextResponse.json({ error: authError.message },
         { status: 400 }
       );
     }
@@ -73,8 +63,7 @@ export async function POST(req: Request) {
     const userId = authData.user?.id;
 
     if (!userId) {
-      return new Response(
-        JSON.stringify({ error: "User ID not returned" }),
+      return NextResponse.json({ error: "User ID not returned" },
         { status: 500 }
       );
     }
@@ -90,21 +79,18 @@ export async function POST(req: Request) {
       });
 
     if (profileInsertError) {
-      return new Response(
-        JSON.stringify({ error: profileInsertError.message }),
+      return NextResponse.json({ error: profileInsertError.message },
         { status: 400 }
       );
     }
 
     // ✅ SUCCESS
-    return new Response(
-      JSON.stringify({ success: true, userId }),
+    return NextResponse.json({ success: true, userId },
       { status: 200 }
     );
 
   } catch (err: any) {
-    return new Response(
-      JSON.stringify({ error: err.message || "Unknown error" }),
+    return NextResponse.json({ error: err.message || "Unknown error" },
       { status: 500 }
     );
   }

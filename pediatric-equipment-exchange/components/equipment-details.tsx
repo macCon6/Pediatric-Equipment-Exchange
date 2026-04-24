@@ -1,17 +1,19 @@
 "use client";
 
 import { ItemFields } from "@/field_interfaces";
-import Image from "next/image";
-import { useState, useEffect } from 'react';
-import SideBar from "@/components/sidebar";
-import UpdateStatusPopup from "@/components/popups/update-status-popup";
-import {useForm, SubmitHandler} from "react-hook-form";
+import { DistributionFields } from "@/field_interfaces";
 import { CATEGORY_OPTIONS, SUBCATEGORY_OPTIONS, CONDITION_OPTIONS, COLOR_OPTIONS } from "@/item-field-options";
+import Image from "next/image";
 import Link from "next/link";
-import Toast from "@/components/popups/toast";
+import { useState } from 'react';
+import {useForm, SubmitHandler} from "react-hook-form";
+import UpdateStatusPopup from "@/components/popups/update-status-popup";
 import RecipientInfoPopup from "@/components/popups/recipient-info-popup";
+import Toast from "@/components/popups/toast";
+import { getStatusColor } from "@/utils/status-colors";
 
-export default function EquipmentDetails({ item }: { item: ItemFields })  {
+
+export default function EquipmentDetails({ item, activeDistribution }: { item: ItemFields, activeDistribution: DistributionFields })  {
 
   // for status changes
   const [mostRecentStatus, setMostRecentStatus] = useState(item.status); // to immediately show the updated status if it gets changed
@@ -24,7 +26,7 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
   
   // misc.
   const [imageIndex, setImageIndex] = useState(0); // for scrolling through images
-  const [recipientPageOpen, setRecipientPageOpen] = useState(false); // show recipient info
+  //const [recipientPageOpen, setRecipientPageOpen] = useState(false); // show recipient info
 
   //for success/failure messages
   const [toastMessage, setToastMessage] = useState(""); 
@@ -34,9 +36,6 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
     setToastMessage(message);  
     setToastType(type);        
   };
-
-  // have to send distribution info to update-status-popup in case the item is being returned
-  const [distribution, setDistribution] = useState<any>(null);
 
   // call the api when they edit anything
   const onSubmit: SubmitHandler<ItemFields> = async (data) => {
@@ -72,17 +71,6 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
     }
   };
   
-  // fetch the distribution info once item details page is opened
-  useEffect(() => {
-    const fetchDistributionEntry = async () => {
-      const res = await fetch(`/api/distributions/${item.id}`);
-      const data = await res.json();
-      setDistribution(data);
-      console.log("Distribution data:", data);
-    }
-    fetchDistributionEntry(); 
-  }, [item.id]);
-  
   // helpers to scroll through images; wrap around when end of array is reached
   const handlePrevImage = () => {
     if (imageIndex > 0) { setImageIndex(imageIndex - 1); }
@@ -94,27 +82,15 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
     else {setImageIndex(0); }
   }
 
-  // give different statuses different colors
-  const getStatusColor = () => {
-    switch(mostRecentStatus) {
-      case "Available": return "bg-green-400";
-      case "Reserved - Needs Signature":  return "bg-yellow-400";
-      case "Reserved - Ready for Pickup":  return "bg-yellow-600";
-      case "Allocated": return "bg-red-800";
-      case "In Processing": return "bg-sky-400";
-    }
-  }
-
   return (
     <>
     {/* Show any toast popups */}
     {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
     
     <div className="flex min-h-screen w-full bg-[#FFC94A]">
-        <SideBar />
 
         {/* Main Content */}
-        <div className="flex-1 p-8 py-15 mb-10 w-full h-full">
+        <div className="flex-1 p-8 mb-10 w-full h-full">
 
           <h1 className="text-white text-2xl mb-8 text-center bg-[#5a9e3a] font-mono">Equipment Details</h1>
         
@@ -269,7 +245,7 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
               {/* Bottom right box for Status details & Change Status button */}
               <div className="bg-white rounded-lg p-4 flex flex-col gap-3 items-center">
                 <h1 className="text-3xl text-center text-black font-bold font-mono"> Current Status: </h1> 
-                <span className={`${getStatusColor()} text-center text-white text-xl font-bold font-mono border rounded-xl p-3 w-full`}> {mostRecentStatus} </span>
+                <span className={`${getStatusColor(mostRecentStatus)} text-center text-white text-xl font-bold font-mono border rounded-xl p-3 w-full`}> {mostRecentStatus} </span>
                 
                 {/* Update status button + view recipient/waiver button if available*/}
 
@@ -280,7 +256,7 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
               
                  {(mostRecentStatus.startsWith("Reserved") || mostRecentStatus === "Allocated") && ( <>
                     <button className="bg-[#5a9e3a] hover:bg-[#4a8a2e] hover:cursor-pointer border rounded-3xl text-white text-xl p-3 font-mono"  
-                      onClick={ () => setRecipientPageOpen(true) }> View Recipient Info </button> 
+                       > View Recipient Info </button> 
                       <span className="text-red-400 italic"> A waiver has been assigned to this reservation. View <Link href= {`/items/${item.id}/waiver`} className="underline text-blue-400"> here. </Link> </span> </>
                   )}
               
@@ -292,7 +268,7 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
       {/* Popup when Update Status button is clicked */}
       <UpdateStatusPopup
             equipment_id = {item.id}
-            distribution_id = {distribution?.id}
+            distribution_id = {activeDistribution?.id}
             current_status = {mostRecentStatus}
             onStatusChange = {(updated_status) => setMostRecentStatus(updated_status)} // to re-render the "current status" box to the new status
             isOpen = { statusPageOpen }
@@ -300,12 +276,15 @@ export default function EquipmentDetails({ item }: { item: ItemFields })  {
             showToast={showToast}
           />  
 
+
+
         {/* Popup when recipient info is clicked */}
-       <RecipientInfoPopup
-            recipient = {distribution?.recipient}
-            isOpen = { recipientPageOpen }
-            onClose = { () => setRecipientPageOpen(false)}
-          />   
+    {/*    <RecipientInfoPopup
+            //reworking this
+            //recipient = {activeDistribution.recipient_id}
+           // isOpen = { recipientPageOpen }
+            //onClose = { () => setRecipientPageOpen(false)}
+          />    */}
     </div>
     </>
   );

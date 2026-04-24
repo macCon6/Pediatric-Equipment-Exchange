@@ -4,35 +4,18 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { getUserAndRole } from "@/lib/data-access-layer";
 
 export async function POST(req: Request) {
 
   const supabase = await createClient();
 
-  // check that the user is logged in 
-  const { data, error } = await supabase.auth.getUser();
-    if (error || !data?.user) {
-      return NextResponse.json(
-        ({ error: "Must be logged in to edit items!" }),
-        { status: 401 }
-      );
-    }
+  const { user } = await getUserAndRole();
   
-  // get the info of the user and throw error early if no profile / correct role
-  // but, the rpc function itself will check user role and id
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", data.user.id)
-    .single();
-
-  if (profileError || !profile) {
-    return NextResponse.json(
-      ({ error: "Forbidden: Could not fetch profile" }),
-      { status: 403 }
-    );
+  if (!user) { 
+    return NextResponse.json({ error: "Unauthorized"},
+      {status: 401 });
   }
-
 
   const {distribution_id, equipment_id, target_status, reservationFormData, cancellationReason} = await req.json();
 
