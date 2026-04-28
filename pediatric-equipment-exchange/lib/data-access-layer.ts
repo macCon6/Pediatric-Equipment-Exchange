@@ -7,7 +7,19 @@ import { createClient } from "@/lib/supabase/server";
 import { cache } from "react";
 
 export const getUserAndRole = cache(async () => { // gets the authenticated user, profile, and caches it
-    console.log("fetching user");
+    //rachel is having touble loggin in. put this here so i can edit pages
+    //remember to delete this after edit is done
+    const DEV_BYPASS = true;
+    if(DEV_BYPASS) {
+      return{
+        user: {id: "dev-user"},
+        role: "therapist",
+        username: "dev",
+        full_name: "Dev User"
+      };
+    }
+  
+  console.log("fetching user");
     const supabase =  await createClient();
     const { data: { user }, error } = await supabase.auth.getUser();
 
