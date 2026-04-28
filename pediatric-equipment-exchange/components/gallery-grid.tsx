@@ -22,17 +22,23 @@ export default function GalleryGrid( {items}: Props) {
 
     return (
             
-        <div>
+        <div className="flex flex-col min-h-0 w-full">
             {/* Search bar */}
-            <div className = "px-8 text-xl bg-white border-2 border-[#132540] rounded-3xl md:h-9 md:w-153" >
-                <input type="text" 
-                    value = {searchTerm} // set the searchTerm variable to the user input
-                    onChange={e => setSearchTerm(e.target.value)}
-                    placeholder = "Search inventory..." />
+            <div className="w-full flex rounded-3xl p-1">
+                <div className="w-full max-w-[16rem] md:max-w-md lg:max-w-2xl xl:max-w-3xl">
+                    <div className="bg-white border-2 border-[#132540] rounded-3xl w-full h-10">
+                        <input type="text" 
+                            className="w-full px-3 py-2"
+                            value = {searchTerm} // set the searchTerm variable to the user input
+                            onChange={e => setSearchTerm(e.target.value)}
+                            placeholder = "Search inventory..." />
+                     </div>
+                </div>
             </div>
              
             {/* All equipment cards are being displayed in this grid  */}
-            <div className = "mt-4 grid grid-cols-2 md:grid-cols-4 gap-6 bg-white p-8 rounded-3xl">
+            
+            <div className = "mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 bg-white p-4 rounded-3xl">
                 {items.length===0 &&
                     <div className = "flex flex-col gap-6 bg-orange-100 border p-6 border border-gray-100 shadow-lg rounded-3xl col-span-4 m-10 justify-self-center">
                         <span className="text-orange-700 font-semibold underline text-xl text-center"> No Items Found!  </span>

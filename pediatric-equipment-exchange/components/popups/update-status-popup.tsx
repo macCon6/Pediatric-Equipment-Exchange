@@ -7,6 +7,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import Popup from "@/components/popups/popup"; 
 import Confirm from "@/components/user-confirmation";
 import { STATUS_OPTIONS } from "@/item-field-options";
+import { getStatusColor } from "@/utils/status-colors";
 
 interface reservationForm {
     name: string;
@@ -109,21 +110,10 @@ export default function UpdateStatusPopup({equipment_id, distribution_id, curren
       setMode("confirm");
     } 
 
-     // give different statuses different colors
-    const getStatusColor = () => {
-        switch(current_status) {
-             case "Available": return "bg-green-400";
-            case "Reserved - Needs Signature":  return "bg-yellow-400";
-            case "Reserved - Ready for Pickup":  return "bg-yellow-600";
-            case "Allocated": return "bg-red-800";
-            case "In Processing": return "bg-sky-400";
-        }
-    }
-
     return (
         <>
         <Popup isOpen={isOpen} onClose ={handleClose} 
-        sizingClassName={`${mode === "confirm"? "max-w-md w-full h-auto" : "w-full md:w-4/5 lg:w-2/3 max-w-5xl h-4/5"}`}> 
+        sizingClassName={`${mode === "confirm"? "max-w-md w-full h-auto" : ""}`}> 
 
             {mode === "select" && 
                 <>
@@ -133,7 +123,7 @@ export default function UpdateStatusPopup({equipment_id, distribution_id, curren
                 <p className= "py-3 text-xl"> Current status: </p>
 
                 {/* show current status above the "choose status" area */}
-                <div className={`flex flex-1 justify-center p-3 rounded-lg ${getStatusColor()} mb-10`}>
+                <div className={`flex flex-1 justify-center p-3 rounded-lg ${getStatusColor(current_status)} mb-10`}>
                     <span className="text-white font-bold text-center">
                         {current_status} 
                     </span>

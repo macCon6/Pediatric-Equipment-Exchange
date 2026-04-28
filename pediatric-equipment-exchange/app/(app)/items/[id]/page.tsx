@@ -1,11 +1,15 @@
 import EquipmentDetails from "@/components/equipment-details";
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server";
+import { getUserAndRole } from "@/lib/data-access-layer";
 
 export default async function Item(details: { params: any }) {
 
   const supabase = await createClient();
 
   const { id } = await details.params; // unwrap the Promise
+
+  // To know what mode to be in in the equipment details page
+  const { role } = await getUserAndRole();
 
   // Attempt to find the item by barcode first, then by ID, and finally by legacy ID  
   const lookupValue = decodeURIComponent(id); 
@@ -48,12 +52,16 @@ export default async function Item(details: { params: any }) {
   }
 
   // fetch the active distribution entry here if it exists, instead of using useEffect in equipment details component to get it
+  // also fetches the recipient info
   const { data: distribution, error: distributionError } = await supabase
     .from("distributions")
-    .select("*")
+    .select("*, recipient:recipient_id(*)")
     .eq("equipment_id", id)
     .is("returned_at", null)
     .maybeSingle();
+  
+  console.log("Server fetched distribution: ", distribution);
+  console.log("Server error fetching distribution: ", distributionError);
 
   if (!item) {
     return (
@@ -65,5 +73,5 @@ export default async function Item(details: { params: any }) {
     )
   }
 
-  return <EquipmentDetails item={item} activeDistribution={distribution} />;
+  return <EquipmentDetails item={item} distribution={distribution} role={role} />;
 }

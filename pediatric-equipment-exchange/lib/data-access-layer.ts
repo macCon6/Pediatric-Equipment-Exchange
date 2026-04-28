@@ -19,9 +19,12 @@ export const getUserAndRole = cache(async () => { // gets the authenticated user
       };
     }
   
+    // updated to use getClaims instead because its faster
   console.log("fetching user");
     const supabase =  await createClient();
-    const { data: { user }, error } = await supabase.auth.getUser();
+    const { data, error } = await supabase.auth.getClaims();
+    const user = data?.claims;
+    console.log('user object is ', user);
 
     if (error || !user) {
       return { user: null, role: "guest", username: null, full_name: null}; // if no user, their role is guest
@@ -31,7 +34,7 @@ export const getUserAndRole = cache(async () => { // gets the authenticated user
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("role, username, full_name") // to display on their profile pages
-      .eq("id", user.id)
+      .eq("id", user.sub)
       .single();
     
     if (profileError) {

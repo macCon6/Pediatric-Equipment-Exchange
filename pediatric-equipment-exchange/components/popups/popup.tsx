@@ -25,7 +25,8 @@ export default function Popup ({isOpen, onClose, children, sizingClassName}: Pro
                 <div className={`z-50
                       bg-white rounded-xl p-6
                       overflow-y-auto
-                      border border-teal-600 ${sizingClassName}`}
+                      border border-teal-600
+                      ${sizingClassName}`}
                       >
                 <button className = "text-black text-3xl" onClick={onClose}> X </button>
                 {children}

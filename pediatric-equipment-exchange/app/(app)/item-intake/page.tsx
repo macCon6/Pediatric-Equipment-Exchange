@@ -209,7 +209,7 @@ export default function ItemIntake() {
       {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
       
       {/* Main content, back rectangle*/}
-      <div className="flex flex-col md:flex-row w-full gap-6 p-4 md:p-10">
+      <div className="flex flex-col md:flex-row  md:items-start w-full gap-6 p-4 md:p-10">
 
         {/* Left column*/}
         <div className ="w-full md:flex-1 flex flex-col gap-6">
@@ -301,7 +301,7 @@ export default function ItemIntake() {
         </div>
 
         {/* Right column - intake form */}
-        <div className="flex-1 flex-col md:w-[400px] max-w-full shadow-lg border border-green-600 bg-white rounded-2xl overflow-y-auto flex min-h-0">
+        <div className="flex flex-col md:w-1/2 max-w-full shadow-lg border border-green-600 bg-white rounded-2xl">
 
           <p className="m-3 text-2xl font-semibold text-center font-mono underline tracking-tight"> Complete the Intake Form </p>
           <form
@@ -358,7 +358,7 @@ export default function ItemIntake() {
               placeholder="Item description"
               className="bg-[#5a9e3a] border border-gray-200 rounded-3xl placeholder-black text-black text-center p-3"
               {...register("description")}
-              rows={6}
+              rows={5}
               cols={20}
             />
 

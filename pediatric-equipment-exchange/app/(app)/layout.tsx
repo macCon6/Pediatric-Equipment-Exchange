@@ -1,16 +1,23 @@
-// the pages after login all commonly use the sidebar, so put it in their common layout here
-// later we can add a header and footer here
+// layout for all pages besides login and landing
 
+import Header from "@/components/header";
 import SideBar from "@/components/sidebar";
+import UIProvider from "../providers/ui-provider";
 
 export default function Layout({ children}: {children: React.ReactNode;}) {
-
   return (
-    <div className="flex min-h-screen bg-[#FFC94A]">
-      <SideBar />
-      <main className="flex-1">
-        {children}
-      </main>
-    </div>
-  )
+    <>
+    <UIProvider> 
+      <div className="min-h-screen flex flex-col bg-[#FFC94A] w-full">
+        <Header />
+        <div className="flex flex-1 w-full ">
+          <SideBar />
+          <main className="flex-1 w-full">
+            {children}
+          </main>
+        </div>
+      </div>
+    </UIProvider> 
+    </>
+  );
 }

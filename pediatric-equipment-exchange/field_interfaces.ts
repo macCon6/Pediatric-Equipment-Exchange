@@ -1,18 +1,18 @@
 
 export interface ItemFields {
-    id: string
-    name: string
-    category: string
-    subcategory?: string
-    condition: string
-    status: string
-    description?: string
-    size: string
-    color: string
-    donor?: string
-    image_urls: string[]
-    created_at: string
-    location: string
+    id: string,
+    name: string,
+    category: string,
+    subcategory: string | null,
+    condition: string,
+    status: string,
+    description: string | null,
+    size: string,
+    color: string | null,
+    donor: string | null,
+    image_urls: string[],
+    created_at: string,
+    location: string,
     barcode_value: string | null
 }
 
@@ -21,20 +21,20 @@ export interface DistributionFields {
     equipment_id: string,
     recipient_id: string,
     reserved_by: string,
-    allocated_by?: string,
-    returned_by?: string,
+    allocated_by: string | null,
+    returned_by: string | null,
     reserved_at: string, 
-    allocated_at?: string,
-    returned_at?: string,
-    condition_at_allocation?: string,
-    notes?: string,
-    cancellation_reason?: string,
-    cancelled_at?: string,
-    cancelled_by?: string,
-    signed_at?: string,
-    signed_by?: string,
-    signed_waiver_url?: string,
-    waiver_template_id: string
+    allocated_at: string | null,
+    returned_at: string | null,
+    condition_at_allocation: string | null,
+    notes: string | null,
+    cancellation_reason: string | null,
+    cancelled_at: string | null,
+    cancelled_by: string | null,
+    signed_at: string | null,
+    signed_by: string | null,
+    signed_waiver_url: string | null,
+    waiver_template_id: string | null
     
 }
 
@@ -53,4 +53,9 @@ export interface ClinicFields {
     id: string,
     name: string,
     created_at: string,
+}
+
+// distribution fetch with recipient info for the "Distribution Details Popup"
+export interface DistributionWithRecipient extends DistributionFields {
+  recipient: RecipientFields
 }
