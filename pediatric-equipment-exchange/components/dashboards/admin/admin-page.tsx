@@ -3,7 +3,7 @@ import ReservedEquipment from "@/components/dashboards/admin/reservations";
 import ProfileInfo from "@/components/dashboards/profile-info-box";
 import EditUsers from "./edit-users";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabaseAdmin } from "@/lib/supabase/admin"; // adjust path if needed
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 interface Props {
   user: any;
@@ -19,7 +19,7 @@ export default async function AdminPage({
   full_name,
 }: Props) {
 
-  // 🔥 FETCH EQUIPMENT + DISTRIBUTION DATA
+  // FETCH DATA
   const { data: items, error } = await supabaseAdmin
     .from("equipment")
     .select(`
@@ -43,60 +43,95 @@ export default async function AdminPage({
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-[#FFC94A]">
-      <div className="p-8 mb-10 w-full h-full">
-        <h1 className="text-white text-2xl mb-8 text-center bg-[#5a9e3a] font-mono">
+
+      <div className="p-8 w-full">
+
+        {/* HEADER */}
+        <h1 className="text-white text-2xl mb-6 text-center bg-[#5a9e3a] py-2 rounded font-mono">
           Admin Page
         </h1>
 
-        {/* Tabs */}
-        <Tabs defaultValue="profile">
-          <div className="relative overflow-y-hidden sm:overflow-x-scroll md:overflow-auto h-10 md:scrollbar-hide">
-            <TabsList className="absolute flex flex-row sm:justify-stretch sm:w-full md:w-1/2">
-              <TabsTrigger value="profile">Profile</TabsTrigger>
-              <TabsTrigger value="users">Users</TabsTrigger>
-              <TabsTrigger value="allocations">Allocations</TabsTrigger>
-              <TabsTrigger value="reservations">Reservations</TabsTrigger>
-              <TabsTrigger value="history">History</TabsTrigger>
-              <TabsTrigger value="waiver">Waiver</TabsTrigger>
-            </TabsList>
-          </div>
+        <Tabs defaultValue="profile" className="w-full flex flex-col items-center mt-6">
 
-          {/* Profile */}
-          <TabsContent value="profile">
-            <ProfileInfo
-              user={user}
-              role={role}
-              username={this_username}
-              full_name={full_name}
-            />
-          </TabsContent>
+  {/* Rectangular tab bar */}
+  <TabsList
+    className="
+      flex
+      justify-between
+      items-center
+      bg-[#E8D3A3]
+      p-1
+      rounded-md   
+      shadow-sm
+      w-[700px]
+      max-w-full
+    "
+  >
+    <TabsTrigger
+      className="
+        flex-1
+        text-center
+        py-2
+        rounded-sm
+        data-[state=active]:bg-white
+        data-[state=active]:shadow
+      "
+      value="profile"
+    >
+      Profile
+    </TabsTrigger>
 
-          {/* Users */}
-          <TabsContent value="users">
-            <EditUsers />
-          </TabsContent>
+    <TabsTrigger className="flex-1 text-center py-2 rounded-sm data-[state=active]:bg-white data-[state=active]:shadow" value="users">
+      Users
+    </TabsTrigger>
 
-          {/* Allocations */}
-          <TabsContent value="allocations">
-            <AllocatedEquipment items={items || []} />
-          </TabsContent>
+    <TabsTrigger className="flex-1 text-center py-2 rounded-sm data-[state=active]:bg-white data-[state=active]:shadow" value="allocations">
+      Allocations
+    </TabsTrigger>
 
-          {/* Reservations */}
-          <TabsContent value="reservations">
-            <ReservedEquipment items={items || []} />
-          </TabsContent>
+    <TabsTrigger className="flex-1 text-center py-2 rounded-sm data-[state=active]:bg-white data-[state=active]:shadow" value="reservations">
+      Reservations
+    </TabsTrigger>
 
-          {/* History */}
-          <TabsContent value="history">
-            component to show distribution history (completed returns, cancellations, filter by clinic, etc)
-          </TabsContent>
+    <TabsTrigger className="flex-1 text-center py-2 rounded-sm data-[state=active]:bg-white data-[state=active]:shadow" value="history">
+      History
+    </TabsTrigger>
 
-          {/* Waiver */}
-          <TabsContent value="waiver">
-            working on it
-          </TabsContent>
+    <TabsTrigger className="flex-1 text-center py-2 rounded-sm data-[state=active]:bg-white data-[state=active]:shadow" value="waiver">
+      Waiver
+    </TabsTrigger>
+  </TabsList>
 
-        </Tabs>
+  {/* Content */}
+  <div className="w-full mt-8">
+    <TabsContent value="profile">
+      <ProfileInfo user={user} role={role} username={this_username} full_name={full_name} />
+    </TabsContent>
+
+    <TabsContent value="users">
+      <EditUsers />
+    </TabsContent>
+
+    <TabsContent value="allocations">
+      <AllocatedEquipment items={items || []} />
+    </TabsContent>
+
+    <TabsContent value="reservations">
+      <ReservedEquipment items={items || []} />
+    </TabsContent>
+
+    <TabsContent value="history">
+      History coming soon
+    </TabsContent>
+
+    <TabsContent value="waiver">
+      Working on it
+    </TabsContent>
+  </div>
+
+</Tabs>
+
+        
       </div>
     </div>
   );
