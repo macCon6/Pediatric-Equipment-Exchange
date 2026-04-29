@@ -8,19 +8,20 @@ export async function updateSession(request: NextRequest) {
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll() {
           return request.cookies.getAll()
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet, headers) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
+          supabaseResponse = NextResponse.next({ request })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
+          )
+          Object.entries(headers).forEach(([key, value]) =>
+            supabaseResponse.headers.set(key, value)
           )
         },
       },
@@ -28,15 +29,13 @@ export async function updateSession(request: NextRequest) {
   )
 
   const { data } = await supabase.auth.getClaims()
-
   const user = data?.claims
   console.log("USER: ", user);
 
-if (request.nextUrl.pathname.startsWith('/api')) {
+  if (request.nextUrl.pathname.startsWith('/api')) {
     return NextResponse.next()
   }
 
-  // to implement the "guest view" for families
   if (!user) {
     const url = request.nextUrl.clone();
     url.pathname = '/login-page';
