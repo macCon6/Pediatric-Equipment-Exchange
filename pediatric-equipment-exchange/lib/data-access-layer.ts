@@ -9,11 +9,11 @@ import { cache } from "react";
 export const getUserAndRole = cache(async () => { // gets the authenticated user, profile, and caches it
     //rachel is having touble loggin in. put this here so i can edit pages
     //remember to delete this after edit is done
-    const DEV_BYPASS = true;
+    const DEV_BYPASS = false;
     if(DEV_BYPASS) {
       return{
         user: {id: "dev-user"},
-        role: "therapist",
+        role: "admin",
         username: "dev",
         full_name: "Dev User"
       };

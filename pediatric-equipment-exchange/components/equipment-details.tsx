@@ -38,6 +38,9 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
   //for success/failure messages
   const [toastMessage, setToastMessage] = useState(""); 
   const [toastType, setToastType] = useState<"error" | "success">("error");
+  
+  //for admin delete confirmation button
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const showToast = (message: string, type: "success" | "error") => { // this is to send down to the update-status-popup
     setToastMessage(message);  
@@ -51,7 +54,29 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
     console.log("Refetched distribution: ", data);
     setCurrentDistribution(data);
   }
+//  Delete item — only admins see this button
+  const handleDelete = async () => {
+  setShowDeleteConfirm(true);
+};
 
+const confirmDelete = async () => {
+  setShowDeleteConfirm(false);
+  try {
+    const res = await fetch(`/api/equipment/${item.id}/delete`, {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      const result = await res.json();
+      showToast(result.error ?? "Failed to delete item", "error");
+    } else {
+      showToast("Item deleted successfully!", "success");
+      setTimeout(() => { window.location.href = "/equipment-gallery"; }, 1500);
+    }
+  } catch (err) {
+    console.error("Delete failed:", err);
+    showToast("Failed to delete item", "error");
+  }
+};
   // call the api when they edit anything
   const onSubmit: SubmitHandler<ItemFields> = async (data) => {
     try {
@@ -275,7 +300,15 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
                         
                     </>
                   )}
-                
+                {/* Delete button — only visible to admins */}
+                  {role === "admin" && ( 
+                    <button
+                      className="bg-red-600 hover:bg-red-700 hover:cursor-pointer border rounded-3xl text-white text-xl p-3"
+                      onClick={handleDelete}
+                    >
+                      Delete Item
+                    </button>
+                  )}
                 </div>
               }
     
@@ -288,22 +321,20 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
           </div>
         </div>
       
-      {/* Popup when Update Status button is clicked */}
+     {/* Popup when Update Status button is clicked */}
       <UpdateStatusPopup
             equipment_id = {item.id}
             distribution_id = {currentDistribution?.id}
             current_status = {mostRecentStatus}
-             // to re-render the "current status" box to the new status
             onStatusChange = {(updated_status) => {
               setMostRecentStatus(updated_status);
-              refreshDistribution(); } // also refetch distribution
+              refreshDistribution(); }
             }
             isOpen = { statusPageOpen }
             onClose = { () => setStatusPageOpen(false)}
             showToast={showToast}
         />  
 
-        {/* Popup when allocation/reservation details button is clicked */}
        <DistributionDetailsPopup
             current_status = {mostRecentStatus}
             equipment_id = {item.id}
@@ -311,6 +342,30 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
             isOpen = { detailsPopupOpen }
             onClose = { () => setDetailsPopupOpen(false)}
         />    
+
+      {/* Delete confirmation modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 flex flex-col items-center gap-6 shadow-xl w-80">
+            <h2 className="text-2xl font-bold text-center text-[#132540]">Completely remove item?</h2>
+            <div className="flex gap-4 w-full">
+              <button
+                className="flex-1 bg-gray-400 hover:bg-gray-500 hover:cursor-pointer border rounded-3xl text-white text-lg p-3"
+                onClick={confirmDelete}
+              >
+                Allow
+              </button>
+              <button
+                className="flex-1 bg-[#5a9e3a] hover:bg-[#4a8a2e] hover:cursor-pointer border rounded-3xl text-white text-lg p-3"
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                Do Not Allow
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
     </>
   );
