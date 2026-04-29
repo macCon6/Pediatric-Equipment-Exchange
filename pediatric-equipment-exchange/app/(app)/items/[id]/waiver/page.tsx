@@ -31,9 +31,9 @@ export default async function WaiverPage( details: { params: any } ) {
   
   if (!distribution || distributionError) {
     return (
-      <div className="flex flex-1 bg-teal-700 h-screen justify-center items-center">
-        <div className="flex bg-white w-1/2 h-1/2 items-center justify-center">
-          <p className="text-6xl text-red-400 text-center font-mono">
+      <div className="flex min-h-full bg-[#FFC94A] justify-center items-center">
+        <div className="flex bg-white w-1/2 h-[50vh] md:h-[70vh] items-center justify-center">
+          <p className="text-lg md:text-2xl lg:text-4xl text-red-400 text-center">
             Distribution entry error or missing
           </p>
         </div>
@@ -49,9 +49,9 @@ export default async function WaiverPage( details: { params: any } ) {
 
   if (!templateWaiver || templateError) {
     return (
-      <div className="flex flex-1 bg-teal-700 h-screen justify-center items-center">
-        <div className="flex bg-white w-1/2 h-1/2 items-center justify-center">
-          <p className="text-6xl text-red-400 text-center font-mono">
+      <div className="flex min-h-full bg-[#FFC94A] justify-center items-center">
+        <div className="flex bg-white w-1/2 h-[50vh] md:h-[70vh] items-center justify-center">
+          <p className="text-lg md:text-2xl lg:text-4xl text-red-400 text-center">
             Missing waiver template
           </p>
         </div>
@@ -63,6 +63,7 @@ export default async function WaiverPage( details: { params: any } ) {
     <WaiverClient
       template_id={templateWaiver.id}
       displayed_waiver_url={distribution.signed_waiver_url ?? templateWaiver.template_url}
+      is_signed={!!distribution.signed_waiver_url} // evaluates to false if there is no signed_waiver_url
       distribution_id={distribution.id} 
       equipment={distribution.equipment} 
     />

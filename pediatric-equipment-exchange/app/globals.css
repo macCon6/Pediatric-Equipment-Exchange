@@ -142,3 +142,7 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+html {
+  overflow-y: scroll;
+}

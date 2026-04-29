@@ -52,16 +52,17 @@ export default async function Item(details: { params: any }) {
   }
 
   // fetch the active distribution entry here if it exists, instead of using useEffect in equipment details component to get it
-  // also fetches the recipient info
+  // also fetches the recipient and staff info
   const { data: distribution, error: distributionError } = await supabase
     .from("distributions")
-    .select("*, recipient:recipient_id(*)")
+    .select("*, recipient:recipient_id(*),reserved_staff:reserved_by(full_name),allocated_staff:allocated_by(full_name)")
     .eq("equipment_id", id)
     .is("returned_at", null)
     .maybeSingle();
   
   console.log("Server fetched distribution: ", distribution);
   console.log("Server error fetching distribution: ", distributionError);
+  console.log("Role: ", role);
 
   if (!item) {
     return (

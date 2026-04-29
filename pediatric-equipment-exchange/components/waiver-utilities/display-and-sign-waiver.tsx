@@ -13,23 +13,27 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 interface Props {
   template_id: string,
   displayed_waiver_url: string,
+  is_signed: boolean,
   distribution_id: string,
   equipment: any, // to add as an automically "filled" field to pass to the sign-waiver route
 }
 
 interface waiverForm {
-  typed_staff_name: string,
-  typed_recipient_name: string,
+  equipment_name: string, 
   barcode_value: string,
-  equipment_name: string
+  typed_recipient_name: string,
+  typed_guardian_name: string,
+  relationship_to_child: string,
+  typed_staff_name: string,
 }
 
-export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url, distribution_id, equipment }: Props) {
+export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url, is_signed, distribution_id, equipment }: Props) {
 
   const [numPages, setNumPages] = useState(0); // to render a pdf with unknown # of pages in react-pdf
   const [pdfURL, setPDFURL] = useState(displayed_waiver_url);
+  const [isSigned, setIsSigned] = useState(is_signed); // to update the right side when the waiver has been signed
 
-  const recipientSignature = useRef<SignatureCanvas>(null);
+  const guardianSignature = useRef<SignatureCanvas>(null);
   const staffSignature = useRef<SignatureCanvas>(null);
 
   const {register, handleSubmit, reset, formState: {errors}} = useForm<waiverForm>(); 
@@ -54,12 +58,12 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
   }, []);
 
 
-  // for submitting the waiver: staff & recipient signatures, date, barcode # and equipment name
+  // for submitting the waiver: staff & guardian signatures, date, barcode # and equipment name
   const onSubmit: SubmitHandler<waiverForm> = async (data: waiverForm) => {
 
     try {
-      if(!recipientSignature.current || recipientSignature.current.isEmpty?.()) { 
-        throw new Error("Missing recipient signauture");
+      if(!guardianSignature.current || guardianSignature.current.isEmpty?.()) { 
+        throw new Error("Missing guardian signauture");
       }
       
       else if (!staffSignature.current || staffSignature.current.isEmpty?.()) {
@@ -67,7 +71,7 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
       }
 
       const staffSig_data_url= staffSignature.current.toDataURL("image/png");
-      const recipientSig_data_url= recipientSignature.current.toDataURL("image/png");
+      const guardianSig_data_url= guardianSignature.current.toDataURL("image/png");
 
       const res = await fetch("/api/sign-waiver", {
         method: "POST",
@@ -78,8 +82,10 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
           distribution_id: distribution_id,
           template_id: template_id,
           typed_recipient_name: data.typed_recipient_name,
+          typed_guardian_name: data.typed_guardian_name,
+          relationship_to_child: data.relationship_to_child,
+          guardian_signature: guardianSig_data_url,
           typed_staff_name: data.typed_staff_name,
-          recipient_signature: recipientSig_data_url,
           staff_signature: staffSig_data_url,
           equipment_id: equipment.id,
           equipment_name: equipment.name,
@@ -94,6 +100,7 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
       }
 
       setPDFURL(result.waiver_url);
+      setIsSigned(true);
       setToastType("success");
       setToastMessage(result.message);
 
@@ -109,12 +116,12 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
     <>
     {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
         
-    <div className="flex flex-col min-h-screen bg-[#134e4a]">
+    <div className="flex flex-col min-h-screen bg-[#FFC94A]">
           
-      <div className="bg-teal-700 mt-2 p-3 rounded-lg text-center">
+      {/* <div className="bg-[#FFC94A] mt-2 p-3 rounded-lg text-center">
         <p className="text-white text-lg md:text-2xl font-serif"> Please read the waiver. Scroll down to sign. </p>
         <p className="mt-3 text-white text-sm md:text-md italic font-serif"> Safari users may need to update or access via Chrome. </p>
-      </div>
+      </div> */}
     
       {/* Grid setup, 2 columns on big screen, 1 stacked column on smaller */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 md:-mt-3 p-4 md:p-8 h-full">
@@ -144,11 +151,11 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
         </div> 
 
         {/* Right column, scrollable. Includes the assigned equipment info, and place for staff/recipient to type & sign names */}
-      {}
+      {!isSigned && 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col overflow-auto space-y-8 max-h-[85vh] p-2 bg-gray-200 rounded-lg">
 
           <div className="relative mt-3 bg-white border border-black rounded-lg p-6 pt-10 space-y-4">
-            <h2 className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-teal-600 text-white px-4 py-1 rounded-full">
+            <h2 className="absolute -top-3 left-1/2 transform -translate-x-1/2  bg-[#5a9e3a] text-white px-4 py-1 rounded-full">
               Details </h2>
             <div>
               <label className="text-sm text-gray-600"> Item Name </label>
@@ -179,22 +186,40 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
           </div>
   
           <div className="relative bg-white border border-black space-y-4 rounded-lg p-6 pt-10 space-y-4">
-            <h2 className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-teal-600 text-white px-4 py-1 rounded-full">
-              Recipient Signature </h2>
-            <label className="text-sm text-gray-600"> Typed Recipient Name </label>
+            <h2 className="text-sm md:text-base text-white absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#5a9e3a] px-4 py-1 rounded-full ">
+              Child & Guardian </h2>
+
+            <label className="text-sm text-gray-600"> Child / Recipient Name </label>
             <input
               {...register("typed_recipient_name", { required: "Please type recipient name" })}
               placeholder="Type name here..."
               className="mt-1 text-center border rounded-xl black text-black p-2 w-full"
             />
-              <p className="text-red-600 text-sm">{errors.typed_recipient_name?.message}</p>
-            <Signature signatureRef={recipientSignature} />
+             <p className="text-red-600 text-sm">{errors.typed_recipient_name?.message}</p>
+
+            <label className="text-sm text-gray-600"> Parent or Legal Guardian Name </label>
+            <input
+              {...register("typed_guardian_name", { required: "Please type guardian name" })}
+              placeholder="Type name here..."
+              className="mt-1 text-center border rounded-xl black text-black p-2 w-full"
+            />
+              <p className="text-red-600 text-sm">{errors.typed_guardian_name?.message}</p>
+
+            <label className="text-sm text-gray-600"> Relationship to Child </label>
+            <input
+              {...register("relationship_to_child", { required: "Please input relationship" })}
+              placeholder="Type relationship here..."
+              className="mt-1 text-center border rounded-xl black text-black p-2 w-full"
+            />
+              <p className="text-red-600 text-sm">{errors.relationship_to_child?.message}</p>
+
+            <Signature signatureRef={guardianSignature} />
           </div>
 
           <div className="relative bg-white border border-black rounded-lg p-6 pt-10 space-y-4">
-            <h2 className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-teal-600 text-white px-4 py-1 rounded-full">
-              Staff Signature </h2>
-            <label className="text-sm text-gray-600"> Typed Staff Name </label>
+            <h2 className="text-sm md:text-base text-white absolute -top-3 left-1/2 transform -translate-x-1/2  bg-[#5a9e3a] px-4 py-1 rounded-full">
+              Authorized Staff </h2>
+            <label className="text-sm text-gray-600"> Staff Name </label>
             <input
               {...register("typed_staff_name", { required: "Please type staff name" })}
               placeholder="Type name here..."
@@ -211,12 +236,30 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
 
             <button
               type="submit"
-              className="bg-teal-600 text-white px-3 py-2 rounded-xl hover:bg-teal-800 hover:cursor-pointer"
+              className="bg-[#5a9e3a] text-white px-3 py-2 rounded-xl hover:opacity-60 hover:cursor-pointer"
             >
               Submit Waiver
             </button>
+            <p className="text-xs text-gray-600 text-center italic">
+              <strong> Note: </strong> This will mark the item as ready for pickup!
+            </p>
           </div>
-        </form>
+        </form> 
+        }
+
+        {isSigned &&
+          <div className="flex flex-col overflow-auto space-y-8 max-h-[85vh] p-2 bg-white rounded-lg justify-center">
+              <p className="text-md italic text-center"> The waiver has been signed. Click the button to view in a full tab and download. </p>
+              <a
+                href={pdfURL}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-[#5a9e3a] mx-auto w-1/2 text-white px-4 py-2 rounded-xl hover:opacity-80 text-center">
+                  Open in new tab
+              </a>
+          </div>
+        }
       </div>
     </div>
     

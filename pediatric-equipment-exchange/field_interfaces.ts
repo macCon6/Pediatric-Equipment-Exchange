@@ -56,7 +56,18 @@ export interface ClinicFields {
     created_at: string,
 }
 
+export interface ProfileFields {
+    id: string,
+    full_name: string,
+    created_at: string,
+    username: string,
+    role: string,
+    email: string
+}
+
 // distribution fetch with recipient info for the "Distribution Details Popup"
-export interface DistributionWithRecipient extends DistributionFields {
+export interface DistributionWithRecipientAndStaff extends DistributionFields {
   recipient: RecipientFields
+  reserved_staff: ProfileFields
+  allocated_staff: ProfileFields
 }

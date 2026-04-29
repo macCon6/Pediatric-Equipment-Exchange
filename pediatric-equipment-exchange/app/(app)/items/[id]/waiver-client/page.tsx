@@ -11,11 +11,18 @@ const DisplayAndSignWaiver = dynamic(
 interface Props {
   template_id: string,
   displayed_waiver_url: string,
+  is_signed: boolean,
   distribution_id: string,
   equipment: any,
 }
 
 // send down to the display component where we're actually using react-pdf
-export default function WaiverClient({ template_id, displayed_waiver_url, distribution_id, equipment}: Props) {
-  return <DisplayAndSignWaiver template_id={template_id} displayed_waiver_url={displayed_waiver_url} distribution_id={distribution_id}  equipment={equipment} />;
+export default function WaiverClient({ template_id, displayed_waiver_url, is_signed, distribution_id, equipment}: Props) {
+  return <DisplayAndSignWaiver 
+            template_id={template_id} 
+            displayed_waiver_url={displayed_waiver_url} 
+            is_signed={is_signed} 
+            distribution_id={distribution_id} 
+            equipment={equipment} 
+          />;
 }
