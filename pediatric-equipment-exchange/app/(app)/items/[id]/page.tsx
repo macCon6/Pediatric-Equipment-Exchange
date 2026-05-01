@@ -51,11 +51,12 @@ export default async function Item(details: { params: any }) {
     item = legacyMatch;
   }
 
-  // fetch the active distribution entry here if it exists, instead of using useEffect in equipment details component to get it
-  // also fetches the recipient and staff info
+  // Use the new "readable distribution" View to fetch all the necessary data joined from all the tables
+  // So that the "reservation/allocation" details page can have all information
+  // And the Admin page can reuse this View for its tabs
   const { data: distribution, error: distributionError } = await supabase
-    .from("distributions")
-    .select("*, recipient:recipient_id(*),reserved_staff:reserved_by(full_name),allocated_staff:allocated_by(full_name)")
+    .from("readable_distribution")
+    .select("*")
     .eq("equipment_id", id)
     .is("returned_at", null)
     .maybeSingle();
@@ -67,7 +68,7 @@ export default async function Item(details: { params: any }) {
   if (!item) {
     return (
       <div className="flex flex-1 bg-[#FFC94A] h-screen justify-center items-center"> 
-        <div className="flex bg-orange-100 p-6 border border-gray-100 shadow-lg  rounded-3xl w-3/4 mb-10 md:mr-20 md:mb-20 h-1/2 items-center justify-center"> 
+        <div className="-translate-y-18 flex bg-orange-100 p-6 border border-gray-100 shadow-lg  rounded-3xl w-3/4 mb-10 md:mr-20 md:mb-20 h-1/2 items-center justify-center"> 
           <p className="text-4xl text-orange-600 tracking-wide text-center "> Item not found </p>
         </div>
       </div>

@@ -1,10 +1,15 @@
-
+import LoadingWheel from "@/components/loading-wheel";
 export default function Loading() {
   return (
-    // recreating how the gallery looks to put the spinner inside of it 
-    <div className = "h-full w-full flex flex-col overflow-hidden bg-[#FFC94A]">
-      loading item
-      
-    </div>  
+    <div className="flex min-h-screen w-full bg-[#FFC94A]">
+    
+        {/* Main Content */}
+      <div className="flex-1 w-full justify-center items-center pt-18">
+          
+          <LoadingWheel />
+          
+      </div>
+      </div>
+     
   );
 }

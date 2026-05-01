@@ -1,15 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
 import { getUserAndRole } from "@/lib/data-access-layer";
-import { NextResponse } from "next/server";
+import { NextRequest,NextResponse } from "next/server";
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+   request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  // Double-check on the server that they're actually an admin
-  const { role } = await getUserAndRole();
 
-  if (role !== "admin") {
+  // Double-check on the server that they're actually an admin
+  const { user, role } = await getUserAndRole();
+
+  if (!user || role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 

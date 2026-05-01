@@ -2,7 +2,6 @@ import { ItemFields } from "@/field_interfaces"
 import Image from "next/image"
 import Link from "next/link"
 import { getStatusColor } from "@/utils/status-colors"
-import {STATUS_OPTIONS } from "@/item-field-options"
 
 // All equipment in the gallery page is displayed using its own card component
 

@@ -1,10 +1,9 @@
 import Popup from "@/components/popups/popup";
 import Link from "next/link";
-import { DistributionWithRecipientAndStaff } from "@/field_interfaces";
 
 interface Props {
     current_status: string,
-    distribution: DistributionWithRecipientAndStaff, 
+    distribution: any
     equipment_id: string,
     isOpen: boolean, // to show the popup
     onClose: () => void, // to close the popup
@@ -15,48 +14,43 @@ export default function DistributionDetailsPopup({current_status, equipment_id, 
     if (!distribution) return null;
 
     return (
-        <Popup isOpen={isOpen} onClose ={onClose} sizingClassName="h-full max-h-[70vh] w-full max-w-5xl"> 
+        <Popup isOpen={isOpen} onClose ={onClose} sizingClassName="max-w-sm md:max-w-xl lg:max-w-2xl xl:max-w-3xl w-full h-full"> 
 
-             <div>
-                <h1 className="text-2xl"> Details </h1>
-            <ul className="text-xl "> 
-            {/* First stage, show recipient info and waiver link */}
-            {current_status.startsWith("Reserved") &&
-                <> 
-                <li> Recipient Name: {distribution.recipient?.name} </li>
-                <li> Contact Name: {distribution.recipient?.contact_name} </li>
-                <li> Contact Phone: {distribution.recipient?.phone} </li>
-                <li> Contact Email: {distribution.recipient?.email} </li>
-                <li> Authorized for Pickup: {distribution.recipient?.authorized_for_pickup} </li>
-                <li> Reserved by: {distribution.reserved_staff?.full_name} </li>
-                <li> Reserved at: {distribution.reserved_at? new Date(distribution.reserved_at).toLocaleString() : "--"} </li>
-                <li> View Waiver: <Link href= {`/items/${equipment_id}/waiver`} className="underline text-blue-400"> Here. </Link> </li>
-                </>
+            <h1 className="text-center font-bold text-2xl"> {current_status.startsWith("Reserved")? "Reservation": "Allocation"} Details  </h1>
 
-            }
+            <div className="flex flex-col py-5">
+                <ul className="text-xl space-y-2"> 
+                    {/* First stage, show recipient info and waiver link */}
+                   
+                  
+                        <li> <strong> Recipient Name: </strong> {distribution.recipient_name} </li>
+                        <li> <strong> Contact Name: </strong> {distribution.contact_name} </li>
+                        <li> <strong> Contact Phone: </strong> {distribution.contact_phone} </li>
+                        <li> <strong> Contact Email: </strong> {distribution.contact_email} </li>
+                        <li> <strong> Authorized for Pickup: </strong> {distribution.authorized_for_pickup} </li>
+                        <li> <strong> Reserved by: </strong> {distribution.reserved_by_name} </li>
+                        <li> <strong> Reserved at: </strong> {distribution.reserved_at? new Date(distribution.reserved_at).toLocaleString() : "--"} </li>
+                   
 
-            {current_status === "Reserved - Ready for Pickup" && 
-                <>
-                <li> Waiver signed at: {distribution.signed_at} </li>
-                </>
-            }
+                    {current_status === "Reserved - Ready for Pickup" && 
+                    <>
+                    <li> <strong> Waiver signed at: </strong>  {distribution.signed_at? new Date(distribution.signed_at).toLocaleString() : "--"} </li>
+                    <li> <strong> Signing Therapist: </strong> {distribution.signed_by_name} </li>
+                    </>
+                    }
 
-            {current_status === "Allocated" && 
-                <>
-                <li> Allocated at: {distribution.allocated_at? new Date(distribution.reserved_at).toLocaleString() : "--"} </li>
-                <li> Allocated by: {distribution.allocated_staff?.full_name} </li>
-                <li> Condition at Allocation: {distribution.condition_at_allocation} </li>
-                <li> Recipient Name: {distribution.recipient?.name} </li>
-                <li> Contact Name: {distribution.recipient?.contact_name} </li>
-                <li> Contact Phone: {distribution.recipient?.phone} </li>
-                <li> Contact Email: {distribution.recipient?.email} </li>
-                <li> View Waiver: <Link href= {`/items/${equipment_id}/waiver`} className="underline text-blue-400"> Here. </Link> </li>
-                </>
-            }
+                    {current_status === "Allocated" && 
+                    <>
+                    <li> <strong> Allocated at: </strong> {distribution.allocated_at? new Date(distribution.reserved_at).toLocaleString() : "--"} </li>
+                    <li> <strong> Allocated by: </strong> {distribution.allocated_by_name} </li>
+                    <li> <strong> Condition at Allocation: </strong> {distribution.condition_at_allocation} </li>
+                    </>
+                    }
 
-            </ul>
+                    <li> <strong> {!distribution.signed_at? "Sign ": "View "} Waiver: </strong> <Link href= {`/items/${equipment_id}/waiver`} className="underline text-blue-400"> Here. </Link> </li>
+
+                </ul>
             </div>
-    
         </Popup>
     );
 }

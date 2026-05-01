@@ -7,12 +7,12 @@ import AdminPage from "@/components/dashboards/admin/admin-page";
 import TherapistPage from "@/components/dashboards/therapist/therapist-page";
 import VolunteerPage from "@/components/dashboards/volunteer/volunteer-page";
  
-export default async function Dashboard() {
+export default async function Dashboard({ searchParams }: any) {
 
   const { user, role, username, full_name} = await getUserAndRole();
  
   if (role === "admin") {
-    return <AdminPage user={user} role={role} this_username={username} full_name={full_name} />
+    return <AdminPage user={user} role={role} this_username={username} full_name={full_name}  searchParams={searchParams} />
 
   } else if (role === "therapist") {
     return <TherapistPage user={user} role={role} username={username} full_name={full_name} />

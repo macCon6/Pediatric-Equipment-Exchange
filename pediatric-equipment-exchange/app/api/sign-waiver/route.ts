@@ -18,11 +18,11 @@ const layout = {
   guardianName: { x: 48, y: 555, label: "Legal Guardian Name: " },
   relationshipToChild: { x: 48, y: 515, label: "Relationship to Child: " },
 
-  guardianSignature: { x: 48, y: 430,  width: 180, height: 60, label: "[Legal Guardian Signature]"},
+  guardianSignature: { x: 48, y: 420,  width: 180, height: 60, label: "[Legal Guardian Signature]"},
 
-  staffName: { x: 48, y: 340, label: "Authorized Staff Name: " },
+  staffName: { x: 48, y: 330, label: "Recommending Therapist Name: " },
 
-  staffSignature: { x: 48, y: 260, width: 180, height: 60, label: "[Authorized Staff Signature]"}
+  staffSignature: { x: 48, y: 235, width: 180, height: 60, label: "[Recommending Therapist Signature]"}
 };
 
 // helper functions to work with pdf lib

@@ -14,10 +14,10 @@ export default function ProfileInfo({user, role, username, full_name}: Props) {
             <h1 className="text-3xl text-center"> Welcome, <span className="italic">{username}</span> </h1>
             <div className="border-transparent rounded-3xl p-6 text-center"> 
                 <h2 className="text-xl text-center mb-6"> Profile Info </h2>
-                <p> Username: {username} </p>
-                <p> Full Name: {full_name} </p>
-                <p> Email: {user.email} </p>
-                <p> Role: {role} </p>
+                <p> <strong> Username: </strong> {username} </p>
+                <p> <strong> Full Name: </strong> {full_name} </p>
+                <p> <strong> Email: </strong> {user.email} </p>
+                <p> <strong> Role: </strong> {role} </p>
             </div>
         </div>
     );

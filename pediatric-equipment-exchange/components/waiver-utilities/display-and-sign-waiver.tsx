@@ -6,6 +6,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import SignatureCanvas from "react-signature-canvas";
 import Signature from "@/components/waiver-utilities/signature-box";
 import Toast from "@/components/popups/toast";
+import Link from "next/link";
 
 // required setup for react-pdf / pdfjs
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -249,7 +250,7 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
 
         {isSigned &&
           <div className="flex flex-col overflow-auto space-y-8 max-h-[85vh] p-2 bg-white rounded-lg justify-center">
-              <p className="text-md italic text-center"> The waiver has been signed. Click the button to view in a full tab and download. </p>
+              <p className="text-md italic text-center"> The waiver has been signed. Click the button to view in a full tab for print/download. </p>
               <a
                 href={pdfURL}
                 download
@@ -258,6 +259,8 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
                 className="bg-[#5a9e3a] mx-auto w-1/2 text-white px-4 py-2 rounded-xl hover:opacity-80 text-center">
                   Open in new tab
               </a>
+              <p className="text-center"> or </p>
+              <Link href={`/equipment-gallery`} className="bg-[#5a9e3a] mx-auto w-1/2 text-white px-4 py-2 rounded-xl hover:opacity-80 text-center"> Back to gallery </Link>
           </div>
         }
       </div>

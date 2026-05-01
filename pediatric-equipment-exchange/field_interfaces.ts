@@ -65,9 +65,32 @@ export interface ProfileFields {
     email: string
 }
 
-// distribution fetch with recipient info for the "Distribution Details Popup"
-export interface DistributionWithRecipientAndStaff extends DistributionFields {
-  recipient: RecipientFields
-  reserved_staff: ProfileFields
-  allocated_staff: ProfileFields
+export interface ReadableDistribution {
+    id: string,
+    equipment_id: string,
+    reserved_by?: string,
+    equipment_name?: string,
+    equipment_status?: string,
+    equipment_deleted_at?: string,
+    recipient_name?: string,
+    contact_name?: string,
+    contact_email?: string,
+    contact_phone?: string,
+    authorized_for_pickup?: string,
+    clinic_name?: string,
+    reserved_by_name?: string,
+    allocated_by_name?: string,
+    returned_by_name?: string,
+    cancelled_by_name?: string,
+    signed_by_name?: string,
+    equipment_deleted_by?: string,
+    reserved_at?: string,
+    returned_at?: string,
+    allocated_at?: string,
+    cancelled_at?: string,
+    cancellation_reason?: string,
+    therapist_notes?: string,
+    signed_at?: string,
+    signed_waiver_url?: string,
+    condition_at_allocation?: string
 }

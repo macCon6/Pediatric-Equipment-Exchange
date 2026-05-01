@@ -86,7 +86,7 @@ export default function GalleryGrid({ items }: Props) {
 
                 {/* Filter dropdowns */}
                 <div className="flex flex-wrap gap-3 items-center">
-                    <span className="text -sm font-semibold text-[#132540] mr-1">Filter & Sort:</span>
+                    <span className="text-base font-semibold text-[#132540] mr-1">Filter & Sort:</span>
 
                     {/* Category dropdown */}
                     <div className="relative">
@@ -195,47 +195,46 @@ export default function GalleryGrid({ items }: Props) {
                 }
 
                 {itemMatches.length === 0 && items.length > 0 &&
-    <div className="flex flex-col gap-4 p-6 rounded-3xl col-span-4 m-10 justify-self-center items-center w-full">
+                <div className="flex flex-col gap-4 p-6 rounded-3xl col-span-4 m-10 justify-self-center items-center w-full">
         
-        <div className="w-full overflow-hidden relative h-32 md:h-40 mb-2">
-    <div style={{
-        position: "absolute",
-        animation: "dogRun 3s linear 1 forwards",
-    }}>
-        <Lottie 
-            animationData={dogAnimation} 
-            loop={true}
-            style={{ width: "clamp(80px, 20vw, 150px)", height: "clamp(80px, 20vw, 150px)" }}
-        />
-    </div>
-</div>
+                    <div className="w-full overflow-hidden relative h-32 md:h-40 mb-2">
+                        <div style={{
+                            position: "absolute",
+                            animation: "dogRun 3s linear 1 forwards",
+                        }}>
+                            <Lottie 
+                                animationData={dogAnimation} 
+                                loop={true}
+                                style={{ width: "clamp(80px, 20vw, 150px)", height: "clamp(80px, 20vw, 150px)" }}
+                            />
+                        </div>
+                    </div>
 
-<style>{`
-    @keyframes dogRun {
-        0%   { left: -180px; }
-        100% { left: calc(100% + 180px); }
-    }
-`}</style>
+                    <style>{`@keyframes dogRun {
+                             0%   { left: -180px; }
+                            100% { left: calc(100% + 180px); }}`}
+                    </style>
 
-        <span className="text-[#132540] font-bold text-2xl text-center">
-            Hold on, we are fetching it now! 
-        </span>
-        <span className="text-gray-500 text-center">
-            Still searching 🦴. Check again later! 
-        </span>
+                    <span className="text-[#132540] font-bold text-2xl text-center">
+                        Hold on, we are fetching it now! 
+                    </span>
+                    <span className="text-gray-500 text-center">
+                        Still searching 🦴. Check again later! 
+                    </span>
 
-        <button 
-            onClick={clearFilters} 
-            className="mt-2 border-2 border-[#132540] text-[#132540] hover:bg-[#132540] hover:text-white rounded-full px-6 py-2 text-sm transition-colors cursor-pointer"
-        >
-            Back
-        </button>
-    </div>
+                    <button 
+                        onClick={clearFilters} 
+                        className="mt-2 border-2 border-[#132540] text-[#132540] hover:bg-[#132540] hover:text-white rounded-full px-6 py-2 text-sm transition-colors cursor-pointer"
+                    >
+                        Back
+                    </button>
+                </div>
+                }
 
-}
                 {itemMatches.map((item) => (
                     <EquipmentCard key={item.id} item={item} />
                 ))}
+                
             </div>
         </div>
     );
