@@ -15,8 +15,8 @@ export async function GET(req: Request, details: { params: any }) {
     const equipment_id = id; 
 
     const { data, error } = await supabase
-        .from("distributions")
-        .select("*, recipient:recipient_id(*), reserved_staff:reserved_by(full_name), allocated_staff:allocated_by(full_name)") 
+        .from("readable_distribution")
+        .select("*") 
         .eq("equipment_id", equipment_id)
         .is("returned_at", null)
         .maybeSingle(); // if there's no distribution, it'll just return null. Otherwise returns the single active one
