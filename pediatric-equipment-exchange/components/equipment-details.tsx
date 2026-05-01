@@ -1,7 +1,7 @@
 "use client";
 
 import { ItemFields } from "@/field_interfaces";
-import { DistributionWithRecipientAndStaff } from "@/field_interfaces";
+import { ReadableDistribution } from "@/field_interfaces";
 import { CATEGORY_OPTIONS, SUBCATEGORY_OPTIONS, CONDITION_OPTIONS, COLOR_OPTIONS } from "@/item-field-options";
 import Image from "next/image";
 import { useState } from 'react';
@@ -13,7 +13,7 @@ import { getStatusColor } from "@/utils/status-colors";
 
 interface Props  {
   item: ItemFields,
-  distribution: DistributionWithRecipientAndStaff
+  distribution: ReadableDistribution
   role: string
 }
 
