@@ -3,11 +3,12 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller} from "react-hook-form";
 import Popup from "@/components/popups/popup"; 
 import Confirm from "@/components/user-confirmation";
 import { STATUS_OPTIONS } from "@/item-field-options";
 import { getStatusColor } from "@/utils/status-colors";
+import CreatableSelect from 'react-select/creatable';
 
 interface reservationForm {
     name: string;
@@ -35,7 +36,7 @@ interface UpdateStatusProps {
 
 export default function UpdateStatusPopup({equipment_id, distribution_id, current_status, isOpen, onClose, onStatusChange, showToast}: UpdateStatusProps) {
 
-    const {register: registerReservation, handleSubmit:handleReservationSubmit, reset: resetReservationForm, formState: {errors: reservationErrors}} = useForm<reservationForm>(); 
+    const {register: registerReservation, handleSubmit:handleReservationSubmit, reset: resetReservationForm, formState: {errors: reservationErrors}, control} = useForm<reservationForm>(); 
     const {register: registerCancellation, handleSubmit:handleCancellationSubmit, reset: resetCancellationForm} = useForm<cancellationForm>();  
 
     // track if in select state, reserve state (opens form), cancel state (opens form) or confirmation dialogue
@@ -43,6 +44,7 @@ export default function UpdateStatusPopup({equipment_id, distribution_id, curren
     const [targetStatus, setTargetStatus] = useState("");
     const [reservationDetails, setReservationDetails] = useState<reservationForm>();
     const [cancellationReason, setCancellationReason] = useState<string>("");
+    const [clinics, setClinics] = useState<{id: string, name: string}[]>([]);
 
     const handleClose = () => {
         resetReservationForm();
@@ -51,12 +53,27 @@ export default function UpdateStatusPopup({equipment_id, distribution_id, curren
         setTargetStatus("");
         setMode('select');
     };
+
+    // fetch these when reserving an item to give the user a hint on
+    // if a clinic already exists in the database
+    const fetchClinics = async () => {
+        try {
+            const res = await fetch("/api/get-clinics");
+            const data = await res.json();
+            setClinics(data);
+        } catch (err) {
+            console.error("Couldn't fetch clinics: ", err);
+        }
+    };
  
     // for when clicking on a chosen status, opens reserve mode w/ ReservationForm when clicking Reserved - Needs Signature
     // opens a form to input a cancellation reason if it's going from reserved -> available
     const handleTargetStatusChange = (status_option: string) => {
         setTargetStatus(status_option);
         if (status_option === "Reserved - Needs Signature") {
+            if (clinics.length === 0) {
+                fetchClinics();
+            }
             setMode("reserve"); 
         } else if(current_status.startsWith("Reserved") && status_option === "Available") {
             setMode("cancel"); 
@@ -120,7 +137,7 @@ export default function UpdateStatusPopup({equipment_id, distribution_id, curren
             {/* Back button */}
             {(mode !== "select" && mode !== "confirm") && 
             <span onClick={()=>{setMode("select")}} 
-                className="bg-gray-300 text-white text-xl ml-1 md:text-2xl px-3 py-1 rounded-xl font-bold hover:cursor-pointer hover:opacity-60"> 
+                className="bg-gray-300 text-white text-xl ml-1  md:text-2xl px-3 py-1 rounded-xl font-bold hover:cursor-pointer hover:opacity-60"> 
                 ↵
             </span>
             }   
@@ -139,7 +156,7 @@ export default function UpdateStatusPopup({equipment_id, distribution_id, curren
                     </span>
                 </div>
 
-                <p className= "text-xl mb-3 md:mb-5"> Select which status to update to: </p>
+                <p className= "text-xl mb-3 md:mb-5"> Select new status: </p>
         
                 <div className="flex flex-col gap-6 md:gap-8"> 
                     {/* Target statuses */}
@@ -198,10 +215,25 @@ export default function UpdateStatusPopup({equipment_id, distribution_id, curren
                         <p className="text-red-600 text-sm"> {reservationErrors.contact_name?.message} </p>
                     
                     <label className={labelClass}> Clinic Name <span className="text-red-500"> * </span></label>
-                    <input
-                        className="mt-1 text-center border rounded-xl text-black p-2"
-                        placeholder= "e.g. Erlanger"
-                        {...registerReservation("clinic", {required: "Clinic is required!"})} />
+                        <Controller
+                            name="clinic"
+                            control={control}
+                            rules={{ required: "Clinic is required!" }}
+                            render={({ field }) => (
+                                <CreatableSelect
+                                    options={clinics.map((c) => ({
+                                        value: c.name,
+                                        label: c.name
+                                    }))}
+                                    value={ field.value? {value: field.value, label: field.value}: null}
+                                    onChange={(selected) => (field.onChange(selected?.value || ""))}
+                                    placeholder="Select existing or type new clinic"
+                                    isClearable
+                                    menuPortalTarget={typeof window !== "undefined" ? document.body : null}
+                                    styles={{menuPortal: (base) => ({ ...base, zIndex: 9999 })}}
+                                />
+                            )}
+                        />
                         <p className="text-red-600 text-sm"> {reservationErrors.clinic?.message} </p>
 
                     <label className={labelClass}> Therapist Notes </label>
@@ -227,7 +259,7 @@ export default function UpdateStatusPopup({equipment_id, distribution_id, curren
 
                     <form onSubmit={handleCancellationSubmit(onCancellationSubmit)} className="w-full max-w-lg flex flex-col gap-4 items-center mt-2">
                     <textarea 
-                        className="mt-3 max-w-lg w-full h-32 sm:h-40 md:h-48 text-center border rounded-xl text-black p-2 resize-none focus:outline-none focus:ring-1 focus:ring-black"
+                        className="mt-3 max-w-lg w-full h-24 sm:h-40 md:h-48 text-center border rounded-xl text-black p-2 resize-none focus:outline-none focus:ring-1 focus:ring-black"
                         placeholder= "What happened?" 
                         rows={6}
                         {...registerCancellation("cancellation_reason")} />
@@ -246,7 +278,8 @@ export default function UpdateStatusPopup({equipment_id, distribution_id, curren
             {mode === "confirm" && 
             <div className="flex flex-1 md:h-[20vh]"> 
                 <Confirm title="Status Change"
-                    message={`Are you sure you want set this item's status to ${targetStatus}?`}
+                    message={`Are you sure you want to set this item's status to ${targetStatus}?`}
+                    submessage={null}
                     onConfirm= {async () => {
                         await updateEquipmentStatus(
                             distribution_id,
@@ -256,6 +289,8 @@ export default function UpdateStatusPopup({equipment_id, distribution_id, curren
                             cancellationReason)
                             handleClose();
                     }}
+                    greenButtonText={"Update"}
+                    redButtonText={"Cancel"}
                     onCancel={()=>{setMode("select")}}
                 />
                 </div>

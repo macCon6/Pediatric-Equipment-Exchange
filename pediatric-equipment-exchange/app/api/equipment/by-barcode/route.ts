@@ -28,7 +28,7 @@ export async function GET(req: Request) {
     }
 
     if (!data) {
-        return new Response(JSON.stringify({ error: "equipment not found" }), { status: 404 });
+        return new Response(JSON.stringify({ error: "Equipment not found" }), { status: 404 });
     }
 
     return new Response(JSON.stringify({ id: data.id }), { status: 200 });

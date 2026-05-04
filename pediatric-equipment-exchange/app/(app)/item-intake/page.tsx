@@ -432,7 +432,7 @@ export default function ItemIntake() {
 
             {/* Description */}
             <div className={fieldClass}>
-              <label className={labelClass}>Description</label>
+              <label className={labelClass}>Description </label>
               <textarea
                 placeholder="Describe the equipment, any notable features or issues..."
                 className={`${inputClass} resize-none`}
@@ -443,12 +443,13 @@ export default function ItemIntake() {
 
             {/* Size */}
             <div className={fieldClass}>
-              <label className={labelClass}>Size</label>
+              <label className={labelClass}>Size <span className="text-red-500">*</span></label>
               <input
                 placeholder="e.g. Small, Medium, Large, or measurements"
                 className={inputClass}
-                {...register("size")}
+                {...register("size",{ required: "Size is required!"})}
               />
+              {errors.size && <p className="text-red-500 text-xs">{errors.size.message}</p>}
             </div>
 
             {/* Color */}

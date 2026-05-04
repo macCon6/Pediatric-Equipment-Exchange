@@ -24,6 +24,13 @@ export async function POST(req: Request) {
       );
     }
 
+    if(!body.image_urls) {
+      return NextResponse.json(
+        ({ error: "Please add at least one image!" }),
+        { status: 400 }
+      );
+    }
+
     const normalizedBarcode = typeof body.barcode_value === "string" ? body.barcode_value.trim() : ""; // Normalize the barcode value by trimming whitespace. If it's not a string, default to an empty string.
 
     const { data, error } = await supabase
@@ -39,9 +46,7 @@ export async function POST(req: Request) {
           color: body.color,
           status: body.status,
           donor: body.donor,
-          image_urls: Array.isArray(body.image_urls)
-            ? body.image_urls
-            : null,
+          image_urls: body.image_urls,
           location: body.location,
           barcode_value: normalizedBarcode === "" ? null : normalizedBarcode,
         },

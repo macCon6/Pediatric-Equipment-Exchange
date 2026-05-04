@@ -14,7 +14,6 @@ export interface ItemFields {
     barcode_value?: string | null
     created_at: string
     location?: string
-    barcode_number?: number
 }
 
 export interface DistributionFields {
@@ -93,4 +92,12 @@ export interface ReadableDistribution {
     signed_at?: string,
     signed_waiver_url?: string,
     condition_at_allocation?: string
+}
+
+export interface RecoverableItem {
+    id: string,
+    name: string,
+    status: string,
+    deleted_staff: { full_name: string; },
+    deleted_at: string
 }

@@ -4,7 +4,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import AdminTabs from "@/components/dashboards/admin/admin-tabs";
-import { ReadableDistribution } from "@/field_interfaces";
+import { ReadableDistribution, RecoverableItem } from "@/field_interfaces";
 
 interface Props {
   user: any;
@@ -21,18 +21,17 @@ export default async function AdminPage({ user, role, this_username, full_name, 
 
   const params = await searchParams;
   const tab = params?.tab ?? "profile";
-  const page = params?.page ?? "1"; // for pagination in the History tab
 
-  let allocated_items: ReadableDistribution[] = [];
-  let reserved_items: ReadableDistribution[] = [];
-  let all_distributions: ReadableDistribution[] = [];
+  let allocated_items: ReadableDistribution[] | null = null;
+  let reserved_items: ReadableDistribution[] | null = null;
+  let all_distributions: ReadableDistribution[]| null = null;
+  let deleted_items: RecoverableItem[] | null = null;
 
   // fetch only necessaruy rows From the Readable Distributiuon View for allocations tab
   if (tab === "allocations") {
     const { data: distributions, error } = await supabase
       .from("readable_distribution")
-      .select(`id, equipment_id, equipment_name, equipment_status, recipient_name, contact_name, contact_email,
-        contact_phone, clinic_name, reserved_at, allocated_at, condition_at_allocation`)
+      .select(`id, equipment_id, equipment_name, equipment_status, recipient_name, contact_name, clinic_name, allocated_at, signed_waiver_url`)
       .not("allocated_at", "is", null)
       .is("returned_at", null)
       .is("cancelled_at", null);
@@ -42,7 +41,7 @@ export default async function AdminPage({ user, role, this_username, full_name, 
       console.error("Error fetching for allocations:", error);
     }
   
-    allocated_items = distributions ?? []; 
+    allocated_items = distributions ?? [];
   }
 
   // fetch onyl necessary rows From the Readable Distributiuon View for reservations tab
@@ -85,12 +84,29 @@ export default async function AdminPage({ user, role, this_username, full_name, 
     all_distributions = distributions ?? []; 
   }
 
+  if (tab === "recovery") {
+    const { data: deletions, error } = await supabase
+      .from("equipment")
+      .select("id, name, status, deleted_at, deleted_staff:deleted_by(full_name)")
+      .not("deleted_at", "is", null)
+      .overrideTypes<Array<{ deleted_staff: { full_name: string } }>>(); // so it doesn't return an array
+  
+    console.log("fetched for deleted items: ", deletions);
+
+    if (error) {
+      console.error("Error fetching for deleted items:", error);
+    }
+
+    deleted_items = deletions ?? [];
+  }
+
   return (
     <AdminTabs
       user={user} role={role} this_username={this_username} full_name={full_name}
       active_tab={tab}
       allocated_items={allocated_items}
       reserved_items={reserved_items}
-      all_distributions = {all_distributions} />
+      all_distributions = {all_distributions} 
+      deleted_items = {deleted_items}/>
   );
 }

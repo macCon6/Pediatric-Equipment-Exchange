@@ -17,7 +17,7 @@ export const CATEGORY_OPTIONS = [
     "Walker",
     "Gait Trainer/Supported Stepping Device",
     "Forearm Crutches",
-    "Adaptive Bicycle/Tricycle",
+    "Adaptive Tricycle/Bicycle",
     "Adaptive Tray",
     "Walking Frame",
     "Guardian",

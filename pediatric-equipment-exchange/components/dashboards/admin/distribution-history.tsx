@@ -5,7 +5,7 @@ import { useRouter, useSearchParams, usePathname} from "next/navigation";
 import Link from "next/link"; // for the waiver
 
 interface Props {
-  all_distributions: ReadableDistribution[]
+  all_distributions: ReadableDistribution[] | null
 }
 
 export default function DistributionHistory({all_distributions}:Props) {
@@ -23,6 +23,14 @@ export default function DistributionHistory({all_distributions}:Props) {
     router.push(`${pathname}?${params.toString()}`);
   };
 
+  if(all_distributions === null) {
+    return (
+      <div className="flex justify-center items-center h-40 bg-white rounded-xl border">
+        <p className="text-gray-500 text-base lg:text-lg animate-bounce"> Just a minute... </p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
 
@@ -33,7 +41,7 @@ export default function DistributionHistory({all_distributions}:Props) {
       ) : (
         <div className="overflow-x-auto rounded-xl border bg-white shadow-sm">
           <table className="w-full text-sm">
-            <thead className="bg-gray-100 text-gray-600 text-xs tracking-wide">
+            <thead className="bg-[#5a9e3a] text-white text-xs md:text-sm tracking-wide">
               <tr>
                 <th className="text-left p-4"> Item Name </th>
                 <th className="text-left p-4"> Recipient </th>
@@ -52,31 +60,31 @@ export default function DistributionHistory({all_distributions}:Props) {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-200">
             
               {all_distributions.map((entry) => (    
                 <tr
                   key={entry.id}
-                  className="hover:bg-gray-200 hover:cursor-pointer"
-                  onClick={() => router.push(`/items/${entry.equipment_id}`)}
+                  className="hover:bg-amber-100 even:bg-green-100 odd:bg-green-50 hover:cursor-pointer"
                 >
-                  <td className="p-4 font-medium text-gray-900">
+                 <td className="p-4 text-xs md:text-sm text-sky-500 underline"
+                    onClick={() => router.push(`/items/${entry.equipment_id}`)}>
                     {entry.equipment_name}
                   </td>
 
-                  <td className="p-4 text-gray-700">
+                  <td className="p-4 text-gray-900">
                     {entry.recipient_name}
                   </td>
 
-                  <td className="p-4 text-gray-700">
+                  <td className="p-4 text-gray-900">
                     {entry.contact_name}
                   </td>
 
-                  <td className="p-4 text-gray-700">
+                  <td className="p-4 text-gray-900">
                     {entry.clinic_name}
                   </td>
 
-                  <td className="p-4 text-gray-700">
+                  <td className="p-4 italic">
                     {entry.reserved_by_name}
                   </td>
 
@@ -86,7 +94,7 @@ export default function DistributionHistory({all_distributions}:Props) {
                       : "--"}
                   </td>
 
-                  <td className="p-4 text-gray-700">
+                  <td className="p-4 italic">
                     {entry.allocated_by_name? entry.allocated_by_name : "--"}
                   </td>
 
@@ -96,7 +104,7 @@ export default function DistributionHistory({all_distributions}:Props) {
                       : "--"}
                   </td>
 
-                  <td className="p-4 text-gray-700">
+                  <td className="p-4 italic">
                     {entry.returned_by_name? entry.returned_by_name : "--"}
                   </td>
 
@@ -106,7 +114,7 @@ export default function DistributionHistory({all_distributions}:Props) {
                       : "--"}
                   </td>
 
-                  <td className="p-4 text-gray-700">
+                  <td className="p-4 italic">
                     {entry.cancelled_by_name? entry.cancelled_by_name : "--"}
                   </td>
 
@@ -122,7 +130,7 @@ export default function DistributionHistory({all_distributions}:Props) {
 
                   <td className="p-4 text-red-500">
                     {entry.signed_waiver_url?
-                      <Link href={entry.signed_waiver_url} className="text-blue-500 underline"> Here </Link> : "None"}
+                      <Link href={entry.signed_waiver_url} className="text-blue-500 underline"> View Here </Link> : "None"}
                   </td>
                   
                 </tr>
@@ -134,15 +142,15 @@ export default function DistributionHistory({all_distributions}:Props) {
 
       <div className="flex justify-center items-center space-x-6">
          <button
-            className="bg-green-600 p-2 hover:cursor-pointer hover:opacity-50 mt-4 -translate-x-12 text-white rounded-2xl text-lg"
+            className="bg-[#5a9e3a]  p-2 hover:cursor-pointer hover:opacity-50 mt-4 -translate-x-12 text-white rounded-2xl text-lg"
             onClick={() => goToPage(page - 1)}
             disabled={page <= 1}
         >
-            Previous Page
+            Previous
         </button>
 
         <button 
-            className="bg-green-600 p-2 hover:cursor-pointer hover:opacity-50 mt-4 translate-x-12 text-white rounded-2xl text-lg"
+            className="bg-[#5a9e3a]  p-2 hover:cursor-pointer hover:opacity-50 mt-4 translate-x-12 text-white rounded-2xl text-lg"
             onClick={() => goToPage(page + 1)}>
             Next Page
         </button>

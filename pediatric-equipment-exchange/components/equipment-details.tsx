@@ -7,7 +7,8 @@ import Image from "next/image";
 import { useState } from 'react';
 import {useForm, SubmitHandler} from "react-hook-form";
 import UpdateStatusPopup from "@/components/popups/update-status-popup";
-import DistributionDetailsPopup from "./popups/distribution-details-popup";
+import DistributionDetailsPopup from "@/components/popups/distribution-details-popup";
+import DeleteItemPopup from "@/components/popups/delete-item-popup";
 import Toast from "@/components/popups/toast";
 import { getStatusColor } from "@/utils/status-colors";
 
@@ -19,7 +20,7 @@ interface Props  {
 
 export default function EquipmentDetails({ item, distribution, role }: Props)  {
 
-  // for status changes / distribution info changes
+  // for status changes
   const [mostRecentStatus, setMostRecentStatus] = useState(item.status); // to immediately show the updated status if it gets changed
   const [statusPageOpen, setStatusPageOpen] = useState(false); // for changing the status
 
@@ -54,29 +55,7 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
     console.log("Refetched distribution: ", data);
     setCurrentDistribution(data);
   }
-//  Delete item — only admins see this button
-  const handleDelete = async () => {
-  setShowDeleteConfirm(true);
-};
 
-const confirmDelete = async () => {
-  setShowDeleteConfirm(false);
-  try {
-    const res = await fetch(`/api/equipment/${item.id}/delete`, {
-      method: "DELETE",
-    });
-    if (!res.ok) {
-      const result = await res.json();
-      showToast(result.error ?? "Failed to delete item", "error");
-    } else {
-      showToast("Item deleted successfully!", "success");
-      setTimeout(() => { window.location.href = "/equipment-gallery"; }, 1500);
-    }
-  } catch (err) {
-    console.error("Delete failed:", err);
-    showToast("Failed to delete item", "error");
-  }
-};
   // call the api when they edit anything
   const onSubmit: SubmitHandler<ItemFields> = async (data) => {
     try {
@@ -127,7 +106,7 @@ const confirmDelete = async () => {
     {/* Show any toast popups */}
     {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
 
-    <div className="flex min-h-screen w-full bg-[#FFC94A]">
+    <div className="flex min-h-screen w-full bg-[#FFC94A] overflow-y-auto">
 
         {/* Main Content */}
         <div className="flex-1 p-8 w-full lg:mt-6">
@@ -304,7 +283,7 @@ const confirmDelete = async () => {
                   {role === "admin" && ( 
                     <button
                       className="bg-red-600 hover:bg-red-700 hover:cursor-pointer border rounded-3xl text-white text-xl p-3"
-                      onClick={handleDelete}
+                      onClick={() => {setShowDeleteConfirm(true)}}
                     >
                       Delete Item
                     </button>
@@ -343,29 +322,13 @@ const confirmDelete = async () => {
             onClose = { () => setDetailsPopupOpen(false)}
         />    
 
-      {/* Delete confirmation modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-8 flex flex-col items-center gap-6 shadow-xl w-80">
-            <h2 className="text-2xl font-bold text-center text-[#132540]">Completely remove item?</h2>
-            <div className="flex gap-4 w-full">
-              <button
-                className="flex-1 bg-gray-400 hover:bg-gray-500 hover:cursor-pointer border rounded-3xl text-white text-lg p-3"
-                onClick={confirmDelete}
-              >
-                Allow
-              </button>
-              <button
-                className="flex-1 bg-[#5a9e3a] hover:bg-[#4a8a2e] hover:cursor-pointer border rounded-3xl text-white text-lg p-3"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Do Not Allow
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      <DeleteItemPopup 
+        equipment_id = {item.id}
+        current_status = {mostRecentStatus}
+        isOpen = {showDeleteConfirm }
+        onClose = {() => setShowDeleteConfirm(false)}
+        showToast={showToast}
+      />
     </div>
     </>
   );

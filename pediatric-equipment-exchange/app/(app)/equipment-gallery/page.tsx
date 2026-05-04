@@ -12,6 +12,7 @@ export default async function EquipmentGallery() {
     const { data:items, error } = await supabase
         .from("equipment")
         .select("*")
+        .is("deleted_at", null) // don't show soft deleted items
         .order("created_at", { ascending: false });
 
         if (error) {
