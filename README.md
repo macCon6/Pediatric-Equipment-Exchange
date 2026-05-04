@@ -1,5 +1,5 @@
 # Pediatric-Equipment-Exchange
-A cloud-based inventory system for managing donated pediatric adaptive equipment. This system allows physical therapists and volunteers to search equipment, track donations, allocate items to families, and manange inventory across organizations.
+A cloud-based inventory system for managing donated pediatric adaptive equipment. This system allows physical therapists and volunteers to search equipment, track donations, allocate items to families, and manage inventory across organizations.
 
 ## Project Purpose 
 This project supports the development of sustainable community reuse of adaptive equipment at no cost to recipients. The host organizations will be Erlanger Hospital and Siskin Hospital.
@@ -10,7 +10,7 @@ The goal is to help physical therapists and trained volunteers at these organiza
 - Photo uploads of each item
 - Equipment descriptions and detailed specifications
 - Status tracking (available, allocated, processing, out of stock)
-- QR Code scanning for quick look-up
+- Bar Code scanning for quick look-up
 - Equipment Reservation System for physical therapists
 - Donation Intake workflow
 - Multi-organization access for therapists and volunteers
@@ -26,30 +26,6 @@ Backend:
 
 Infrastructure:
 - Github for version control
-
-## Project Structure
-This project contains:
-
-```bash
-/root
-
- 	supabase/               ← backend (Docker)
-  
- 	pediatric-equipment-exchange/  ← frontend (Next.js)
-```
-
-The system consists of two parts: 
-
-> Frontend (Next.js): Located in pediatric-equipment-exchange/ 
-
-> Backend (Supabase via Docker): Managed from the root folder using Supabase CLI. They communicate via Supabase local API endpoints
-
-You do not need to manually setup the Database, as the schema should be automatically generated from our supabase/migrations folder.
-In case of emergency: reset the database with
-
-```bash
-npx supabase db reset
-```
 
 ## Setup Instructions
 INSTALLATION REQUIREMENTS: 
@@ -73,24 +49,66 @@ npm -v
 ```
 
 
+## Project Structure
 
-## QUICK SETUP GUIDE: 
+When extracting the ZIP, please extract it into your Downloads folder instead of inside itself to avoid a duplicate wrapping folder.
 
-Start with either: git clone https://github.com/TiredGhost8/Pediatric-Equipment-Exchange.git  OR extract the project from the .zip.
+The ROOT PROJECT FOLDER is:
+
+Pediatric-Equipment-Exchange-main/
+
+Inside ROOT you will find:
+
+```bash
+     supabase/                       ← Backend (Docker / Supabase)
+     pediatric-equipment-exchange/  ← Frontend (Next.js)
+```
+
+You MUST run all backend commands FROM THE ROOT:
+
+```bash
+   cd Pediatric-Equipment-Exchange-main
+```
+
+The system consists of two parts: 
+
+> Frontend (Next.js): Located in pediatric-equipment-exchange/ 
+
+> Backend (Supabase via Docker): Managed from the root folder using Supabase CLI. They communicate via Supabase local API endpoints
+
+You do not need to manually setup the Database, as the schema should be automatically generated from our supabase/migrations folder.
+In case of emergency: reset the database with
+
+```bash
+npx supabase db reset
+```
+
+
+## QUICK SETUP GUIDE
+
+> You will need 2 terminals open.
+> 
+> One will be in the ROOT folder for the backend Supabase commands. ( cd Pediatric-Equipment-Exchange-main )
+> 
+> One will be in the inner folder for the Nextjs Frontend commands. ( cd Pediatric-Equipment-Exchange-main/pediatric-equipment-exchange )
+
+Extract the project from the .zip. When extracting the ZIP, please extract it into your Downloads folder instead of inside itself to avoid a duplicate wrapping folder.
 
 ```bash
 
-cd Pediatric-Equipment-Exchange
+cd Pediatric-Equipment-Exchange-main (ROOT FOLDER)
 
-npx supabase start
+npx supabase start (IN ROOT FOLDER)
+
 ```
+Leave this terminal OPEN — do NOT close it.
 
-- IMPORTANT: Create a .env.local file under the inner /pediatric-equipment-exchange folder, and copy and paste the environment variables that show under “Authentication Keys”. See .env.example for an example.
+- IMPORTANT: Create a .env.local file inside of the inner /pediatric-equipment-exchange folder, and copy and paste the environment variables that show under “Authentication Keys”. See .env.example for an example.
 
 - Open a new terminal
 
 ```bash
-cd pediatric-equipment-exchange
+cd Pediatric-Equipment-Exchange-main/pediatric-equipment-exchange
 
 npm install
 
@@ -110,16 +128,14 @@ npm run dev
 *After ensuring that your Docker is open*
 
 Clone the repository OR extract it from the .zip
-```bash
-git clone https://github.com/TiredGhost8/Pediatric-Equipment-Exchange.git 
-```
 
 ```bash
-cd Pediatric-Equipment-Exchange
+cd Pediatric-Equipment-Exchange-main (ROOT FOLDER)
 ```
 
 # Start Backend (Supabase) from the project root folder
 
+RUN SUPABASE COMMANDS FROM ROOT FOLDER ONLY
 ```bash
 npx supabase start 
 ```
@@ -128,11 +144,11 @@ This will install and load the Supabase CLI. This includes starting the PostgreS
 
 This process may take a few minutes on the first run.
 
-IMPORTANT: You must create a file named .env.local with the values of the keys that show on the terminal after npx supabase start
+IMPORTANT: You must create a file named .env.local with the values of the "Authentication Keys" that show on the terminal after npx supabase start
 
-     - Right click the inner /pediatric-equipment-exchange folder and create new file
-
-     - Name this file .env.local
+     - Navigate to the FRONTEND folder Pediatric-Equipment-Exchange-main/pediatric-equipment-exchange  
+     
+     - Add a new file. Name it: .env.local
 
      - Copy and paste:
      - NEXT_PUBLIC_SUPABASE_URL= http://localhost:54321
@@ -143,12 +159,14 @@ IMPORTANT: You must create a file named .env.local with the values of the keys t
 
 After startup, Supabase services will be available locally. You may optionally navigate to the Supabase Dashboard to see the database UI at http://127.0.0.1:54323/ 
 
+KEEP THIS TERMINAL OPEN AND RUNNING!
 
 # Start the Frontend Application (Nextjs) 
-- Navigate to the folder containing the App, install the dependencies, run the bootstrap that creates a user profile, and then run the local instance:
+
+- OPEN A NEW TERMINAL and navigate to the folder containing the App. Install the dependencies, run the bootstrap that creates a user profile, and then run the local instance:
 
 ```bash
-cd pediatric-equipment-exchange 
+cd Pediatric-Equipment-Exchange-main/pediatric-equipment-exchange 
 
 npm install 
 
