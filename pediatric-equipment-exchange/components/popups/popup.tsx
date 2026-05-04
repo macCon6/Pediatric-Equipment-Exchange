@@ -17,19 +17,20 @@ export default function Popup ({isOpen, onClose, children, sizingClassName}: Pro
         {isOpen &&
             <>
             {/* // outer layer to gray out things in the background */}
-            <div className="fixed inset-0 bg-black opacity-70 z-50" /> 
+            <div className="fixed inset-0 bg-black opacity-60 z-50" /> 
 
             {/* Flex container for popup box */}
             <div className="fixed inset-0 z-50 flex items-center justify-center">
                 {/* // popup contents */}
                 <div className={`z-50
-                    bg-white rounded-xl p-6
+                    bg-white rounded-xl p-8
+                      pb-10
                       overflow-y-auto
                       border border-teal-600
                       max-h-[75vh] md:max-h-[80vh]
                       ${sizingClassName}`}
                       >
-                <button className = "text-white text-xl md:text-2xl -ml-3 bg-red-500 px-3 py-1 rounded-xl font-bold hover:cursor-pointer hover:opacity-60 mb-2" 
+                <button className = "text-white text-xl md:text-2xl -ml-5 -mt-3 bg-red-500 px-3 py-1 rounded-xl font-bold hover:cursor-pointer hover:opacity-60 mb-2" 
                     onClick={onClose}> ✕ </button>
                 {children}
                 </div>

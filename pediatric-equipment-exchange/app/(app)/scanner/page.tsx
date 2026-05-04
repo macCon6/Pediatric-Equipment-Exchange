@@ -8,6 +8,7 @@ import {
     Html5QrcodeScanType,
     Html5QrcodeSupportedFormats,
 } from "html5-qrcode";
+import Toast from "@/components/popups/toast";
 
 export default function Scanner() { // Implements a QR code and barcode scanner using html5-qrcode. When a code is successfully scanned, it navigates to the corresponding item detail page.
     const router = useRouter();
@@ -15,6 +16,8 @@ export default function Scanner() { // Implements a QR code and barcode scanner 
     const hasNavigatedRef = useRef(false);
     const [manualBarcode, setManualBarcode] = useState("");
     const [isLookingUp, setIsLookingUp] = useState(false);
+    const [toastType, setToastType] = useState<"success" | "error">("error");
+    const [toastMessage, setToastMessage] = useState("");
 
     useEffect(() => {
         const scanner = new Html5QrcodeScanner(
@@ -126,6 +129,8 @@ export default function Scanner() { // Implements a QR code and barcode scanner 
                 const errorData = await apiResponse.json();
                 console.error("[DEBUG][scanner] manual lookup error:", errorData.error);
                 setIsLookingUp(false);
+                setToastMessage(errorData.error);
+                setToastType("error");
                 return;
             }
 
@@ -135,16 +140,19 @@ export default function Scanner() { // Implements a QR code and barcode scanner 
             const targetPath = `/items/${encodeURIComponent(equipmentId)}`;
             console.log("[DEBUG][scanner] manual lookup navigating to:", targetPath);
             router.push(targetPath);
-        } catch (err) {
+        } catch (err: any) {
             console.error("[DEBUG][scanner] manual lookup failed:", err);
             setIsLookingUp(false);
+            setToastMessage(err.message);
+            setToastType("error");
         }
     };
 
     return (
         <div className="flex min-h-screen w-full bg-[#FFC94A]">
+            {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
 
-            <main className="flex-1 p-4 md:p-8">
+            <main className="flex-1 p-4 md:p-8 w-full">
                 <h1 className="text-2xl font-semibold text-[#132540]">Scan Equipment</h1>
                 <p className="mt-2 text-sm text-[#132540]">
                     Point your camera at a barcode label to open the attached equipment record.
@@ -156,7 +164,7 @@ export default function Scanner() { // Implements a QR code and barcode scanner 
 
                 <section className="mt-6 max-w-xl rounded-2xl bg-white/85 p-4 shadow-lg">
                     <h2 className="text-lg font-semibold text-[#132540] mb-3">Or enter barcode manually:</h2>
-                    <form onSubmit={handleManualSubmit} className="flex gap-2">
+                    <form onSubmit={handleManualSubmit} className="flex flex-col md:flex-row gap-2">
                         <input
                             type="text"
                             placeholder="Enter barcode (e.g., 0002)"
@@ -168,7 +176,7 @@ export default function Scanner() { // Implements a QR code and barcode scanner 
                         <button
                             type="submit"
                             disabled={isLookingUp}
-                            className="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            className="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 hover:cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >
                             {isLookingUp ? "Looking up..." : "Search"}
                         </button>

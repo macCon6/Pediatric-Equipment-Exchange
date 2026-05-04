@@ -9,22 +9,24 @@ import ReservedEquipment from "@/components/dashboards/admin/reservations";
 import ProfileInfo from "@/components/dashboards/profile-info-box";
 import EditUsers from "@/components/dashboards/admin/edit-users";
 import DistributionHistory from "@/components/dashboards/admin/distribution-history";
+import RecoverEquipment from "@/components/dashboards/admin/recover-equipment";
 import UpdateWaiver from "@/components/dashboards/admin/update-waiver";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import { ReadableDistribution } from "@/field_interfaces";
+import { ReadableDistribution, RecoverableItem } from "@/field_interfaces";
 
 interface Props {
   user: any,
   role: string,
   this_username: string,
   full_name: string,
-  allocated_items: ReadableDistribution[],
-  reserved_items: ReadableDistribution[],
-  all_distributions: ReadableDistribution[],
+  allocated_items: ReadableDistribution[] | null,
+  reserved_items: ReadableDistribution[] | null,
+  all_distributions: ReadableDistribution[] | null,
+  deleted_items: RecoverableItem[] | null,
   active_tab:any
 }
 
-export default function AdminTabs({ user, role, this_username, full_name, allocated_items, reserved_items, all_distributions, active_tab}: Props ) {
+export default function AdminTabs({ user, role, this_username, full_name, allocated_items, reserved_items, all_distributions, deleted_items, active_tab}: Props ) {
     
     
     const router = useRouter();
@@ -40,7 +42,7 @@ export default function AdminTabs({ user, role, this_username, full_name, alloca
         <div className="flex flex-col min-h-screen w-full bg-[#FFC94A]">
             <div className="p-8 w-full">
 
-                <Tabs  defaultValue={active_tab} onValueChange={changeTab} className="w-full flex flex-col items-center">
+                <Tabs defaultValue={active_tab} onValueChange={changeTab} className="w-full flex flex-col items-center">
 
                     {/* Rectangular tab bar --- updated to make tabs scrollable on mobile*/}
                     <TabsList className="flex justify-between items-center bg-[#E8D3A3] p-1 rounded-md shadow-sm w-[700px] max-w-full overflow-x-scroll scrollbar-hide">
@@ -68,10 +70,15 @@ export default function AdminTabs({ user, role, this_username, full_name, alloca
                         <TabsTrigger className="flex-1 text-center py-2 rounded-sm data-[state=active]:bg-white data-[state=active]:shadow" value="waiver">
                             Waiver
                         </TabsTrigger>
+
+                        <TabsTrigger className="flex-1 text-center py-2 rounded-sm data-[state=active]:bg-white data-[state=active]:shadow" value="recovery">
+                            Recovery
+                        </TabsTrigger>
+
                     </TabsList>
 
                     {/* Content */}
-                    <div className="w-full mt-8">
+                    <div className="w-full mt-3">
 
                         <TabsContent value="profile">
                             <ProfileInfo user={user} role={role} username={this_username} full_name={full_name} />
@@ -95,6 +102,10 @@ export default function AdminTabs({ user, role, this_username, full_name, alloca
 
                         <TabsContent value="waiver">
                             Update waiver
+                        </TabsContent>
+
+                        <TabsContent value="recovery">
+                            <RecoverEquipment deleted_items={deleted_items}/>
                         </TabsContent>
                     </div>
 

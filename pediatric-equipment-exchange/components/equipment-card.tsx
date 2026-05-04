@@ -12,7 +12,7 @@ export default function EquipmentCard({item}: {item: ItemFields}) {
     
     return (
         <>
-        <Link href={`/items/${item.id}`}>
+        <Link href={`/items/${item.id}`} onClick={() => window.scrollTo(0, 0)}>
 
             <div className="hover:scale-105 cursor-pointer hover:shadow-2xl shadow-xl transition duration-100 border-2 border-[#FFC94A] rounded-3xl bg-[#FFE09A] h-full">
             

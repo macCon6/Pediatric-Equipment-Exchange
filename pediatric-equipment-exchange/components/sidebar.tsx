@@ -149,7 +149,7 @@ export default function SideBar() {
                         </button>
                     </Link>
                     
-                    <button className="w-full py-2 text-center text-sm rounded-full bg-[#5a9e3a] text-white hover:bg-[#4a8a2e]"
+                    <button className="w-full py-2 text-center text-sm rounded-full bg-[#5a9e3a] text-white hover:bg-[#4a8a2e] hover:cursor-pointer"
                         onClick={() => router.push("/login-page")}> Login
                     </button>
                 </div>

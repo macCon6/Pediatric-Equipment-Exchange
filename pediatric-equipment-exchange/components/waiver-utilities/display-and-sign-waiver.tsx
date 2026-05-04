@@ -132,6 +132,15 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
           ref={containerRef}
           className="bg-white rounded-lg overflow-auto max-h-[85vh] flex flex-col p-2 relative"
         >
+           {!isSigned && 
+            <a className="absolute top-1 right-2 md:top-3 md:right-4 bg-[#5a9e3a] text-white z-20 p-1 text-sm md:text-lg lg:text-xl px-2 rounded-xl"
+              href={pdfURL}
+              target="_blank"
+              rel="noopener noreferrer"
+            > 
+              Open in full tab </a>
+            }
+
           <div className="flex flex-col gap-4 w-full">
             <Document
               file={pdfURL} 
@@ -238,6 +247,7 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
             <button
               type="submit"
               className="bg-[#5a9e3a] text-white px-3 py-2 rounded-xl hover:opacity-60 hover:cursor-pointer"
+              onClick={() => window.scrollTo(0, 0)} 
             >
               Submit Waiver
             </button>
@@ -250,17 +260,16 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
 
         {isSigned &&
           <div className="flex flex-col overflow-auto space-y-8 max-h-[85vh] p-2 bg-white rounded-lg justify-center">
-              <p className="text-md italic text-center"> The waiver has been signed. Click the button to view in a full tab for print/download. </p>
+              <p className="text-md italic text-center"> The waiver has been signed. Click below to view in a full tab for print/download. </p>
               <a
                 href={pdfURL}
-                download
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-[#5a9e3a] mx-auto w-1/2 text-white px-4 py-2 rounded-xl hover:opacity-80 text-center">
                   Open in new tab
               </a>
               <p className="text-center"> or </p>
-              <Link href={`/equipment-gallery`} className="bg-[#5a9e3a] mx-auto w-1/2 text-white px-4 py-2 rounded-xl hover:opacity-80 text-center"> Back to gallery </Link>
+              <Link href={`/equipment-gallery`} className="bg-[#5a9e3a] mx-auto w-1/2 text-white px-4 py-2 rounded-xl hover:opacity-80 text-center mb-6"> Back to gallery </Link>
           </div>
         }
       </div>

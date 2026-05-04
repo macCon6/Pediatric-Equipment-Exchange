@@ -32,8 +32,7 @@ export async function updateSession(request: NextRequest) {
   const user = data?.claims
   console.log("USER: ", user);
 
-  if (request.nextUrl.pathname.startsWith('/api') || 
-    request.nextUrl.pathname.startsWith('/reset-password')) {
+  if (request.nextUrl.pathname.startsWith('/reset-password')) {
     return NextResponse.next()
   }
 

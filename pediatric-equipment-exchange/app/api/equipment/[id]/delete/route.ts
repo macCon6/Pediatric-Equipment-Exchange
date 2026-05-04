@@ -1,9 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { getUserAndRole } from "@/lib/data-access-layer";
-import { NextRequest,NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-export async function DELETE(
-   request: NextRequest,
+export async function DELETE( request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
 
@@ -17,15 +16,52 @@ export async function DELETE(
   const supabase = await createClient();
   const { id } = await params;
 
-  const { error } = await supabase
-    .from("equipment")
-    .delete()
-    .eq("id", id);
+  const {deletion_type, current_status} = await request.json();
 
-  if (error) {
-    console.error("Delete error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (current_status !== "Available") { 
+    return NextResponse.json(
+      ({ error: "Only Available items can be deleted" }),
+        { status: 400 }
+    );
   }
 
-  return NextResponse.json({ success: true });
+   if (!(deletion_type === "hard" || deletion_type === "soft")) { 
+    return NextResponse.json(
+      ({ error: "Invalid request" }),
+        { status: 400 }
+    );
+  }
+
+  // completely remove item
+  if(deletion_type === "hard") {
+    const { error: hardDeleteError } = await supabase
+      .from("equipment")
+      .delete()
+      .eq("id", id);
+
+    if (hardDeleteError) {
+      console.error("Hard Delete error:", hardDeleteError);
+      return NextResponse.json({ error: hardDeleteError.message }, { status: 500 });
+    }
+  }
+ 
+  // soft delete only fills in the "deleted by" & "deleted at" fields
+  if(deletion_type === "soft") {
+
+    const { error: softDeleteError } = await supabase
+      .from("equipment")
+      .update({
+        deleted_at: new Date().toISOString(),
+        deleted_by: user?.sub
+      })
+    .eq ("id", id)
+    
+    if (softDeleteError) {
+      console.error("Soft Delete error:", softDeleteError);
+      return NextResponse.json({ error: softDeleteError.message }, { status: 500 });
+    }
+
+  }
+
+  return NextResponse.json({ success: true }, {status: 200});
 }
