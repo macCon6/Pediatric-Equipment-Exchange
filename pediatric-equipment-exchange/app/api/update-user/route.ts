@@ -1,7 +1,17 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getUserAndRole } from "@/lib/data-access-layer";
 
 export async function POST(req: Request) {
+
+  const { user } = await getUserAndRole();
+
+  // check on server side that they are logged in 
+  if (!user) { 
+    return NextResponse.json({ error: "Unauthorized"},
+      {status: 401 });
+  }
+
   try {
     const { id, email, username, full_name } = await req.json();
 

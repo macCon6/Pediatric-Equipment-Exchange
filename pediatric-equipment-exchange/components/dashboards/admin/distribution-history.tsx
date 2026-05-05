@@ -67,7 +67,7 @@ export default function DistributionHistory({all_distributions}:Props) {
                   key={entry.id}
                   className="hover:bg-amber-100 even:bg-green-100 odd:bg-green-50 hover:cursor-pointer"
                 >
-                 <td className="p-4 text-xs md:text-sm text-sky-500 underline"
+                 <td className="p-2 text-xs md:text-sm text-sky-500 underline"
                     onClick={() => router.push(`/items/${entry.equipment_id}`)}>
                     {entry.equipment_name}
                   </td>
@@ -130,7 +130,7 @@ export default function DistributionHistory({all_distributions}:Props) {
 
                   <td className="p-4 text-red-500">
                     {entry.signed_waiver_url?
-                      <Link href={entry.signed_waiver_url} className="text-blue-500 underline"> View Here </Link> : "None"}
+                      <Link href={entry.signed_waiver_url} className="text-sky-500 underline"> View Here </Link> : "None"}
                   </td>
                   
                 </tr>

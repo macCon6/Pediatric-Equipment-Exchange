@@ -50,7 +50,7 @@ export default function DistributionDetailsPopup({current_status, equipment_id, 
                     <li> <strong> {!distribution.signed_at? "Sign ": "View "} Waiver: </strong> 
                         <Link href= {`/items/${equipment_id}/waiver`} 
                         onClick={() => window.scrollTo(0, 0)} 
-                        className="underline text-blue-400"> Here. </Link> </li>
+                        className="underline text-sky-500"> Link to Waiver </Link> </li>
 
                 </ul>
             </div>

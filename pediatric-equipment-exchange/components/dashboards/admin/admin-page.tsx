@@ -4,7 +4,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import AdminTabs from "@/components/dashboards/admin/admin-tabs";
-import { ReadableDistribution, RecoverableItem } from "@/field_interfaces";
+import { ReadableDistribution, RecoverableItem, WaiverTemplateFields } from "@/field_interfaces";
 
 interface Props {
   user: any;
@@ -26,6 +26,7 @@ export default async function AdminPage({ user, role, this_username, full_name, 
   let reserved_items: ReadableDistribution[] | null = null;
   let all_distributions: ReadableDistribution[]| null = null;
   let deleted_items: RecoverableItem[] | null = null;
+  let waiver_templates: WaiverTemplateFields[] | null = null;
 
   // fetch only necessaruy rows From the Readable Distributiuon View for allocations tab
   if (tab === "allocations") {
@@ -84,6 +85,20 @@ export default async function AdminPage({ user, role, this_username, full_name, 
     all_distributions = distributions ?? []; 
   }
 
+  if (tab === "waiver") {
+    const { data: waiverTemplates, error } = await supabase
+      .from("waiver_templates")
+      .select("*")
+  
+    console.log("fetched for waiver templates: ", waiverTemplates);
+
+    if (error) {
+      console.error("Error fetching for waiver templates:", error);
+    }
+
+    waiver_templates = waiverTemplates ?? [];
+  }
+
   if (tab === "recovery") {
     const { data: deletions, error } = await supabase
       .from("equipment")
@@ -107,6 +122,7 @@ export default async function AdminPage({ user, role, this_username, full_name, 
       allocated_items={allocated_items}
       reserved_items={reserved_items}
       all_distributions = {all_distributions} 
-      deleted_items = {deleted_items}/>
+      waiver_templates = {waiver_templates}
+      deleted_items = {deleted_items} />
   );
 }

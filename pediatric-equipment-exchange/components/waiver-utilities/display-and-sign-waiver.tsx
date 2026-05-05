@@ -1,15 +1,13 @@
 "use client";
 
-import { Document, Page, pdfjs } from "react-pdf";
 import { useState, useRef, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import SignatureCanvas from "react-signature-canvas";
 import Signature from "@/components/waiver-utilities/signature-box";
 import Toast from "@/components/popups/toast";
 import Link from "next/link";
+import PDFViewer from "@/components/pdf_viewer";
 
-// required setup for react-pdf / pdfjs
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface Props {
   template_id: string,
@@ -118,11 +116,6 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
     {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
         
     <div className="flex flex-col min-h-screen bg-[#FFC94A]">
-          
-      {/* <div className="bg-[#FFC94A] mt-2 p-3 rounded-lg text-center">
-        <p className="text-white text-lg md:text-2xl font-serif"> Please read the waiver. Scroll down to sign. </p>
-        <p className="mt-3 text-white text-sm md:text-md italic font-serif"> Safari users may need to update or access via Chrome. </p>
-      </div> */}
     
       {/* Grid setup, 2 columns on big screen, 1 stacked column on smaller */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 md:-mt-3 p-4 md:p-8 h-full">
@@ -142,21 +135,12 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
             }
 
           <div className="flex flex-col gap-4 w-full">
-            <Document
-              file={pdfURL} 
-              onLoadSuccess={({ numPages }) => setNumPages(numPages)} 
-            >
-              {Array.from(new Array(numPages), (_, i) => ( 
-                <div key={i} className="bg-white p-2 w-full flex justify-center">
-                  <Page
-                    pageNumber={i + 1}
-                    width={containerWidth}
-                    renderAnnotationLayer={false}
-                    renderTextLayer={false}
-                  />
-                </div>
-              ))}
-            </Document>  
+            <PDFViewer
+              pdfURL={pdfURL}
+              numPages={numPages}
+              setNumPages={setNumPages}
+              containerWidth={containerWidth}
+            />
           </div>  
         </div> 
 

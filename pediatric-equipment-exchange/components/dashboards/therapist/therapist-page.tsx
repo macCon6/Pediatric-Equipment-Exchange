@@ -1,7 +1,7 @@
 import ReservedEquipment from "@/components/dashboards/admin/reservations";
 import ProfileInfo from "@/components/dashboards/profile-info-box";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 
 
 interface Props {
@@ -18,21 +18,15 @@ export default async function TherapistPage({
   full_name,
 }: Props) {
 
-  const { data: items, error } = await supabaseAdmin
-    .from("equipment")
-    .select(`
-      *,
-      distribution:distributions (
-        reserved_at,
-        allocated_at,
-        user_id,
-        recipient (
-          name,
-          email,
-          phone
-        )
-      )
-    `);
+  const supabase = await createClient();
+
+  const { data: items, error } = await supabase
+    .from("readable_distribution")
+      .select("id, equipment_id, equipment_name, recipient_name, contact_name, clinic_name, reserved_by, reserved_by_name, reserved_at, signed_waiver_url")
+      .not("reserved_at", "is", null)
+      .is("allocated_at", null)
+      .is("returned_at", null)
+      .is("cancelled_at", null);
 
   if (error) {
     console.error(error);
@@ -40,19 +34,12 @@ export default async function TherapistPage({
 
   const reservedItems =
     items?.filter((item) =>
-      item.distribution?.some(
-        (dist: any) =>
-          dist.user_id === user.id && dist.reserved_at
-      )
+      item.reserved_by === user.sub 
     ) || [];
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-[#FFC94A]">
       <div className="p-8 w-full">
-
-        <h1 className="text-white text-2xl mb-6 text-center bg-[#5a9e3a] py-2 rounded font-mono">
-          Therapist Dashboard
-        </h1>
 
         <Tabs defaultValue="profile" className="w-full flex flex-col items-center mt-6">
 

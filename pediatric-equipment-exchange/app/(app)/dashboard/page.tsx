@@ -15,7 +15,7 @@ export default async function Dashboard({ searchParams }: any) {
     return <AdminPage user={user} role={role} this_username={username} full_name={full_name}  searchParams={searchParams} />
 
   } else if (role === "therapist") {
-    return <TherapistPage user={user} role={role} username={username} full_name={full_name} />
+    return <TherapistPage user={user} role={role} this_username={username} full_name={full_name} />
 
   } else if (role === "volunteer"){
     return <VolunteerPage user={user} role={role} username={username} full_name={full_name} />
