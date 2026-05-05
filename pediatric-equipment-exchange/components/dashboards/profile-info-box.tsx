@@ -1,5 +1,5 @@
 // maybe use this component to let them edit their profile info?
-
+/*
 interface Props {
     user: any,
     role: string
@@ -39,4 +39,145 @@ export default function ProfileInfo({user, role, username, full_name}: Props) {
         }
         </>
     );
-}
+}*/
+
+   "use client";
+   
+   import { useState } from "react";
+   
+   interface Props {
+     user: any;
+     full_name: string;
+     username: string;
+     role: string;
+   }
+   
+   export default function ProfileInfo({
+     user,
+     full_name,
+     username,
+     role,
+   }: Props) {
+     const [isEditing, setIsEditing] = useState(false);
+   
+     const [name, setName] = useState(full_name);
+     const [email, setEmail] = useState(user?.email || "");
+     const [userName, setUserName] = useState(username);
+     const [loading, setLoading] = useState(false);
+   
+     const handleSave = async () => {
+       setLoading(true);
+   
+       const res = await fetch("/api/update-user", {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify({
+           id: user.id,
+           full_name: name,
+           username: userName,
+           email,
+         }),
+       });
+   
+       const data = await res.json();
+   
+       if (data.error) {
+         console.error(data.error);
+       } else {
+         setIsEditing(false);
+       }
+   
+       setLoading(false);
+     };
+   
+     return (
+       <div className="bg-white p-6 rounded-xl shadow-md max-w-xl mx-auto">
+   
+         <h2 className="text-lg font-bold mb-4 text-center">Profile</h2>
+   
+         {/* NAME */}
+         <div className="mb-3">
+           <label className="text-sm text-gray-500">Full Name</label>
+   
+           {isEditing ? (
+             <input
+               className="border p-2 w-full rounded"
+               value={name}
+               onChange={(e) => setName(e.target.value)}
+             />
+           ) : (
+             <p className="font-semibold">{name}</p>
+           )}
+         </div>
+   
+         {/* USERNAME */}
+         <div className="mb-3">
+           <label className="text-sm text-gray-500">Username</label>
+   
+           {isEditing ? (
+             <input
+               className="border p-2 w-full rounded"
+               value={userName}
+               onChange={(e) => setUserName(e.target.value)}
+             />
+           ) : (
+             <p>{userName}</p>
+           )}
+         </div>
+   
+         {/* EMAIL */}
+         <div className="mb-3">
+           <label className="text-sm text-gray-500">Email</label>
+   
+           {isEditing ? (
+             <input
+               className="border p-2 w-full rounded"
+               value={email}
+               onChange={(e) => setEmail(e.target.value)}
+             />
+           ) : (
+             <p>{email}</p>
+           )}
+         </div>
+   
+         {/* ROLE (LOCKED) */}
+         <div className="mb-4">
+           <label className="text-sm text-gray-500">Role</label>
+           <p className="capitalize">{role}</p>
+         </div>
+   
+         {/* BUTTONS */}
+         <div className="flex gap-3 mt-4 justify-center">
+   
+           {isEditing ? (
+             <>
+               <button
+                 onClick={handleSave}
+                 disabled={loading}
+                 className="bg-green-500 text-white px-4 py-2 rounded"
+               >
+                 {loading ? "Saving..." : "Save"}
+               </button>
+   
+               <button
+                 onClick={() => setIsEditing(false)}
+                 className="bg-gray-300 px-4 py-2 rounded"
+               >
+                 Cancel
+               </button>
+             </>
+           ) : (
+             <button
+               onClick={() => setIsEditing(true)}
+               className="bg-[#5a9e3a] px-4 py-2 rounded-xl font-semibold text-white"
+             >
+               Edit Profile
+             </button>
+           )}
+   
+         </div>
+       </div>
+     );
+   }
