@@ -101,3 +101,11 @@ export interface RecoverableItem {
     deleted_staff: { full_name: string; },
     deleted_at: string
 }
+
+export interface WaiverTemplateFields {
+    id: string,
+    created_at: string,
+    version: number,
+    is_active: boolean,
+    template_url: string
+}

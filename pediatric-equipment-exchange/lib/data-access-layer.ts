@@ -7,27 +7,27 @@ import { createClient } from "@/lib/supabase/server";
 import { cache } from "react";
 
 export const getUserAndRole = cache(async () => { // gets the authenticated user, profile, and caches it
-  
-  console.log("fetching user");
-    const supabase =  await createClient();
-    const { data: { user }, error } = await supabase.auth.getUser();
+    console.log("fetching user");
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.getClaims(); // using getClaims since it is faster than getUser
+    const user = data?.claims;
+    console.log('user object is ', user);
 
     if (error || !user) {
-      return { user: null, role: "guest", username: null, full_name: null}; // if no user, their role is guest
+      return { user: null, role: "guest", username: null, full_name: null};
     }
  
-    // fetch role & profile info
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("role, username, full_name") // to display on their profile pages
-      .eq("id", user.id)
+      .select("role, username, full_name")
+      .eq("id", user.sub)
       .single();
     
     if (profileError) {
         console.error("Profile fetch error: ", profileError);
     }
     
-    // Now any server component can call getUserAndRole() and get this info
+    // now any server component can call getUserAndRole to get this infos
     return {
         user: user,
         role: profile?.role ?? "guest",

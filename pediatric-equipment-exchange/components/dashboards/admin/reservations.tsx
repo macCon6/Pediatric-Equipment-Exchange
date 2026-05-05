@@ -31,7 +31,7 @@ export default function ReservedEquipment({reserved_items}:Props) {
           <table className="w-full text-sm">
             <thead className="bg-[#5a9e3a] text-white text-xs md:text-sm tracking-wide">
               <tr>
-                <th className="text-left p-4"> Item Name </th>
+                <th className="text-left p-6"> Item Name </th>
                 <th className="text-left p-4"> Reserved For </th>
                 <th className="text-left p-4"> Caregiver </th>
                 <th className="text-left p-4"> Clinic </th>
@@ -48,7 +48,7 @@ export default function ReservedEquipment({reserved_items}:Props) {
                   key={entry.id}
                   className="hover:bg-amber-100 even:bg-green-100 odd:bg-green-50 hover:cursor-pointer"
                 >
-                  <td className="p-4 text-xs md:text-sm text-sky-500 underline"
+                  <td className="p-2 text-xs md:text-sm text-sky-500 underline"
                     onClick={() => router.push(`/items/${entry.equipment_id}`)}>
                     {entry.equipment_name}
                   </td>

@@ -109,7 +109,7 @@ export default function RecoverEquipment({deleted_items}:Props) {
           <table className="w-full text-sm">
             <thead className="bg-[#5a9e3a] text-white text-xs md:text-sm tracking-wide">
               <tr>
-                <th className="text-left p-4"> Item Name </th>
+                <th className="text-left p-3"> Item Name </th>
                 <th className="text-left p-4"> Deleted By </th>
                 <th className="text-left p-4"> Deleted At </th>
                 <th className="text-left p-4"> Recover </th>
@@ -126,7 +126,7 @@ export default function RecoverEquipment({deleted_items}:Props) {
                   className="hover:bg-amber-100 even:bg-green-100 odd:bg-green-50 hover:cursor-pointer"
                  
                 >
-                  <td className="p-4 text-xs md:text-sm text-sky-500 underline"
+                  <td className="p-2 text-xs md:text-sm text-sky-500 underline"
                     onClick={() => router.push(`/items/${entry.id}`)}>
                     {entry.name}
                   </td>
@@ -142,7 +142,7 @@ export default function RecoverEquipment({deleted_items}:Props) {
                   </td>
 
                   <td className="p-4 text-gray-700">
-                    <button className="flex-1 bg-[#5a9e3a] hover:opacity-50 hover:cursor-pointer border rounded-3xl text-white text-lg p-3"
+                    <button className="flex-1 bg-[#5a9e3a] hover:opacity-50 hover:cursor-pointer border rounded-3xl text-white text-sm md:text-lg p-3"
                         onClick={() => handleChoice("recover", entry.id, entry.name, entry.status)}
                     >
                         Recover Item
@@ -150,7 +150,7 @@ export default function RecoverEquipment({deleted_items}:Props) {
                   </td>
 
                   <td className="p-4 text-gray-700">
-                    <button className="flex-1 bg-red-600 hover:opacity-50 hover:cursor-pointer border rounded-3xl text-white text-lg p-3"
+                    <button className="flex-1 bg-red-600 hover:opacity-50 hover:cursor-pointer border rounded-3xl text-white text-sm md:text-lg p-3"
                          onClick={() => handleChoice("delete", entry.id, entry.name, entry.status)}
                     >
                         Hard Delete

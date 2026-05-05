@@ -12,7 +12,7 @@ import DistributionHistory from "@/components/dashboards/admin/distribution-hist
 import RecoverEquipment from "@/components/dashboards/admin/recover-equipment";
 import UpdateWaiver from "@/components/dashboards/admin/update-waiver";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import { ReadableDistribution, RecoverableItem } from "@/field_interfaces";
+import { ReadableDistribution, RecoverableItem, WaiverTemplateFields } from "@/field_interfaces";
 
 interface Props {
   user: any,
@@ -22,11 +22,12 @@ interface Props {
   allocated_items: ReadableDistribution[] | null,
   reserved_items: ReadableDistribution[] | null,
   all_distributions: ReadableDistribution[] | null,
+  waiver_templates: WaiverTemplateFields[] | null,
   deleted_items: RecoverableItem[] | null,
   active_tab:any
 }
 
-export default function AdminTabs({ user, role, this_username, full_name, allocated_items, reserved_items, all_distributions, deleted_items, active_tab}: Props ) {
+export default function AdminTabs({ user, role, this_username, full_name, allocated_items, reserved_items, all_distributions, waiver_templates, deleted_items, active_tab}: Props ) {
     
     
     const router = useRouter();
@@ -101,7 +102,7 @@ export default function AdminTabs({ user, role, this_username, full_name, alloca
                         </TabsContent>
 
                         <TabsContent value="waiver">
-                            Update waiver
+                            <UpdateWaiver waiver_templates={waiver_templates}/>
                         </TabsContent>
 
                         <TabsContent value="recovery">
