@@ -130,18 +130,17 @@ export default function UpdateWaiver({waiver_templates}: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-5 bg-white border rounded-3xl p-6">
+    <div className="flex flex-col gap-5 bg-white border rounded-3xl px-1 py-5 md:px-3">
 
       {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
 
       {mode === "choose" && <> 
-        <h1 className="text-2xl mb-6 font-bold text-center"> Waiver Station </h1>
 
-        <button className="text-lg border border-green-600 bg-green-100 hover:bg-gray-300 hover:cursor-pointer p-3 rounded-2xl" onClick={() => setMode("viewPast")}> View Past Waivers </button>
+        <button className="ml-3 mr-3 text-lg border border-green-600 bg-[#D8EBDB] hover:opacity-60 hover:cursor-pointer p-3 rounded-2xl" onClick={() => setMode("viewPast")}> View Past Waivers </button>
 
-        <button className="text-lg border border-green-600 bg-green-50 hover:bg-gray-300 hover:cursor-pointer p-3 rounded-2xl" onClick={() => setMode("viewActive")}> View Active Waiver </button>
+        <button className="ml-3 mr-3 text-lg border border-green-600 bg-green-50 hover:opacity-60 hover:cursor-pointer p-3 rounded-2xl" onClick={() => setMode("viewActive")}> View Active Waiver </button>
 
-        <button className="text-lg border border-green-600 bg-green-100 hover:bg-gray-300 hover:cursor-pointer p-3 rounded-2xl mb-6" onClick={() => setMode("update")}> Update Active Waiver </button>
+        <button className="ml-3 mr-3 text-lg border border-green-600 bg-[#D8EBDB] hover:opacity-60 hover:cursor-pointer p-3 rounded-2xl mb-6" onClick={() => setMode("update")}> Update Active Waiver </button>
         </>
       }
 
@@ -156,10 +155,10 @@ export default function UpdateWaiver({waiver_templates}: Props) {
           <table className="w-full text-sm">
             <thead className="bg-[#5a9e3a] text-white text-xs md:text-sm tracking-wide">
               <tr>
-                <th className="text-left py-4 px-2"> Version </th>
-                <th className="text-left py-4 px-2"> Active? </th>
-                <th className="text-left py-4 px-2"> Created At </th>
-                <th className="text-left py-4 px-2"> View </th>
+                <th className="text-left py-4 px-1 md:px-3"> Version </th>
+                <th className="text-left py-4 px-1 md:px-3"> Active? </th>
+                <th className="text-left py-4 px-1 md:px-3"> Created At </th>
+                <th className="text-left py-4 px-1 md:px-3"> View </th>
               </tr>
             </thead>
 
@@ -178,7 +177,7 @@ export default function UpdateWaiver({waiver_templates}: Props) {
                     {entry.is_active? "Yes" : "No"}
                   </td>
 
-                  <td className="p-4 text-gray-900">
+                  <td className="p-4 text-gray-500">
                     { new Date(entry.created_at).toLocaleString() }
                   </td>
 
@@ -234,7 +233,7 @@ export default function UpdateWaiver({waiver_templates}: Props) {
                     {entry.is_active? "Yes" : "No"}
                   </td>
 
-                  <td className="p-4 text-gray-900">
+                  <td className="p-4 text-gray-500">
                     { new Date(entry.created_at).toLocaleString() }
                   </td>
 
@@ -263,7 +262,7 @@ export default function UpdateWaiver({waiver_templates}: Props) {
 
 
       {mode=== "update" && <> 
-        <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-md p-6 ml-2 mr-2 border border-gray-100">
           <h2 className="text-lg font-bold text-[#132540] mb-1"> Update active waiver</h2>
           <p className="text-sm text-gray-500 mb-4"> Please upload a new PDF </p>
 
@@ -310,7 +309,7 @@ export default function UpdateWaiver({waiver_templates}: Props) {
                 await updateActiveWaiver();
           }}
           disabled={uploading}
-          className={`mt-2 rounded-xl py-3 text-lg bg-[#5a9e3a] text-white
+          className={`mt-2 rounded-xl ml-2 mr-2 py-3 text-lg bg-[#5a9e3a] text-white
           ${uploading? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:opacity-90"}`}>
           {uploading ? "Uploading new waiver..." : "Submit waiver"}
         </button>

@@ -42,6 +42,7 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
   
   //for admin delete confirmation button
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const isDeleted = !!item.deleted_at; // for ui after deletion
 
   const showToast = (message: string, type: "success" | "error") => { // this is to send down to the update-status-popup
     setToastMessage(message);  
@@ -103,11 +104,12 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
 
   return (
     <>
+    
     {/* Show any toast popups */}
     {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
 
     <div className="flex min-h-screen w-full bg-[#FFC94A] overflow-y-auto">
-
+    
         {/* Main Content */}
         <div className="flex-1 p-8 w-full lg:mt-6">
         
@@ -115,7 +117,7 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         
             {/* Left Column - Image array that can be clicked through*/}
-            <div className="bg-white p-6 rounded-lg flex flex-col items-center justify-center min-h-[25rem]">
+            <div className="relative bg-white p-6 rounded-lg flex flex-col items-center justify-center min-h-[25rem]">
               <Image 
                 src={itemDetails.image_urls?.[imageIndex] ? itemDetails.image_urls[imageIndex]: "/missing-image.png"}
                 alt={itemDetails.name}
@@ -124,6 +126,13 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
                 className="rounded-lg w-full max-w-sm md:max-w-md object-contain aspect-3/4"
                 priority 
               />
+
+              {isDeleted && 
+                <div className="absolute inset-0 flex items-center justify-center bg-white/50">
+                  <h1 className="text-lg md:text-2xl bg-white max-w-xs text-center p-3 rounded-xl border-3 border-red-500"> Please recover the item to make changes</h1>
+                </div>
+              }
+
               {/* Buttons to click through the images */}
               <div className="flex justify-between w-full md:mt-6 ">
                 <button className="text-6xl text-green-600 flex items-center justify-center hover:text-orange-200 hover:cursor-pointer disabled:text-gray-300 disabled:cursor-not-allowed"
@@ -138,7 +147,8 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
             </div> 
 
             {/* Right column, a flex column split into two boxes */}
-            <div className="flex flex-col gap-4 min-h-[30rem]">
+            <div className="relative flex flex-col gap-4 min-h-[30rem]">
+
 
               {/* Top right box for Item Details */}
               <div className="bg-white rounded-lg p-4 flex flex-col flex-1 min-h-[30rem]">
@@ -259,7 +269,7 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
                 </ul>
               }
               </div>
-
+              
               {/* Bottom right box for Status details & Change Status button */}
               <div className="w-full bg-white rounded-lg p-4 flex flex-col gap-2 items-center">
                 <h1 className="text-3xl text-center text-black font-bold font-mono"> Status: </h1> 
@@ -279,8 +289,8 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
                         
                     </>
                   )}
-                {/* Delete button — only visible to admins */}
-                  {role === "admin" && ( 
+                {/* Delete button — only visible to admins, only visible on Available items */}
+                  {role === "admin" && mostRecentStatus === "Available" && ( 
                     <button
                       className="bg-red-600 hover:bg-red-700 hover:cursor-pointer border rounded-3xl text-white text-xl p-3"
                       onClick={() => {setShowDeleteConfirm(true)}}
@@ -290,15 +300,21 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
                   )}
                 </div>
               }
-    
+            </div>
+
+            {isDeleted && (
+              <div className="absolute inset-0 bg-white/70 flex items-center justify-center rounded-lg">
+                <div className="text-lg md:text-2xl bg-white max-w-xs text-center p-3 rounded-xl border-3 border-red-500">
+                   Please recover the item to make changes
+                </div>
+              </div>
+            )}
                 
                   
-            </div>
-            
-            </div>
-      
+          
           </div>
         </div>
+      </div>
       
      {/* Popup when Update Status button is clicked */}
       <UpdateStatusPopup

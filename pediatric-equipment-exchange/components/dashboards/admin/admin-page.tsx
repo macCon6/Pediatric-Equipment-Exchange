@@ -4,7 +4,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import AdminTabs from "@/components/dashboards/admin/admin-tabs";
-import { ReadableDistribution, RecoverableItem, WaiverTemplateFields } from "@/field_interfaces";
+import { ReadableDistribution, RecoverableItem, WaiverTemplateFields, ClinicFields } from "@/field_interfaces";
+import { BuildHistoryQuery } from "@/utils/build-history-query";
 
 interface Props {
   user: any;
@@ -12,6 +13,13 @@ interface Props {
   this_username: string;
   full_name: string;
 }
+
+export type HistoryData = {
+  all_distributions: ReadableDistribution[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+};
 
 export default async function AdminPage({ user, role, this_username, full_name, searchParams}: Props & {
   searchParams: Promise<{ tab?: string; page?: string }>;
@@ -24,15 +32,16 @@ export default async function AdminPage({ user, role, this_username, full_name, 
 
   let allocated_items: ReadableDistribution[] | null = null;
   let reserved_items: ReadableDistribution[] | null = null;
-  let all_distributions: ReadableDistribution[]| null = null;
   let deleted_items: RecoverableItem[] | null = null;
   let waiver_templates: WaiverTemplateFields[] | null = null;
+  let history_data: HistoryData | null = null;
+  let clinics: ClinicFields[] = [];
 
   // fetch only necessaruy rows From the Readable Distributiuon View for allocations tab
   if (tab === "allocations") {
     const { data: distributions, error } = await supabase
       .from("readable_distribution")
-      .select(`id, equipment_id, equipment_name, equipment_status, recipient_name, contact_name, clinic_name, allocated_at, signed_waiver_url`)
+      .select(`id, equipment_id, equipment_barcode, equipment_name, equipment_status, reserved_by_name, recipient_name, contact_name, clinic_name, allocated_at, allocated_by_name, signed_waiver_url`)
       .not("allocated_at", "is", null)
       .is("returned_at", null)
       .is("cancelled_at", null);
@@ -49,7 +58,7 @@ export default async function AdminPage({ user, role, this_username, full_name, 
   if (tab === "reservations") {
     const { data: distributions, error } = await supabase
       .from("readable_distribution")
-      .select("id, equipment_id, equipment_name, recipient_name, contact_name, clinic_name, reserved_by_name, reserved_at, signed_waiver_url")
+      .select("id, equipment_id, equipment_barcode, equipment_name, recipient_name, contact_name, clinic_name, therapist_notes, reserved_by_name, reserved_at, signed_waiver_url")
       .not("reserved_at", "is", null)
       .is("allocated_at", null)
       .is("returned_at", null)
@@ -63,26 +72,21 @@ export default async function AdminPage({ user, role, this_username, full_name, 
     reserved_items = distributions ?? []; 
   }
 
-   // fetch From the Readable Distributiuon View for history tab
+   // fetch us9ing hte buildHistory helper for history tab
   if (tab === "history") {
+
+    const { data } = await supabase
+      .from("clinics")
+      .select("id, name")
+      .order("name")
     
-    const page = Number(params?.page ?? 1);
-    const pageSize = 8;
+    clinics = data ?? [];
+       
+    console.log("fetched clinics for history tab", clinics)
 
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
+    history_data = await BuildHistoryQuery(params);
 
-    const { data: distributions, error } = await supabase
-      .from("readable_distribution")
-      .select("*")
-      .range(from, to)
-  
-    console.log("fetched for history: ", distributions);
-    if (error) {
-      console.error("Error fetching for history:", error);
-    }
-
-    all_distributions = distributions ?? []; 
+    console.log("fetched history");
   }
 
   if (tab === "waiver") {
@@ -102,7 +106,7 @@ export default async function AdminPage({ user, role, this_username, full_name, 
   if (tab === "recovery") {
     const { data: deletions, error } = await supabase
       .from("equipment")
-      .select("id, name, status, deleted_at, deleted_staff:deleted_by(full_name)")
+      .select("id, name, status, barcode_value, deleted_at, deleted_staff:deleted_by(full_name)")
       .not("deleted_at", "is", null)
       .overrideTypes<Array<{ deleted_staff: { full_name: string } }>>(); // so it doesn't return an array
   
@@ -121,7 +125,8 @@ export default async function AdminPage({ user, role, this_username, full_name, 
       active_tab={tab}
       allocated_items={allocated_items}
       reserved_items={reserved_items}
-      all_distributions = {all_distributions} 
+      history_data={history_data}
+      clinics = {clinics}
       waiver_templates = {waiver_templates}
       deleted_items = {deleted_items} />
   );

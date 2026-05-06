@@ -1,19 +1,21 @@
 
 export interface ItemFields {
-    id: string
-    name: string
-    category: string
-    subcategory: string | null
-    condition: string
-    status: string
-    description: string | null
-    size: string
-    color: string | null
-    donor: string | null
-    image_urls: string[]
-    barcode_value?: string | null
-    created_at: string
-    location?: string
+    id: string,
+    name: string,
+    category: string,
+    subcategory: string | null,
+    condition: string,
+    status: string,
+    description: string | null,
+    size: string,
+    color: string | null,
+    donor: string | null,
+    image_urls: string[],
+    barcode_value?: string | null,
+    created_at: string,
+    location?: string,
+    deleted_at: string | null,
+    deleted_by: string | null
 }
 
 export interface DistributionFields {
@@ -52,7 +54,7 @@ export interface RecipientFields {
 export interface ClinicFields {
     id: string,
     name: string,
-    created_at: string,
+    created_at?: string,
 }
 
 export interface ProfileFields {
@@ -67,6 +69,7 @@ export interface ProfileFields {
 export interface ReadableDistribution {
     id: string,
     equipment_id: string,
+    equipment_barcode: string
     reserved_by?: string,
     equipment_name?: string,
     equipment_status?: string,
@@ -98,6 +101,7 @@ export interface RecoverableItem {
     id: string,
     name: string,
     status: string,
+    barcode_value: string,
     deleted_staff: { full_name: string; },
     deleted_at: string
 }
