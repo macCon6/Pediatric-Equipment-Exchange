@@ -12,6 +12,10 @@ interface Props {
 export default function VolunteerPage({user, role, username, full_name}: Props) {
 
     return (
-        <ProfileInfo user={user} role={role} username={username} full_name={full_name} />
+        <div className="flex flex-col min-h-screen w-full bg-[#FFC94A]">
+            <div className="p-8 w-9/10 bg-amber-50 mt-6 rounded-3xl mx-auto">
+                <ProfileInfo user={user} role={role} username={username} full_name={full_name} />
+            </div>   
+        </div>
     );
 }

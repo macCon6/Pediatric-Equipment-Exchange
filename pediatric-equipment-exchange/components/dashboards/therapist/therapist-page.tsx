@@ -22,7 +22,7 @@ export default async function TherapistPage({
 
   const { data: items, error } = await supabase
     .from("readable_distribution")
-      .select("id, equipment_id, equipment_name, recipient_name, contact_name, clinic_name, reserved_by, reserved_by_name, reserved_at, signed_waiver_url")
+      .select("id, equipment_id, equipment_name, recipient_name, contact_name, clinic_name, reserved_by, reserved_by_name, reserved_at, signed_waiver_url, equipment_barcode, therapist_notes")
       .not("reserved_at", "is", null)
       .is("allocated_at", null)
       .is("returned_at", null)
@@ -39,9 +39,9 @@ export default async function TherapistPage({
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-[#FFC94A]">
-      <div className="p-8 w-full">
+      <div className="p-6 w-9/10 bg-amber-50 mt-6 rounded-3xl mx-auto mb-6">
 
-        <Tabs defaultValue="profile" className="w-full flex flex-col items-center mt-6">
+        <Tabs defaultValue="profile" className="w-full flex flex-col items-center">
 
           <TabsList className="flex justify-between items-center bg-white p-1 rounded-md shadow-sm w-[500px] max-w-full">
             <TabsTrigger value="profile" className="flex-1 text-center py-2 rounded-sm data-[state=active]:bg-[#f4f4f4]">
@@ -53,7 +53,7 @@ export default async function TherapistPage({
             </TabsTrigger>
           </TabsList>
 
-          <div className="w-full mt-8">
+          <div className="w-full mt-4">
             <TabsContent value="profile">
              <ProfileInfo
                 user={user}

@@ -15,6 +15,12 @@ export default function RecoverEquipment({deleted_items}:Props) {
 
   const router = useRouter();
 
+  const handleNavigation = (equipment_id: string) => {
+    window.scrollTo(0, 0);
+    router.push(`/items/${equipment_id}`);
+  }
+
+
   const[recoveryChoice, setRecoveryChoice]=useState<"recover" | "delete">("recover");
   const[chosenEquipment, setChosenEquipment]=useState<{id: string, name: string, status: string}>();
   const[confirmationPopupOpen, setConfirmationPopupOpen] = useState(false); 
@@ -25,7 +31,7 @@ export default function RecoverEquipment({deleted_items}:Props) {
   const handleClose = () => {
     setRecoveryChoice("recover");
     setConfirmationPopupOpen(false);
-    router.refresh();
+    setTimeout(() => { router.refresh(); }, 1000);
   };
 
   const handleChoice = (recovery_choice: "recover" | "delete", equipment_id: string, equipment_name: string, equipment_status: string) => {
@@ -94,75 +100,56 @@ export default function RecoverEquipment({deleted_items}:Props) {
     );
   }
 
+  if (deleted_items.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-40 bg-white rounded-xl border">
+        <p className="text-gray-500 text-base lg:text-lg"> No recoverable items </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full">
+    <div className="w-full px-2">
 
       {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
 
-      {deleted_items.length === 0 ? (
-        <div className="flex justify-center items-center h-40 bg-white rounded-xl border">
-          <p className="text-gray-500"> No recoverable items </p>
-        </div>
-      ) : (
-        <div className="overflow-x-auto rounded-xl border bg-white shadow-sm">
-          <table className="w-full text-sm">
-            <thead className="bg-[#5a9e3a] text-white text-xs md:text-sm tracking-wide">
-              <tr>
-                <th className="text-left p-3"> Item Name </th>
-                <th className="text-left p-4"> Deleted By </th>
-                <th className="text-left p-4"> Deleted At </th>
-                <th className="text-left p-4"> Recover </th>
-                <th className="text-left p-4"> Hard Delete </th>
+       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
 
-              </tr>
-            </thead>
+        {deleted_items.map((entry) => (
+          <div key={entry.id} className="p-4 hover:scale-105 cursor-pointer hover:shadow-2xl shadow-md border transition duration-100 rounded-3xl bg-white">
 
-            <tbody className="divide-y divide-gray-100">
-            
-              {deleted_items.map((entry) => (    
-                <tr
-                  key={entry.id}
-                  className="hover:bg-amber-100 even:bg-green-100 odd:bg-green-50 hover:cursor-pointer"
-                 
-                >
-                  <td className="p-2 text-xs md:text-sm text-sky-500 underline"
-                    onClick={() => router.push(`/items/${entry.id}`)}>
-                    {entry.name}
-                  </td>
+            <div className="flex flex-col gap-1 text-sm">
+              <p className="font-bold tracking-wide bg-[#D8EBDB] text-center mb-2 py-2 rounded-xl">{entry.name}</p>
 
-                  <td className="p-4 italic">
-                    {entry.deleted_staff.full_name}
-                  </td>
-                 
-                  <td className="p-4 text-gray-500">
-                    {entry.deleted_at
-                      ? new Date(entry.deleted_at).toLocaleString()
-                      : "--"}
-                  </td>
+              <p className="text-center mb-3"><span className="text-blue-500 underline hover:text-blue-700" onClick={() => handleNavigation(entry.id)}> View Item Page </span> </p>
 
-                  <td className="p-4 text-gray-700">
+              <p><span className="font-semibold"> Barcode:</span> {entry.barcode_value}</p>
+
+              <p><span className="font-semibold"> Deleted By:</span> {entry.deleted_staff.full_name}</p>
+
+              <p><span className="font-semibold"> Deleted At:</span> <span className="text-gray-500"> {entry.deleted_at
+                ? new Date(entry.deleted_at).toLocaleString() : "--"} </span> </p>
+              
+              <div className="flex-1 mx-auto space-x-6 mt-3">
+             
                     <button className="flex-1 bg-[#5a9e3a] hover:opacity-50 hover:cursor-pointer border rounded-3xl text-white text-sm md:text-lg p-3"
                         onClick={() => handleChoice("recover", entry.id, entry.name, entry.status)}
                     >
                         Recover Item
                     </button>
-                  </td>
-
-                  <td className="p-4 text-gray-700">
+                
+              
                     <button className="flex-1 bg-red-600 hover:opacity-50 hover:cursor-pointer border rounded-3xl text-white text-sm md:text-lg p-3"
                          onClick={() => handleChoice("delete", entry.id, entry.name, entry.status)}
                     >
                         Hard Delete
                     </button>
-                  </td>
-                  
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                </div>
+                
+            </div>
+          </div>
+        ))}
+      </div>
 
       {confirmationPopupOpen &&
         <Popup isOpen={confirmationPopupOpen} onClose ={handleClose} 
