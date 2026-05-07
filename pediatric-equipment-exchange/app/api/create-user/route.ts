@@ -32,7 +32,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const allowedRoles = ["admin", "physical_therapist", "volunteer"];
+    const allowedRoles = ["admin", "therapist", "volunteer"];
     if (!allowedRoles.includes(role)) {
       return NextResponse.json({ error: "Invalid role" },
         { status: 400 }

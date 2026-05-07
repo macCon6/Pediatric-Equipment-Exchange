@@ -5,7 +5,7 @@ import { ReadableDistribution } from "@/field_interfaces";
 import { CATEGORY_OPTIONS, SUBCATEGORY_OPTIONS, CONDITION_OPTIONS, COLOR_OPTIONS } from "@/item-field-options";
 import Image from "next/image";
 import { useState } from 'react';
-import {useForm, SubmitHandler} from "react-hook-form";
+import {useForm, SubmitHandler } from "react-hook-form";
 import UpdateStatusPopup from "@/components/popups/update-status-popup";
 import DistributionDetailsPopup from "@/components/popups/distribution-details-popup";
 import DeleteItemPopup from "@/components/popups/delete-item-popup";
@@ -31,7 +31,7 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
   // for editing item details
   const [isEditing, setIsEditing] = useState(false); // for editing item details, will use a form from react-hook-form
   const [itemDetails, setItemDetails] = useState(item); // to immediately show the new item details if they get changed
-  const { register, handleSubmit} = useForm({ defaultValues: item }) // form for editing details
+  const { register, handleSubmit, reset} = useForm({ defaultValues: item }) // form for editing details
   
   // misc.
   const [imageIndex, setImageIndex] = useState(0); // for scrolling through images
@@ -72,8 +72,10 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
 
       if (!res.ok) {
         console.error(result.error);
-        showToast("Failed to save edits", "error");
+        showToast(`Failed to save: ${result.error}`, "error");
+    
       } else {
+        reset(data);
         setItemDetails((currentItem) => ({
           ...currentItem,
           ...data,
@@ -87,7 +89,7 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
       }
     } catch (err) {
       console.error("Request failed:", err);
-      showToast("Failed to save edits", "error");
+      showToast(`Failed to save edits: ${err}`, "error");
     }
   };
   
@@ -261,7 +263,11 @@ export default function EquipmentDetails({ item, distribution, role }: Props)  {
 
                     <div className="mt-auto flex justify-between min-h-[3rem]">
                       <button className="font-sans text-[#686dd3] font-arial text-sm mt-auto hover:cursor-pointer hover:opacity-70"
-                        onClick={()=>setIsEditing(false)}> Cancel Edit </button>
+                        onClick={()=> {
+                            reset(item);
+                            setIsEditing(false);
+                          }
+                        }> Cancel Edit </button>
                       <button type="submit" className="text-[#686dd3] font-sans text-sm mt-auto hover:cursor-pointer hover:opacity-70"> 
                           Save Details </button>
                     </div>

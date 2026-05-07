@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Toast from "@/components/popups/toast";
 
 interface User {
   id: string;
@@ -13,6 +14,9 @@ interface User {
 export default function UsersList({ refreshTrigger }: { refreshTrigger: number }) {
   const [users, setUsers] = useState<User[]>([]);
   const [userToDelete, setUserToDelete] = useState<string | null>(null); // ✅ popup state
+
+  const[toastMessage, setToastMessage] = useState("");
+  const[toastType, setToastType] = useState<"success" | "error">("error");
 
   const fetchUsers = async () => {
     const res = await fetch("/api/get-users");
@@ -39,8 +43,12 @@ export default function UsersList({ refreshTrigger }: { refreshTrigger: number }
     if (res.ok) {
       // remove from UI instantly
       setUsers(prev => prev.filter(user => user.id !== userToDelete));
+      setToastType("success");
+      setToastMessage("User deleted successfully");
     } else {
       console.error(data.error);
+      setToastType("error");
+      setToastMessage(`Failed to delete user: ${data.error}`);
     }
 
     setUserToDelete(null); // close popup
@@ -50,8 +58,39 @@ export default function UsersList({ refreshTrigger }: { refreshTrigger: number }
     setUserToDelete(null); // close popup
   };
 
+
+  const copyEmails = async (role?: string) => {
+    
+    const filteredUsers = role? users.filter((u) => u.role === role) : users;
+
+    const emailList = filteredUsers
+      .map((u) => u.email)
+      .filter(Boolean)
+      .join(", "); // copy and pasting a list of emals joined by , in gmail works well
+
+    try {
+      await navigator.clipboard.writeText(emailList);
+      setToastType("success");
+      setToastMessage(`Copied ${role? role : ""} emails to your clipboard!`);
+    } catch (err: any) {
+      console.error(err);
+      setToastType("error");
+      setToastMessage(`Copy failed: ${err.message}`);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-3">
+      {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button className="bg-amber-200 rounded-xl py-1 px-3 mt-2 border hover:cursor-pointer hover:opacity-50" onClick={() => copyEmails()}> Copy All Emails </button>
+
+        <button className="bg-amber-200 rounded-xl py-1 px-3 mt-2 border hover:cursor-pointer hover:opacity-50" onClick={() => copyEmails("admin")}> Copy Admin Emails </button>
+
+        <button className="bg-amber-200 rounded-xl py-1 px-3 mt-2 border hover:cursor-pointer hover:opacity-50" onClick={() => copyEmails("therapist")}> Copy Therapist Emails </button>
+
+        <button className="bg-amber-200 rounded-xl py-1 px-3 mt-2 border hover:cursor-pointer hover:opacity-50" onClick={() => copyEmails("volunteer")}> Copy Volunteer Emails </button>
+      </div>
 
       {/* USERS */}
       {users.map((user) => (

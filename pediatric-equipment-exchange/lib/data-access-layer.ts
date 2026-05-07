@@ -14,12 +14,12 @@ export const getUserAndRole = cache(async () => { // gets the authenticated user
     console.log('user object is ', user);
 
     if (error || !user) {
-      return { user: null, role: "guest", username: null, full_name: null};
+      return { user: null, role: "guest", username: null, full_name: null, email: null};
     }
  
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("role, username, full_name")
+      .select("role, username, full_name, email")
       .eq("id", user.sub)
       .single();
     
@@ -32,6 +32,7 @@ export const getUserAndRole = cache(async () => { // gets the authenticated user
         user: user,
         role: profile?.role ?? "guest",
         username: profile?.username ?? null,
-        full_name: profile?.full_name ?? null
+        full_name: profile?.full_name ?? null,
+        email: profile?.email ?? null
     }
 });

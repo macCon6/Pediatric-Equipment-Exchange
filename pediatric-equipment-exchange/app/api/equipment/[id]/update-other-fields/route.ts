@@ -17,6 +17,8 @@ export async function POST(req: Request) {
   }
   
   const {equipment_id, newFieldsForm} = await req.json();
+
+  
   const normalizedBarcode = typeof newFieldsForm.barcode_value === "string" ? newFieldsForm.barcode_value.trim() : ""; // Normalize the barcode value by trimming whitespace. If it's not a string, default to an empty string.
 
   const { error } = await supabase

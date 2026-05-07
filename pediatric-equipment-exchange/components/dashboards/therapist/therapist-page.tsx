@@ -9,6 +9,7 @@ interface Props {
   role: string;
   this_username: string;
   full_name: string;
+  email: string
 }
 
 export default async function TherapistPage({
@@ -16,6 +17,7 @@ export default async function TherapistPage({
   role,
   this_username,
   full_name,
+  email
 }: Props) {
 
   const supabase = await createClient();
@@ -60,6 +62,7 @@ export default async function TherapistPage({
                 role={role}
                 username={this_username}
                 full_name={full_name}
+                email={email}
               />
             </TabsContent>
 

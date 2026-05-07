@@ -12,6 +12,7 @@ interface Props {
   role: string;
   this_username: string;
   full_name: string;
+  email: string
 }
 
 export type HistoryData = {
@@ -21,7 +22,7 @@ export type HistoryData = {
   totalCount: number;
 };
 
-export default async function AdminPage({ user, role, this_username, full_name, searchParams}: Props & {
+export default async function AdminPage({ user, role, this_username, full_name, email, searchParams}: Props & {
   searchParams: Promise<{ tab?: string; page?: string }>;
 })  {
 
@@ -121,7 +122,7 @@ export default async function AdminPage({ user, role, this_username, full_name, 
 
   return (
     <AdminTabs
-      user={user} role={role} this_username={this_username} full_name={full_name}
+      user={user} role={role} this_username={this_username} full_name={full_name} email={email}
       active_tab={tab}
       allocated_items={allocated_items}
       reserved_items={reserved_items}
