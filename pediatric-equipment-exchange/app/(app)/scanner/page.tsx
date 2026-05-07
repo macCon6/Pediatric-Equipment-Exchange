@@ -25,6 +25,9 @@ export default function Scanner() { // Implements a QR code and barcode scanner 
             {
                 fps: 10,
                 qrbox: { width: 250, height: 250 },
+                videoConstraints: {
+                    facingMode: "environment",
+                },
                 supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
                 formatsToSupport: [
                     Html5QrcodeSupportedFormats.QR_CODE,
@@ -75,6 +78,11 @@ export default function Scanner() { // Implements a QR code and barcode scanner 
                     console.log("[DEBUG][scanner] calling API to look up barcode:", normalizedCode);
                     const apiResponse = await fetch(`/api/equipment/by-barcode?barcode=${encodeURIComponent(normalizedCode)}`);
                     console.log("[DEBUG][scanner] API response status:", apiResponse.status);
+
+                    if (apiResponse.status === 404) {
+                        router.push("/items/not-found");
+                        return;
+                    }
 
                     if (!apiResponse.ok) {
                         const errorData = await apiResponse.json();

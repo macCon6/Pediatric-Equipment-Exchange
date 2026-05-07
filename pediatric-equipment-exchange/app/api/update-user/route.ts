@@ -13,7 +13,9 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { id, email, username, full_name } = await req.json();
+    const { email, username, full_name } = await req.json();
+
+    const id = user.sub;
 
     // ✅ 1. Update email in Supabase Auth
     const { error: authError } =

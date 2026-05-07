@@ -3,20 +3,23 @@
    
 import { useState } from "react";
 import Toast from "@/components/popups/toast";
+import { useRouter } from "next/navigation";
    
 interface Props {
   user: any;
   full_name: string;
   username: string;
   role: string;
+  email: string
 }
    
-export default function ProfileInfo({user, full_name, username, role,}: Props) {
+export default function ProfileInfo({user, full_name, username, role, email}: Props) {
   
   const [isEditing, setIsEditing] = useState(false);
+  const router = useRouter();
    
   const [name, setName] = useState(full_name);
-  const [email, setEmail] = useState(user?.email || "");
+  const [updatedEmail, setUpdatedEmail] = useState(email);
   const [userName, setUserName] = useState(username);
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +29,7 @@ export default function ProfileInfo({user, full_name, username, role,}: Props) {
   const handleCancel = () => {
     setName(full_name);
     setUserName(username);
-    setEmail(user?.email || "");
+    setUpdatedEmail(email);
     setIsEditing(false);
   };
    
@@ -39,10 +42,9 @@ export default function ProfileInfo({user, full_name, username, role,}: Props) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: user.sub,
         full_name: name,
         username: userName,
-        email,
+        email: updatedEmail,
       }),
     });
    
@@ -53,9 +55,11 @@ export default function ProfileInfo({user, full_name, username, role,}: Props) {
       setToastType("error");
       setToastMessage(data.error);
     } else {
+      router.refresh();
       setIsEditing(false);
       setToastType("success");
       setToastMessage("Profile updated successfully!");
+
     }
     setLoading(false);
   };
@@ -107,11 +111,11 @@ export default function ProfileInfo({user, full_name, username, role,}: Props) {
              <input
                disabled={loading}
                className="border p-2 w-full rounded text-center"
-               value={email}
-               onChange={(e) => setEmail(e.target.value)}
+               value={updatedEmail}
+               onChange={(e) => setUpdatedEmail(e.target.value)}
              />
            ) : (
-             <p>{email}</p>
+             <p>{updatedEmail}</p>
            )}
          </div>
    
