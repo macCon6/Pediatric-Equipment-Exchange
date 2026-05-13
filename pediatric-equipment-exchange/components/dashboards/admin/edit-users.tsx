@@ -6,7 +6,6 @@ import Toast from "@/components/popups/toast";
 
 export default function EditUsers() {
 
-  const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
@@ -36,7 +35,6 @@ export default function EditUsers() {
       credentials: "include", //  REQUIRED for auth
       body: JSON.stringify({
         email,
-        username,
         password,
         fullName,
         role,
@@ -51,7 +49,6 @@ export default function EditUsers() {
 
       // Clear form
       setEmail("");
-      setUserName("");
       setPassword("");
       setFullName("");
       setIsAdmin(false);
@@ -72,9 +69,12 @@ export default function EditUsers() {
   return (
   <>
       {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 min-w-0">
           {/* Create User Box */}
-          <div className="bg-white rounded-lg p-4 flex flex-col gap-3 text-black">
+          <div className="bg-white rounded-lg p-6 flex flex-col gap-3 text-black border-3 border-gray-50 ">
+
+            <h1 className="text-lg md:text-2xl text-center tracking-wide mb-3 mt-2"> Create New User </h1>
+
             {/* Full Name */}
             <div className="flex flex-col">
               <label className="text-sm">Full Name:</label>
@@ -94,17 +94,6 @@ export default function EditUsers() {
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="border p-2 rounded"
-              />
-            </div>
-
-            {/* Username */}
-            <div className="flex flex-col">
-              <label className="text-sm">Username:</label>
-              <input
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUserName(e.target.value)}
                 className="border p-2 rounded"
               />
             </div>
@@ -167,7 +156,8 @@ export default function EditUsers() {
           </div>
 
           {/* Users List */}
-          <div className="bg-white rounded-lg p-4 flex flex-col gap-3 text-black">
+          <div className="pb-6 max-h-[75vh] bg-white rounded-lg p-4 overflow-y-auto flex flex-col gap-3 text-black border-3 border-gray-50"
+          style={{ scrollbarGutter: "stable" }}>
             <UsersList refreshTrigger={refreshUsers} />
           </div>
 

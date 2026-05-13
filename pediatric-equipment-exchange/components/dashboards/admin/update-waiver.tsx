@@ -121,14 +121,6 @@ export default function UpdateWaiver({waiver_templates}: Props) {
     }
   }   
 
-  if(waiver_templates === null) {
-    return (
-      <div className="flex justify-center items-center h-40 bg-white rounded-xl border">
-        <p className="text-gray-500 text-base lg:text-lg animate-bounce"> Just a minute... </p>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col gap-5 bg-white border rounded-3xl px-1 py-5 md:px-3">
 
@@ -163,8 +155,8 @@ export default function UpdateWaiver({waiver_templates}: Props) {
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-            
-              {waiver_templates.map((entry) => (    
+
+              {waiver_templates?.filter((entry) => !entry.is_active).map((entry) => (    
                 <tr
                   key={entry.id}
                   className="hover:bg-amber-100 even:bg-green-100 odd:bg-green-50"
@@ -220,7 +212,7 @@ export default function UpdateWaiver({waiver_templates}: Props) {
 
             <tbody className="divide-y divide-gray-100">
             
-              {waiver_templates.filter((entry) => entry.is_active === true).map((entry) => (    
+              {waiver_templates?.filter((entry) => entry.is_active === true).map((entry) => (    
                 <tr
                   key={entry.id}
                   className="hover:bg-amber-100 even:bg-green-100 odd:bg-green-50">

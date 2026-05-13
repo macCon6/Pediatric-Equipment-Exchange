@@ -22,10 +22,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // 📦 3. GET REQUEST DATA
-    const { email, username, password, fullName, role } = await req.json();
+    const { email, password, fullName, role } = await req.json();
 
-    // ✅ 4. VALIDATE INPUT
+
     if (!email || !password || !fullName) {
       return NextResponse.json({ error: "Missing required fields" },
         { status: 400 }
@@ -39,16 +38,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const cleanUsername = username?.toLowerCase().trim();
-
-    // 👤 5. CREATE AUTH USER
     const { data: authData, error: authError } =
       await supabaseAdmin.auth.admin.createUser({
         email: email.trim(),
         password,
         email_confirm: true,
         user_metadata: {
-          username: cleanUsername,
           role,
           fullName,
         },
@@ -68,23 +63,24 @@ export async function POST(req: Request) {
       );
     }
 
-    // 🧾 6. INSERT INTO PROFILES TABLE
     const { error: profileInsertError } =
       await supabase.from("profiles").insert({
         id: userId,
         full_name: fullName,
         role,
-        username: cleanUsername,
         email: email.trim(),
       });
 
     if (profileInsertError) {
+
+      // delete auth table insert to avoid an orphaned row
+      await supabaseAdmin.auth.admin.deleteUser(userId);
+
       return NextResponse.json({ error: profileInsertError.message },
         { status: 400 }
       );
     }
 
-    // ✅ SUCCESS
     return NextResponse.json({ success: true, userId },
       { status: 200 }
     );

@@ -78,16 +78,7 @@ export default function ReservedEquipment({reserved_items}:Props) {
     if (type === "waiver") setSelectedWaiverState("");
   };
 
-  // loading / undefined state
-  if(reserved_items === null) {
-    return (
-      <div className="flex justify-center items-center h-40 bg-white rounded-xl border">
-        <p className="text-gray-500 text-base lg:text-lg animate-bounce"> Just a minute... </p>
-      </div>
-    );
-  }
-
-  if (reserved_items.length === 0) {
+  if (reserved_items?.length === 0) {
     return (
       <div className="flex justify-center items-center h-40 bg-white rounded-xl border">
         <p className="text-gray-500 text-base lg:text-lg"> No reserved items </p>
@@ -177,7 +168,7 @@ export default function ReservedEquipment({reserved_items}:Props) {
                  
             {/* Results count */}
             <span className="text-sm text-gray-500 ml-auto">
-              Showing {itemMatches?.length} of {reserved_items.length} reservations
+              Showing {itemMatches?.length} of {reserved_items?.length} reservations
             </span>
 
         </div>
@@ -224,6 +215,10 @@ export default function ReservedEquipment({reserved_items}:Props) {
               <p><span className="font-semibold">Reserved For:</span> {entry.recipient_name}</p>
 
               <p><span className="font-semibold">Caregiver:</span> {entry.contact_name}</p>
+
+              <p><span className="font-semibold">Caregiver Phone:</span> {entry.contact_phone}</p>
+
+              <p><span className="font-semibold">Caregiver Email:</span> {entry.contact_email}</p>
 
               <p><span className="font-semibold">Clinic:</span> {entry.clinic_name}</p>
 

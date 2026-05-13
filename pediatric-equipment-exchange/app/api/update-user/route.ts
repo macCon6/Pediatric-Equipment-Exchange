@@ -13,11 +13,10 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { email, username, full_name } = await req.json();
+    const { email, full_name } = await req.json();
 
     const id = user.sub;
 
-    // ✅ 1. Update email in Supabase Auth
     const { error: authError } =
       await supabaseAdmin.auth.admin.updateUserById(id, {
         email,
@@ -27,11 +26,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: authError.message }, { status: 500 });
     }
 
-    // ✅ 2. Update your profiles table (FIXED HERE)
     const { error: dbError } = await supabaseAdmin
-      .from("profiles") // ✅ changed from "users"
+      .from("profiles") 
       .update({
-        username,
         full_name,
          email, 
       })

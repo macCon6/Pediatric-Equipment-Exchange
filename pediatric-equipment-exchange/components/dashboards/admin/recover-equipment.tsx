@@ -91,16 +91,7 @@ export default function RecoverEquipment({deleted_items}:Props) {
    }
   };      
 
-  
-  if(deleted_items === null) {
-    return (
-      <div className="flex justify-center items-center h-40 bg-white rounded-xl border">
-        <p className="text-gray-500 text-base lg:text-lg animate-bounce"> Just a minute... </p>
-      </div>
-    );
-  }
-
-  if (deleted_items.length === 0) {
+  if (deleted_items?.length === 0) {
     return (
       <div className="flex justify-center items-center h-40 bg-white rounded-xl border">
         <p className="text-gray-500 text-base lg:text-lg"> No recoverable items </p>
@@ -115,7 +106,7 @@ export default function RecoverEquipment({deleted_items}:Props) {
 
        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
 
-        {deleted_items.map((entry) => (
+        {deleted_items?.map((entry) => (
           <div key={entry.id} className="p-4 hover:scale-105 cursor-pointer hover:shadow-2xl shadow-md border transition duration-100 rounded-3xl bg-white">
 
             <div className="flex flex-col gap-1 text-sm">

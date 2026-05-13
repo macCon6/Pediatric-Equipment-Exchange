@@ -28,7 +28,7 @@ export default function UsersList({ refreshTrigger }: { refreshTrigger: number }
     fetchUsers();
   }, [refreshTrigger]);
 
-  // ✅ Confirm delete
+
   const confirmDelete = async () => {
     if (!userToDelete) return;
 
@@ -66,7 +66,7 @@ export default function UsersList({ refreshTrigger }: { refreshTrigger: number }
     const emailList = filteredUsers
       .map((u) => u.email)
       .filter(Boolean)
-      .join(", "); // copy and pasting a list of emals joined by , in gmail works well
+      .join(", "); // copy and pasting a list of emals joined by , in gmail and outlook works well
 
     try {
       await navigator.clipboard.writeText(emailList);
@@ -80,8 +80,11 @@ export default function UsersList({ refreshTrigger }: { refreshTrigger: number }
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 w-full">
       {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
+
+      <h1 className="text-lg md:text-2xl text-center tracking-wide mb-3 mt-2" > Current Users </h1>
+
       <div className="flex flex-wrap gap-2 mb-4">
         <button className="bg-amber-200 rounded-xl py-1 px-3 mt-2 border hover:cursor-pointer hover:opacity-50" onClick={() => copyEmails()}> Copy All Emails </button>
 
@@ -96,44 +99,52 @@ export default function UsersList({ refreshTrigger }: { refreshTrigger: number }
       {users.map((user) => (
         <div key={user.id} className="bg-gray-100 p-3 rounded relative">
 
-          {/* ❌ Delete Button */}
+          {/* still working on this */}
+          <button
+            className="absolute top-2 right-8 hover:cursor-pointer px-2 rounded-2xl font-bold text-sm bg-red-500 text-white"
+          >
+            Edit Role
+          </button>
+
           <button
             onClick={() => setUserToDelete(user.id)}
-            className="absolute top-2 right-3 text-red-500 font-bold text-lg"
+            className="absolute top-1 right-3 text-red-500 font-bold text-lg hover:cursor-pointer"
           >
             ✕
           </button>
+  
 
           <p><b>Full Name:</b> {user.full_name}</p>
-          <p><b>Email:</b> {user.email}</p>
+          <p className="break-all"><b>Email:</b> {user.email}</p>
           <p><b>Role:</b> {user.role}</p>
         </div>
       ))}
 
-      {/* ✅ CUSTOM POPUP */}
       {userToDelete && (
         <div className="fixed inset-0 flex items-center justify-center bg-[#FFC94A]/80 backdrop-blur-sm z-50">
 
           <div className="bg-white p-6 rounded-xl shadow-2xl text-center w-[300px]">
 
-            <p className="text-lg font-semibold mb-4">
+            <p className="text-lg font-semibold">
               Delete user: {users.find(u => u.id === userToDelete)?.full_name}?
+            </p>
+
+            <p className="text-md mt-4 mb-6">
+              They will no longer be able to log in to the site. This cannot be undone!
             </p>
 
             <div className="flex gap-4 justify-center">
 
-              {/* Confirm */}
               <button
                 onClick={confirmDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 hover:cursor-pointer"
               >
                 Delete
               </button>
 
-              {/* Cancel */}
               <button
                 onClick={cancelDelete}
-                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 hover:cursor-pointer"
               >
                 Cancel
               </button>
