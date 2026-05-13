@@ -131,7 +131,7 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
               target="_blank"
               rel="noopener noreferrer"
             > 
-              Open in full tab </a>
+              Click here to view PDF in new tab </a>
             }
 
           <div className="flex flex-col gap-4 w-full">
@@ -244,7 +244,7 @@ export default function DisplayAndSignWaiver({ template_id, displayed_waiver_url
 
         {isSigned &&
           <div className="flex flex-col overflow-auto space-y-8 max-h-[85vh] p-2 bg-white rounded-lg justify-center">
-              <p className="text-md italic text-center"> The waiver has been signed. Click below to view in a full tab for print/download. </p>
+              <p className="text-md italic text-center"> The waiver has been signed. Click below to view in a new tab for print/download. </p>
               <a
                 href={pdfURL}
                 target="_blank"

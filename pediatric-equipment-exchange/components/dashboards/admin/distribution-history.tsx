@@ -187,6 +187,10 @@ export default function DistributionHistory({all_distributions, clinics, page, p
 
               <p><span className="font-semibold"> Caregiver:</span> {entry.contact_name}</p>
 
+               <p><span className="font-semibold">Caregiver Phone:</span> {entry.contact_phone}</p>
+
+              <p><span className="font-semibold">Caregiver Email:</span> {entry.contact_email}</p>
+
               <p><span className="font-semibold"> Clinic:</span> {entry.clinic_name}</p>
 
               <p><span className="font-semibold"> Reserved By:</span> {entry.reserved_by_name} </p>

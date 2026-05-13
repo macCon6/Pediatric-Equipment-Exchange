@@ -16,10 +16,10 @@ export default function DistributionDetailsPopup({current_status, equipment_id, 
     return (
         <Popup isOpen={isOpen} onClose ={onClose} sizingClassName="max-w-sm md:max-w-xl lg:max-w-2xl xl:max-w-3xl w-full h-full"> 
 
-            <h1 className="text-center font-bold text-2xl"> {current_status.startsWith("Reserved")? "Reservation": "Allocation"} Details  </h1>
+            <h1 className="text-center font-bold text-2xl underline tracking-wide"> {current_status.startsWith("Reserved")? "Reservation": "Allocation"} Details  </h1>
 
             <div className="flex flex-col py-5">
-                <ul className="text-xl space-y-2"> 
+                <ul className="text-xl space-y-3 py-3 px-2 rounded-2xl"> 
                     {/* First stage, show recipient info and waiver link */}
                    
                   
