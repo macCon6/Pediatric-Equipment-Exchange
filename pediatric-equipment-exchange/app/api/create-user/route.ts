@@ -38,6 +38,7 @@ export async function POST(req: Request) {
     if (authError) {
         return NextResponse.json({ error: authError.message }, { status: 400 });
       }
+
     
     const userId= authData.user?.id;
 
@@ -47,18 +48,22 @@ export async function POST(req: Request) {
     }
 
     // send user email to reset their password 
-    const { error: resetError } =
-  await supabaseAdmin.auth.resetPasswordForEmail(
-    email.trim().toLowerCase(),
-    {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
-    }
-  );
-    
+    const { error: inviteError } =
+    await supabaseAdmin.auth.admin.inviteUserByEmail(
+      email.trim().toLowerCase(),
+      {
+        redirectTo:
+         "https://beyond-the-horizon-lending-library.vercel.app/auth/callback",
+        data: {
+          fullName,
+         role,
+        },
+      }
+    );
 
-    if (resetError) {
+    if (inviteError) {
       await supabaseAdmin.auth.admin.deleteUser(userId);
-      return NextResponse.json({ error: resetError.message }, { status: 400 });
+      return NextResponse.json({ error: inviteError.message }, { status: 400 });
     }
 
     const { error: profileInsertError } = await supabaseAdmin
