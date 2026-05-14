@@ -143,7 +143,7 @@ export default function SideBar() {
                 </div>
 
                 <div className="mt-auto p-2 flex flex-col gap-4">
-                    <Link href="https://www.camp-horizon.com/">
+                    <Link href="https://www.camp-horizon.com/" target="_blank" rel="noopener noreferrer">
                         <button className="w-full py-2 text-center text-sm rounded-full text-blue-500 hover:cursor-pointer hover:opacity-50 underline">
                             Back to Camp Horizon
                         </button>

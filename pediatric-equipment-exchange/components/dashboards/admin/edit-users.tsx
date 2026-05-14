@@ -12,6 +12,9 @@ export default function EditUsers() {
   const [isTherapist, setIsTherapist] = useState(false);
   const [fullName, setFullName] = useState("");
 
+  // for admin to choose if its a manual creation or an invitation email for sign up
+  const[sendInvite, setSendInvite] = useState(false);
+
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("error");
   const [refreshUsers, setRefreshUsers] = useState(0);
@@ -38,6 +41,7 @@ export default function EditUsers() {
         password,
         fullName,
         role,
+        sendInvite
       }),
     });
 
@@ -51,6 +55,7 @@ export default function EditUsers() {
       setEmail("");
       setPassword("");
       setFullName("");
+      setSendInvite(false);
       setIsAdmin(false);
 
       // Refresh user list instantly
@@ -74,6 +79,32 @@ export default function EditUsers() {
           <div className="bg-white rounded-lg p-6 flex flex-col gap-3 text-black border-3 border-gray-50 ">
 
             <h1 className="text-lg md:text-2xl text-center tracking-wide mb-3 mt-2"> Create New User </h1>
+
+            <p className="text-sm"> Please select if you would like to manually create the user or send an invitation email, which will
+              send them a link that allows them to sign up. </p>
+
+            <p className="text-sm"> You must enter their full name and email in both cases, but you only have to enter a password if manually creating a user.  </p>
+
+            <p className="text-sm"> 
+              Manually created users can log in with the information you provide here. They can reset their password using the "Forgot Password" button on the login page. </p>
+
+            <div className="flex gap-3 items-center mt-2 mb-4 justify-center">
+              <label className="text-sm">Manually create user </label>
+              <button
+                onClick={() => { setSendInvite(!sendInvite) }}
+                className={`w-12 h-6 flex items-center rounded-full p-1 transition ${
+                  sendInvite ? "bg-[#5a9e3a]" : "bg-gray-300"
+                }`}
+              >
+                <div
+                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition ${
+                    sendInvite ? "translate-x-6" : "translate-x-0"
+                  }`}
+                />
+              </button>
+              <label className="text-sm"> Send invitation email </label>
+            </div>
+
 
             {/* Full Name */}
             <div className="flex flex-col">
@@ -100,13 +131,14 @@ export default function EditUsers() {
 
             {/* Password */}
             <div className="flex flex-col">
-              <label className="text-sm">Password:</label>
+              <label className="text-sm"> {sendInvite? "Password is only needed for manual user creation.":"Password:"}</label>
               <input
                 type="password"
                 placeholder="Password"
+                disabled = {sendInvite}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="border p-2 rounded"
+                className={`border p-2 rounded ${sendInvite? "opacity-30 hover:cursor-not-allowed": ""}`}
               />
             </div>
 
@@ -131,7 +163,7 @@ export default function EditUsers() {
             <div className="flex gap-3 items-center">
               <label className="text-sm">Make Therapist?</label>
               <button
-                onClick={() => { setIsTherapist(!isTherapist), setIsAdmin(false)}}
+                onClick={() => { setIsTherapist(!isTherapist); setIsAdmin(false)}}
                 className={`w-12 h-6 flex items-center rounded-full p-1 transition ${
                   isTherapist ? "bg-[#5a9e3a]" : "bg-gray-300"
                 }`}
@@ -148,7 +180,7 @@ export default function EditUsers() {
             {/* Submit */}
             <button
               onClick={handleCreateUser}
-              disabled={!email || !password || !fullName}
+              disabled={!email || !fullName || (!sendInvite && !password) }
               className="bg-[#5a9e3a] disabled:opacity-50 text-black rounded-full px-5 p-2 mt-2"
             >
               Create User

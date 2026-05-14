@@ -15,7 +15,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden: Admins only" }, { status: 403 });
     }
 
-    const { email, username, password, fullName, role, sendInvite } = await req.json();
+    const { email, password, fullName, role, sendInvite } = await req.json();
 
     if (!email || !fullName) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -30,7 +30,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
 
-    const cleanUsername = username?.toLowerCase().trim();
     let userId: string;
 
     if (sendInvite) {
@@ -38,7 +37,6 @@ export async function POST(req: Request) {
         await supabaseAdmin.auth.admin.inviteUserByEmail(email.trim(), {
           redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
           data: {
-            username: cleanUsername,
             role,
             fullName,
           },
@@ -53,11 +51,10 @@ export async function POST(req: Request) {
     } else {
       const { data: authData, error: authError } =
         await supabaseAdmin.auth.admin.createUser({
-          email: email.trim(),
+          email: email.trim().toLowerCase(),
           password,
           email_confirm: true,
           user_metadata: {
-            username: cleanUsername,
             role,
             fullName,
           },
@@ -80,8 +77,7 @@ export async function POST(req: Request) {
         id: userId,
         full_name: fullName,
         role,
-        username: cleanUsername,
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
       });
 
     if (profileInsertError) {

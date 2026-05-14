@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 export default function ResetPassword() {
   const supabase = createClient();
   const router = useRouter();
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -18,31 +19,36 @@ export default function ResetPassword() {
 
 useEffect(() => {
   const params = new URLSearchParams(window.location.search);
-  const tokenHash = params.get("token_hash");
-  const type = params.get("type") as any;
+  const code = params.get("code");
 
-  if (tokenHash && type) {
-    supabase.auth.verifyOtp({
-      token_hash: tokenHash,
-      type: type,
-    }).then(({ data, error }) => {
+   const exchange = async () => {
+      if (!code) {
+        setErrorMessage("Invalid or expired reset link.");
+        setLoading(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+
       if (error) {
-        console.error("verifyOtp error:", error);
-        setErrorMessage("Invalid or expired reset link. Please request a new one.");
+        setErrorMessage("This reset link is invalid or expired.");
       } else {
-        console.log("verifyOtp success:", data);
         setSessionReady(true);
       }
+
       setLoading(false);
-    });
-  } else {
-    setErrorMessage("Invalid reset link. Please request a new one.");
-    setLoading(false);
-  }
-}, []);
+    };
+
+    exchange();
+  }, []);
 
   const handleReset = async () => {
     setErrorMessage("");
+    
+    if (!sessionReady) {
+      setErrorMessage("Session not ready. Please reopen the reset link.");
+      return;
+    }
 
     if (!password || !confirmPassword) {
       setErrorMessage("Please fill in both fields");
@@ -68,7 +74,7 @@ useEffect(() => {
 
     setSuccess(true);
     setTimeout(() => {
-      router.push("/login-page");
+      router.replace("/login-page");
     }, 2000);
   };
 
@@ -147,7 +153,9 @@ useEffect(() => {
 
             <button
               onClick={handleReset}
-              className="w-full rounded-xl bg-[#5a9e3a] py-3 text-lg font-semibold text-white transition-colors hover:bg-[#4a8a2e] cursor-pointer"
+              disabled={!sessionReady}
+              className={`w-full rounded-xl py-3 text-lg font-semibold text-white transition-colors 
+                 ${sessionReady ? "bg-[#5a9e3a] hover:bg-[#4a8a2e] cursor-pointer" : "bg-gray-400 cursor-not-allowed"}`}
             >
               Update Password
             </button>
