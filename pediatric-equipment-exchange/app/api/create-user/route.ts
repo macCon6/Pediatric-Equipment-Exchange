@@ -15,60 +15,49 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden: Admins only" }, { status: 403 });
     }
 
-    const { email, password, fullName, role, sendInvite } = await req.json();
+    const { email, fullName, role } = await req.json();
 
-    if (!email || !fullName) {
+    if (!email || !fullName ) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
-
-    if (!sendInvite && !password) {
-      return NextResponse.json({ error: "Password is required when not sending invite" }, { status: 400 });
-    }
-
     const allowedRoles = ["admin", "therapist", "volunteer"];
     if (!allowedRoles.includes(role)) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
 
-    let userId: string;
+    const { data: authData, error: authError } =
+      await supabaseAdmin.auth.admin.createUser({
+        email: email.trim().toLowerCase(),
+        email_confirm: true,
+        user_metadata: {
+          role,
+          fullName,
+        },
+      });
 
-    if (sendInvite) {
-      const { data: authData, error: authError } =
-        await supabaseAdmin.auth.admin.inviteUserByEmail(email.trim(), {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/callback`,
-          data: {
-            role,
-            fullName,
-          },
-        });
-
-      if (authError) {
+    if (authError) {
         return NextResponse.json({ error: authError.message }, { status: 400 });
       }
+    
+    const userId= authData.user?.id;
 
-      userId = authData.user?.id;
-
-    } else {
-      const { data: authData, error: authError } =
-        await supabaseAdmin.auth.admin.createUser({
-          email: email.trim().toLowerCase(),
-          password,
-          email_confirm: true,
-          user_metadata: {
-            role,
-            fullName,
-          },
-        });
-
-      if (authError) {
-        return NextResponse.json({ error: authError.message }, { status: 400 });
-      }
-
-      userId = authData.user?.id;
-    }
 
     if (!userId) {
       return NextResponse.json({ error: "User ID not returned" }, { status: 500 });
+    }
+
+    // send user email to reset their password 
+    const { error: resetError } =
+      await supabaseAdmin.auth.resetPasswordForEmail(email.trim().toLowerCase(),
+      {
+        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/callback`,
+      }
+    );
+    
+
+    if (resetError) {
+      await supabaseAdmin.auth.admin.deleteUser(userId);
+      return NextResponse.json({ error: resetError.message }, { status: 400 });
     }
 
     const { error: profileInsertError } = await supabaseAdmin

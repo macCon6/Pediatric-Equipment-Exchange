@@ -7,13 +7,9 @@ import Toast from "@/components/popups/toast";
 export default function EditUsers() {
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [isTherapist, setIsTherapist] = useState(false);
   const [fullName, setFullName] = useState("");
-
-  // for admin to choose if its a manual creation or an invitation email for sign up
-  const[sendInvite, setSendInvite] = useState(false);
 
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("error");
@@ -38,10 +34,8 @@ export default function EditUsers() {
       credentials: "include", //  REQUIRED for auth
       body: JSON.stringify({
         email,
-        password,
         fullName,
         role,
-        sendInvite
       }),
     });
 
@@ -53,10 +47,9 @@ export default function EditUsers() {
 
       // Clear form
       setEmail("");
-      setPassword("");
       setFullName("");
-      setSendInvite(false);
       setIsAdmin(false);
+      setIsTherapist(false);
 
       // Refresh user list instantly
       setRefreshUsers((prev) => prev + 1);
@@ -80,31 +73,7 @@ export default function EditUsers() {
 
             <h1 className="text-lg md:text-2xl text-center tracking-wide mb-3 mt-2"> Create New User </h1>
 
-            <p className="text-sm"> Please select if you would like to manually create the user or send an invitation email, which will
-              send them a link that allows them to sign up. </p>
-
-            <p className="text-sm"> You must enter their full name and email in both cases, but you only have to enter a password if manually creating a user.  </p>
-
-            <p className="text-sm"> 
-              Manually created users can log in with the information you provide here. They can reset their password using the "Forgot Password" button on the login page. </p>
-
-            <div className="flex gap-3 items-center mt-2 mb-4 justify-center">
-              <label className="text-sm">Manually create user </label>
-              <button
-                onClick={() => { setSendInvite(!sendInvite) }}
-                className={`w-12 h-6 flex items-center rounded-full p-1 transition ${
-                  sendInvite ? "bg-[#5a9e3a]" : "bg-gray-300"
-                }`}
-              >
-                <div
-                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition ${
-                    sendInvite ? "translate-x-6" : "translate-x-0"
-                  }`}
-                />
-              </button>
-              <label className="text-sm"> Send invitation email </label>
-            </div>
-
+            <p className="text-sm"> Upon creating a user's account, they will receive an email prompting them to reset their password. </p>
 
             {/* Full Name */}
             <div className="flex flex-col">
@@ -126,19 +95,6 @@ export default function EditUsers() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="border p-2 rounded"
-              />
-            </div>
-
-            {/* Password */}
-            <div className="flex flex-col">
-              <label className="text-sm"> {sendInvite? "Password is only needed for manual user creation.":"Password:"}</label>
-              <input
-                type="password"
-                placeholder="Password"
-                disabled = {sendInvite}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={`border p-2 rounded ${sendInvite? "opacity-30 hover:cursor-not-allowed": ""}`}
               />
             </div>
 
@@ -180,7 +136,7 @@ export default function EditUsers() {
             {/* Submit */}
             <button
               onClick={handleCreateUser}
-              disabled={!email || !fullName || (!sendInvite && !password) }
+              disabled={!email || !fullName }
               className="bg-[#5a9e3a] disabled:opacity-50 text-black rounded-full px-5 p-2 mt-2"
             >
               Create User

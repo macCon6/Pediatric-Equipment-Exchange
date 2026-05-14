@@ -138,7 +138,6 @@ export default function UsersList({ refreshTrigger }: { refreshTrigger: number }
       {users.map((user) => (
         <div key={user.id} className="bg-gray-100 p-3 rounded relative">
 
-          {/* still working on this */}
           <button
             onClick={() => { 
               setUserToUpdate(user.id); 
