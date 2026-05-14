@@ -73,7 +73,14 @@ export default function EditUsers() {
 
             <h1 className="text-lg md:text-2xl text-center tracking-wide mb-3 mt-2"> Create New User </h1>
 
-            <p className="text-sm"> Upon creating a user's account, they will receive an email prompting them to reset their password. </p>
+            <p className="text-sm"> New users will not be sent a confirmation email.  </p>
+
+            <p className="text-sm"> Instead, they must navigate to the site login page. There, they will need to select the "Forgot Password" button and enter the email associated with their account. 
+              This will send them an email containing a link to reset their password.
+            </p>
+
+            <p className="text-sm"> That email and new password will be their login credentials for the site.
+            </p>
 
             {/* Full Name */}
             <div className="flex flex-col">
