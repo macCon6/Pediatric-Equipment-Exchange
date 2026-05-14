@@ -105,7 +105,9 @@ export default function Login() {
                     i
                   </button>
                   <div className="absolute bottom-8 right-0 w-64 bg-gray-700 text-white text-xs rounded-xl px-3 py-2 shadow-lg invisible group-hover:visible z-50">
-                    The reset email may land in your <strong>spam or junk folder</strong>. If you don't see it in your inbox, please check there and mark it as safe.
+                   *** <strong>NEW</strong> users must change password after setting up an account with Physical Therapist/Admin. ***     
+                    
+                   *<strong>IMPORTANT</strong>* The reset email may land in your <strong>spam or junk folder</strong>. If you don't see it in your inbox, please check there and mark it as safe. The email should return to main inbox, click the link in the email to continue reset password.
                     <div className="absolute bottom-[-6px] right-2 w-3 h-3 bg-gray-700 rotate-45"></div>
                   </div>
                 </div>

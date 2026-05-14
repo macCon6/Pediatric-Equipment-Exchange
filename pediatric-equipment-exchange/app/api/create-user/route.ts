@@ -47,22 +47,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User ID not returned" }, { status: 500 });
     }
 
-    // send user email to reset their password 
-    const { error: linkError } =
-      await supabaseAdmin.auth.resetPasswordForEmail(
-      email.trim().toLowerCase(),
-      {
-        redirectTo:
-          "https://beyond-the-horizon-lending-library.vercel.app/auth/callback",
-      }
-    );
-   
-
-    if (linkError) {
-      await supabaseAdmin.auth.admin.deleteUser(userId);
-      return NextResponse.json({ error: linkError.message }, { status: 400 });
-    }
-
     const { error: profileInsertError } = await supabaseAdmin
       .from("profiles")
       .insert({
