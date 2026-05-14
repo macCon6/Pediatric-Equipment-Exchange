@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     if (sendInvite) {
       const { data: authData, error: authError } =
         await supabaseAdmin.auth.admin.inviteUserByEmail(email.trim(), {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
+          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/callback`,
           data: {
             role,
             fullName,
