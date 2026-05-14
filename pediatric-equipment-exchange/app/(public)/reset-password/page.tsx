@@ -15,6 +15,13 @@ export default function ResetPassword() {
   const [errorMessage, setErrorMessage] = useState("");
   const [success, setSuccess] = useState(false);
 
+  useEffect(() => {
+    const clean = async () => {
+      await supabase.auth.signOut();
+    };
+    clean();
+  }, []);
+
   const handleReset = async () => {
     setErrorMessage("");
 
@@ -41,6 +48,8 @@ export default function ResetPassword() {
     }
 
     setSuccess(true);
+    await supabase.auth.signOut(); 
+
     setTimeout(() => {
       router.replace("/login-page");
     }, 2000);
