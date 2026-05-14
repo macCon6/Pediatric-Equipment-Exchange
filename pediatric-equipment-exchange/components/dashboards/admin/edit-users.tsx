@@ -2,21 +2,32 @@
 
 import { useState } from "react";
 import UsersList from "@/components/dashboards/admin/user-list";
+import Toast from "@/components/popups/toast";
 
 export default function EditUsers() {
 
-  const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isTherapist, setIsTherapist] = useState(false);
   const [fullName, setFullName] = useState("");
 
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("error");
   const [refreshUsers, setRefreshUsers] = useState(0);
 
+
   const handleCreateUser = async () => {
-    const role = isAdmin ? "admin" : "volunteer";
+    
+    let role = "volunteer";
+
+    if(isAdmin) {
+      role = "admin";
+    }
+    
+    if(isTherapist) {
+      role = "therapist";
+    }
 
     const res = await fetch("/api/create-user", {
       method: "POST",
@@ -24,7 +35,6 @@ export default function EditUsers() {
       credentials: "include", //  REQUIRED for auth
       body: JSON.stringify({
         email,
-        username,
         password,
         fullName,
         role,
@@ -34,11 +44,11 @@ export default function EditUsers() {
     const data = await res.json();
 
     if (res.ok) {
-      setSuccessMessage("✅ User added successfully!");
+      setToastType("success");
+      setToastMessage("User added successfully!");
 
       // Clear form
       setEmail("");
-      setUserName("");
       setPassword("");
       setFullName("");
       setIsAdmin(false);
@@ -46,37 +56,25 @@ export default function EditUsers() {
       // Refresh user list instantly
       setRefreshUsers((prev) => prev + 1);
 
-      setTimeout(() => setSuccessMessage(""), 3000);
     } else {
+      setToastType("error");
       if (res.status === 401) {
-        setErrorMessage("❌ You must be logged in to create a user.");
+        setToastMessage("You must be logged in to create a user.");
       } else {
-        setErrorMessage(`❌ ${data.error || "Something went wrong"}`);
+        setToastMessage(`${data.error || "Something went wrong"}`);
       }
-
-      setTimeout(() => setErrorMessage(""), 4000);
     }
   };
 
   return (
   <>
-        {/*  SUCCESS POPUP */}
-        {successMessage && (
-          <div className="fixed top-6 right-6 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-xl text-lg">
-            {successMessage}
-          </div>
-        )}
-
-        {/* ERROR POPUP */}
-        {errorMessage && (
-          <div className="fixed top-6 right-6 z-50 bg-red-500 text-white px-6 py-4 rounded-lg shadow-xl text-lg">
-            {errorMessage}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 min-w-0">
           {/* Create User Box */}
-          <div className="bg-white rounded-lg p-4 flex flex-col gap-3 text-black">
+          <div className="bg-white rounded-lg p-6 flex flex-col gap-3 text-black border-3 border-gray-50 ">
+
+            <h1 className="text-lg md:text-2xl text-center tracking-wide mb-3 mt-2"> Create New User </h1>
+
             {/* Full Name */}
             <div className="flex flex-col">
               <label className="text-sm">Full Name:</label>
@@ -100,17 +98,6 @@ export default function EditUsers() {
               />
             </div>
 
-            {/* Username */}
-            <div className="flex flex-col">
-              <label className="text-sm">Username:</label>
-              <input
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUserName(e.target.value)}
-                className="border p-2 rounded"
-              />
-            </div>
-
             {/* Password */}
             <div className="flex flex-col">
               <label className="text-sm">Password:</label>
@@ -127,7 +114,7 @@ export default function EditUsers() {
             <div className="flex gap-3 items-center">
               <label className="text-sm">Make Admin?</label>
               <button
-                onClick={() => setIsAdmin(!isAdmin)}
+                onClick={() => { setIsAdmin(!isAdmin); setIsTherapist(false)}}
                 className={`w-12 h-6 flex items-center rounded-full p-1 transition ${
                   isAdmin ? "bg-[#5a9e3a]" : "bg-gray-300"
                 }`}
@@ -140,6 +127,24 @@ export default function EditUsers() {
               </button>
             </div>
 
+            {/*therapist Toggle */}
+            <div className="flex gap-3 items-center">
+              <label className="text-sm">Make Therapist?</label>
+              <button
+                onClick={() => { setIsTherapist(!isTherapist), setIsAdmin(false)}}
+                className={`w-12 h-6 flex items-center rounded-full p-1 transition ${
+                  isTherapist ? "bg-[#5a9e3a]" : "bg-gray-300"
+                }`}
+              >
+                <div
+                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition ${
+                    isTherapist ? "translate-x-6" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+            
+            <p className="text-sm italic"> *Activating neither will give this user the Volunteer role. </p>
             {/* Submit */}
             <button
               onClick={handleCreateUser}
@@ -151,7 +156,8 @@ export default function EditUsers() {
           </div>
 
           {/* Users List */}
-          <div className="bg-white rounded-lg p-4 flex flex-col gap-3 text-black">
+          <div className="pb-6 max-h-[75vh] bg-white rounded-lg p-4 overflow-y-auto flex flex-col gap-3 text-black border-3 border-gray-50"
+          style={{ scrollbarGutter: "stable" }}>
             <UsersList refreshTrigger={refreshUsers} />
           </div>
 

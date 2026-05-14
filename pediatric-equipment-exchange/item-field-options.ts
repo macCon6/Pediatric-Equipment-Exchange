@@ -12,16 +12,21 @@ export const CONDITION_OPTIONS = [
 export const CATEGORY_OPTIONS = [
     "Stander",
     "Wheelchair",
-    "Medical Stroller",
-    "Activity Chair",
     "Walker",
+    "Medical Stroller",
     "Gait Trainer/Supported Stepping Device",
+    "Standard Crutches",
     "Forearm Crutches",
+    "Activity Chair",
+    "Bath Equipment",
+    "Shower Chair",
+    "Toilet Chair",
     "Adaptive Tricycle/Bicycle",
     "Adaptive Tray",
     "Walking Frame",
-    "Guardian",
-    "Pacer",
+    "Sleep Positioner",
+    "Toddler Mobility Trainer",
+    "Adaptive Swing",
     "Other"
 ] as const;
 
@@ -29,12 +34,18 @@ export const SUBCATEGORY_OPTIONS = [
     "Supine",
     "Prone",
     "Posterior",
-    "Multi",
     "Mobile",
+    "Multi-Position",
+    "Manual Tilt-in-Space",
+    "Manual Reclining",
     "Manual Rigid",
     "Manual Folding",
+    "Manual E-Assist",
     "Sport",
-    "Power"
+    "Power",
+    "Hand-Propelled Only",
+    "Foot-Propelled Only",
+    "Hand-and-Foot Propelled"
 ] as const;
 
 export const STATUS_OPTIONS = [

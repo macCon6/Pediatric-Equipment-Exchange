@@ -18,8 +18,8 @@ import { HistoryData } from "@/components/dashboards/admin/admin-page";
 interface Props {
   user: any,
   role: string,
-  this_username: string,
   full_name: string,
+  email: string,
   allocated_items: ReadableDistribution[] | null,
   reserved_items: ReadableDistribution[] | null,
   history_data: HistoryData | null,
@@ -29,7 +29,7 @@ interface Props {
   active_tab:any
 }
 
-export default function AdminTabs({ user, role, this_username, full_name, allocated_items, reserved_items, history_data, clinics, waiver_templates, deleted_items, active_tab}: Props ) {
+export default function AdminTabs({ user, role, full_name, email, allocated_items, reserved_items, history_data, clinics, waiver_templates, deleted_items, active_tab}: Props ) {
     
     
     const router = useRouter();
@@ -84,7 +84,7 @@ export default function AdminTabs({ user, role, this_username, full_name, alloca
                     <div className="w-full mt-3">
 
                         <TabsContent value="profile">
-                            <ProfileInfo user={user} role={role} username={this_username} full_name={full_name} />
+                            <ProfileInfo user={user} role={role} full_name={full_name} email={email}/>
                         </TabsContent>
 
                         <TabsContent value="users">

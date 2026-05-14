@@ -7,22 +7,22 @@ import { createClient } from "@/lib/supabase/server";
 interface Props {
   user: any;
   role: string;
-  this_username: string;
   full_name: string;
+  email: string
 }
 
 export default async function TherapistPage({
   user,
   role,
-  this_username,
   full_name,
+  email
 }: Props) {
 
   const supabase = await createClient();
 
   const { data: items, error } = await supabase
     .from("readable_distribution")
-      .select("id, equipment_id, equipment_name, recipient_name, contact_name, clinic_name, reserved_by, reserved_by_name, reserved_at, signed_waiver_url, equipment_barcode, therapist_notes")
+      .select("id, equipment_id, equipment_name, recipient_name, contact_name, contact_email, contact_phone, clinic_name, reserved_by, reserved_by_name, reserved_at, signed_waiver_url, equipment_barcode, therapist_notes")
       .not("reserved_at", "is", null)
       .is("allocated_at", null)
       .is("returned_at", null)
@@ -58,8 +58,8 @@ export default async function TherapistPage({
              <ProfileInfo
                 user={user}
                 role={role}
-                username={this_username}
                 full_name={full_name}
+                email={email}
               />
             </TabsContent>
 

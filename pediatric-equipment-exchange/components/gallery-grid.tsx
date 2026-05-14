@@ -3,7 +3,7 @@
 import EquipmentCard from "@/components/equipment-card";
 import { ItemFields } from "@/field_interfaces";
 import { useState } from "react";
-import { CATEGORY_OPTIONS } from "@/item-field-options";
+import { CATEGORY_OPTIONS, COLOR_OPTIONS } from "@/item-field-options";
 import Lottie from "lottie-react";
 import dogAnimation from "../public/Long_Dog.json";
 
@@ -17,12 +17,14 @@ export default function GalleryGrid({ items }: Props) {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+    const [selectedColors, setSelectedColors] = useState<string[]>([]);
 
     // Get unique values for filter dropdowns from actual data
     const dataCategories = [...new Set(items.map(item => item.category).filter(Boolean))];
     const categories = [...CATEGORY_OPTIONS.filter(cat => cat !== "Other").sort(), "Other"];
     const statuses = [...new Set(items.map(item => item.status).filter(Boolean))].sort();
     const conditions = [...new Set(items.map(item => item.condition).filter(Boolean))].sort();
+    const colors = [...COLOR_OPTIONS];
 
     // Toggle a value in a multi-select filter
     const toggleFilter = (value: string, selected: string[], setSelected: (v: string[]) => void) => {
@@ -40,16 +42,18 @@ export default function GalleryGrid({ items }: Props) {
         const categoryMatches = selectedCategories.length === 0 || selectedCategories.includes(item.category);
         const statusMatches = selectedStatuses.length === 0 || selectedStatuses.includes(item.status);
         const conditionMatches = selectedConditions.length === 0 || selectedConditions.includes(item.condition);
-        return nameMatches && categoryMatches && statusMatches && conditionMatches;
+        const colorMatches = selectedColors.length === 0 || selectedColors.includes(item.color? item.color : "");
+        return nameMatches && categoryMatches && statusMatches && conditionMatches && colorMatches;
     });
 
-    const hasActiveFilters = selectedCategories.length > 0 || selectedStatuses.length > 0 || selectedConditions.length > 0 || searchTerm;
+    const hasActiveFilters = selectedCategories.length > 0 || selectedStatuses.length > 0 || selectedConditions.length > 0 || selectedColors.length > 0 ||searchTerm;
 
     const clearFilters = () => {
         setSearchTerm("");
         setSelectedCategories([]);
         setSelectedStatuses([]);
         setSelectedConditions([]);
+        setSelectedColors([]);
     };
 
     // All active filter tags combined
@@ -57,12 +61,14 @@ export default function GalleryGrid({ items }: Props) {
         ...selectedCategories.map(v => ({ value: v, type: "category" })),
         ...selectedStatuses.map(v => ({ value: v, type: "status" })),
         ...selectedConditions.map(v => ({ value: v, type: "condition" })),
+        ...selectedColors.map(v => ({ value: v, type: "color" })),
     ];
 
     const removeTag = (value: string, type: string) => {
         if (type === "category") setSelectedCategories(selectedCategories.filter(v => v !== value));
         if (type === "status") setSelectedStatuses(selectedStatuses.filter(v => v !== value));
         if (type === "condition") setSelectedConditions(selectedConditions.filter(v => v !== value));
+        if (type === "color") setSelectedColors(selectedColors.filter(v => v !== value));
     };
 
     return (
@@ -140,6 +146,25 @@ export default function GalleryGrid({ items }: Props) {
                                 <option key={condition} value={condition}
                                     style={{ fontWeight: selectedConditions.includes(condition) ? "bold" : "normal" }}>
                                     {selectedConditions.includes(condition) ? "✓ " : ""}{condition}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                     {/* Colors dropdown */}
+                    <div className="relative">
+                        <select
+                            onChange={e => {
+                                if (e.target.value) toggleFilter(e.target.value, selectedColors, setSelectedColors);
+                                e.target.value = "";
+                            }}
+                            className="border-2 border-[#132540] rounded-2xl px-3 py-2 bg-white text-[#132540] text-sm focus:outline-none cursor-pointer"
+                        >
+                            <option value="">Color {selectedConditions.length > 0 ? `(${selectedColors.length})` : ""}</option>
+                            {colors.map(color => (
+                                <option key={color} value={color}
+                                    style={{ fontWeight: selectedColors.includes(color) ? "bold" : "normal" }}>
+                                    {selectedConditions.includes(color) ? "✓ " : ""}{color}
                                 </option>
                             ))}
                         </select>

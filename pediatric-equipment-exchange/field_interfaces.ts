@@ -61,7 +61,6 @@ export interface ProfileFields {
     id: string,
     full_name: string,
     created_at: string,
-    username: string,
     role: string,
     email: string
 }

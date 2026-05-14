@@ -8,7 +8,8 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("*");
+    .select("*")
+    .is("deleted_at", null);
 
   if (error) {
     return NextResponse.json({ error: error.message },
@@ -16,7 +17,7 @@ export async function GET() {
     );
   }
 
-  return NextResponse.json({ users: data }, // ✅ IMPORTANT
+  return NextResponse.json({ users: data },
     { status: 200 }
   );
 }

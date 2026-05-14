@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Password is required when not sending invite" }, { status: 400 });
     }
 
-    const allowedRoles = ["admin", "physical_therapist", "volunteer"];
+    const allowedRoles = ["admin", "therapist", "volunteer"];
     if (!allowedRoles.includes(role)) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
@@ -34,7 +34,6 @@ export async function POST(req: Request) {
     let userId: string;
 
     if (sendInvite) {
-      // ✅ Send invite email — user sets their own password
       const { data: authData, error: authError } =
         await supabaseAdmin.auth.admin.inviteUserByEmail(email.trim(), {
           redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
@@ -52,7 +51,6 @@ export async function POST(req: Request) {
       userId = authData.user?.id;
 
     } else {
-      // ✅ Create user with manual password
       const { data: authData, error: authError } =
         await supabaseAdmin.auth.admin.createUser({
           email: email.trim(),
@@ -76,7 +74,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User ID not returned" }, { status: 500 });
     }
 
-    // Insert into profiles table
     const { error: profileInsertError } = await supabaseAdmin
       .from("profiles")
       .insert({
@@ -88,6 +85,7 @@ export async function POST(req: Request) {
       });
 
     if (profileInsertError) {
+      await supabaseAdmin.auth.admin.deleteUser(userId);
       return NextResponse.json({ error: profileInsertError.message }, { status: 400 });
     }
 

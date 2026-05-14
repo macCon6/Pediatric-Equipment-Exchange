@@ -29,9 +29,10 @@ export async function DELETE(req: Request) {
       );
     }
 
-    // ✅ Delete from Supabase Auth
     const { error: authError } =
       await supabaseAdmin.auth.admin.deleteUser(id);
+
+      console.log(authError);
 
     if (authError) {
       return NextResponse.json({ error: authError.message },
@@ -39,18 +40,14 @@ export async function DELETE(req: Request) {
       );
     }
 
-    // ✅ Delete from profiles table
-    const { error: profileError } = await supabase
+
+    // dont delete from Profiles table that way we can preserve history just set deleted at
+    const{error: profError} =await supabase
       .from("profiles")
-      .delete()
+      .update({ deleted_at: new Date().toISOString() })
       .eq("id", id);
-
-    if (profileError) {
-      return NextResponse.json({ error: profileError.message },
-        { status: 400 }
-      );
-    }
-
+    
+      console.log(profError);
     return NextResponse.json({ success: true },
       { status: 200 }
     );

@@ -3,21 +3,22 @@
    
 import { useState } from "react";
 import Toast from "@/components/popups/toast";
+import { useRouter } from "next/navigation";
    
 interface Props {
   user: any;
   full_name: string;
-  username: string;
   role: string;
+  email: string
 }
    
-export default function ProfileInfo({user, full_name, username, role,}: Props) {
+export default function ProfileInfo({user, full_name, role, email}: Props) {
   
   const [isEditing, setIsEditing] = useState(false);
+  const router = useRouter();
    
   const [name, setName] = useState(full_name);
-  const [email, setEmail] = useState(user?.email || "");
-  const [userName, setUserName] = useState(username);
+  const [updatedEmail, setUpdatedEmail] = useState(email);
   const [loading, setLoading] = useState(false);
 
   const[toastMessage, setToastMessage] = useState("");
@@ -25,8 +26,7 @@ export default function ProfileInfo({user, full_name, username, role,}: Props) {
 
   const handleCancel = () => {
     setName(full_name);
-    setUserName(username);
-    setEmail(user?.email || "");
+    setUpdatedEmail(email);
     setIsEditing(false);
   };
    
@@ -39,10 +39,8 @@ export default function ProfileInfo({user, full_name, username, role,}: Props) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: user.sub,
         full_name: name,
-        username: userName,
-        email,
+        email: updatedEmail,
       }),
     });
    
@@ -53,9 +51,11 @@ export default function ProfileInfo({user, full_name, username, role,}: Props) {
       setToastType("error");
       setToastMessage(data.error);
     } else {
+      router.refresh();
       setIsEditing(false);
       setToastType("success");
       setToastMessage("Profile updated successfully!");
+
     }
     setLoading(false);
   };
@@ -64,9 +64,9 @@ export default function ProfileInfo({user, full_name, username, role,}: Props) {
     <div className="flex flex-col mt-auto items-center"> 
       <div className="border max-w-xl md:max-w-2xl w-full mx-auto bg-white p-6 rounded-2xl shadow-md">
       {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
-         <h1 className="text-3xl text-center mb-4"> Welcome, <span className="italic">{userName}</span> </h1>
+         <h1 className="text-3xl text-center mb-4"> Welcome, <span className="italic">{full_name}</span> </h1>
    
-      <div className="flex flex-col items-center bg-amber-50 pb-3 border-2 border-dashed border-amber-300 rounded-3xl px-2">
+      <div className="flex flex-col items-center bg-amber-50 pb-3 pt-5 gap-2 border-2 border-dashed border-amber-300 rounded-3xl px-2">
          {/* NAME */}
          <div className="mt-3 mb-3 text-center">
            <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Full Name</label>
@@ -83,22 +83,6 @@ export default function ProfileInfo({user, full_name, username, role,}: Props) {
            )}
          </div>
    
-         {/* USERNAME */}
-         <div className="mb-3 text-center">
-           <label className="text-xs font-medium text-gray-500 uppercase tracking-wide0">Username</label>
-   
-           {isEditing ? (
-             <input
-               disabled={loading}
-               className="border p-2 w-full rounded text-center"
-               value={userName}
-               onChange={(e) => setUserName(e.target.value)}
-             />
-           ) : (
-             <p>{userName}</p>
-           )}
-         </div>
-   
          {/* EMAIL */}
          <div className="mb-3 text-center">
            <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Email</label>
@@ -107,22 +91,22 @@ export default function ProfileInfo({user, full_name, username, role,}: Props) {
              <input
                disabled={loading}
                className="border p-2 w-full rounded text-center"
-               value={email}
-               onChange={(e) => setEmail(e.target.value)}
+               value={updatedEmail}
+               onChange={(e) => setUpdatedEmail(e.target.value)}
              />
            ) : (
-             <p>{email}</p>
+             <p>{updatedEmail}</p>
            )}
          </div>
    
          {/* ROLE (LOCKED) */}
-         <div className="mb-4 text-center">
+         <div className="text-center">
            <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Role</label>
            <p className="capitalize">{role}</p>
          </div>
    
          {/* BUTTONS */}
-         <div className="flex gap-3 mt-4 justify-center">
+         <div className="flex gap-3 mt-4 mb-3 justify-center">
    
            {isEditing ? (
              <>

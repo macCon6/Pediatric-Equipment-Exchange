@@ -30,6 +30,7 @@ export default function Loading() {
           <div className="h-10 w-52 bg-gray-100 border-2 border-[#132540] rounded-2xl" />
           <div className="h-10 w-28 bg-gray-100 border-2 border-[#132540] rounded-2xl" />
           <div className="h-10 w-36 bg-gray-100 border-2 border-[#132540] rounded-2xl" />
+          <div className="h-10 w-28 bg-gray-100 border-2 border-[#132540] rounded-2xl" />
 
           {/* Results count */}
           <span className="text-sm text-gray-500 ml-auto">
