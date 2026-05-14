@@ -26,13 +26,6 @@ export default function CallbackPage() {
         return;
       }
 
-      const { data } = await supabase.auth.getSession();
-
-      if (!data.session) {
-        router.replace("/login-page");
-        return;
-      }
-
       router.replace("/reset-password");
     };
 
