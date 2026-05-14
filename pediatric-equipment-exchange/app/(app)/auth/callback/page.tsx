@@ -9,40 +9,27 @@ export default function CallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const run = async () => {
+  const run = async () => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
 
-      const url = new URL(window.location.href);
+    if (code) {
+      const { error } =
+        await supabase.auth.exchangeCodeForSession(code);
 
-      const code = url.searchParams.get("code");
-
-      // PKCE flow 
-      if (code) {
-        const { error } =
-          await supabase.auth.exchangeCodeForSession(code);
-
-        if (error) {
-          router.replace("/login-page");
-          return;
-        }
-
-        router.replace("/reset-password");
+      if (error) {
+        router.replace("/login-page");
         return;
       }
 
-      //  recovery/hash flow
-
-      const { data, error } = await supabase.auth.getSession();
-
-      if (error || !data.session) {
-        router.replace("/login-page");
-        return; 
-      }
-
       router.replace("/reset-password");
-    };
+      return;
+    }
 
-    run();
-  }, []);
+    router.replace("/login-page");
+  };
 
+  run();
+}, []);
   return <p>Verifying secure link...</p>;
 }
