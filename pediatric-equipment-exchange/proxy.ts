@@ -20,6 +20,6 @@ export const config = {
      * UPDATED TO EXCLUDE: / (using $), login-page, equipment-gallery,
      * and /items/[id] (but NOT /items/[id]/waiver). Using items/[^/]+$
      */
-    '/((?!$|api|login-page|equipment-gallery|items/[^/]+$|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!$|api|login-page|equipment-gallery|items/[^/]+$|reset-password|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
