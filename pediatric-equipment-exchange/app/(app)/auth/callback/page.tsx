@@ -9,27 +9,35 @@ export default function CallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-  const run = async () => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
+    const run = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
 
-    if (code) {
-      const { error } =
-        await supabase.auth.exchangeCodeForSession(code);
+      if (code) {
+        const { error } =
+          await supabase.auth.exchangeCodeForSession(code);
 
-      if (error) {
+        if (error) {
+          router.replace("/login-page");
+          return;
+        }
+
+        router.replace("/reset-password");
+        return;
+      }
+
+      const { data } = await supabase.auth.getSession();
+
+      if (!data.session) {
         router.replace("/login-page");
         return;
       }
 
       router.replace("/reset-password");
-      return;
-    }
+    };
 
-    router.replace("/login-page");
-  };
+    run();
+  }, []);
 
-  run();
-}, []);
   return <p>Verifying secure link...</p>;
 }
