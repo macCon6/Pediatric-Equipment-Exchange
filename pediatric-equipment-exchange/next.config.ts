@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
   },
   compiler: {
     // Remove console logs in production (!isDev)
-    removeConsole: isDev
+    removeConsole: !isDev
   }
 };
 
