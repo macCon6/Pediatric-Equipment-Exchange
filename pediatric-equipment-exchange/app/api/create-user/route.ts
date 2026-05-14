@@ -53,9 +53,10 @@ export async function POST(req: Request) {
       email.trim().toLowerCase(),
       {
         redirectTo:
-        "https://beyond-the-horizon-lending-library.vercel.app/auth/callback",
+          "https://beyond-the-horizon-lending-library.vercel.app/auth/callback",
       }
-    ) ;
+    );
+   
 
     if (linkError) {
       await supabaseAdmin.auth.admin.deleteUser(userId);

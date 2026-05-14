@@ -9,20 +9,31 @@ export default function CallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-
     const run = async () => {
-      if (!code) {
-        router.replace("/login-page");
+      const url = new URL(window.location.href);
+
+      const code = url.searchParams.get("code");
+
+      // PKCE flow 
+      if (code) {
+        const { error } =
+          await supabase.auth.exchangeCodeForSession(code);
+
+        if (error) {
+          router.replace("/login-page");
+          return;
+        }
+
+        router.replace("/reset-password");
         return;
       }
 
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
+      //  recovery/hash flow
+      const { data, error } = await supabase.auth.getSession();
 
-      if (error) {
+      if (error || !data.session) {
         router.replace("/login-page");
-        return;
+        return; 
       }
 
       router.replace("/reset-password");
