@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useUI } from "@/app/providers/ui-provider";
 import { useState, useEffect } from "react";
 
@@ -29,6 +29,10 @@ export default function SideBar() {
         router.replace("/login-page");  
     };
 
+    const pathname = usePathname();
+    if (pathname.startsWith("/reset-password") || pathname.startsWith("/auth")) {
+        return null;
+    }
     
     // fetch the user once on mount. this is only to know whether to show
     // the guest or authenticated user sidebar. all role specific UI is checked with the DAL
