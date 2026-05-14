@@ -14,41 +14,9 @@ export default function ResetPassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [success, setSuccess] = useState(false);
-  const [sessionReady, setSessionReady] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
-
-   const exchange = async () => {
-      if (!code) {
-        setErrorMessage("Invalid or expired reset link.");
-        setLoading(false);
-        return;
-      }
-
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-      if (error) {
-        setErrorMessage("This reset link is invalid or expired.");
-      } else {
-        setSessionReady(true);
-      }
-
-      setLoading(false);
-    };
-
-    exchange();
-  }, []);
 
   const handleReset = async () => {
     setErrorMessage("");
-    
-    if (!sessionReady) {
-      setErrorMessage("Session not ready. Please reopen the reset link.");
-      return;
-    }
 
     if (!password || !confirmPassword) {
       setErrorMessage("Please fill in both fields");
@@ -87,12 +55,6 @@ useEffect(() => {
           <p className="text-sm text-gray-500 mt-1">Enter your new password below</p>
         </div>
 
-        {loading && (
-          <div className="text-center text-gray-500 text-sm py-4">
-            Verifying your reset link...
-          </div>
-        )}
-
         {success && (
           <div className="bg-green-100 border border-green-400 text-green-700 rounded-lg px-4 py-3 text-sm text-center">
             Password updated! Redirecting to login...
@@ -111,7 +73,7 @@ useEffect(() => {
           </div>
         )}
 
-        {!loading && sessionReady && !success && (
+        { !success && (
           <>
             <div className="flex flex-col gap-1">
               <label className="text-sm font-semibold text-gray-600">New Password</label>
@@ -153,9 +115,8 @@ useEffect(() => {
 
             <button
               onClick={handleReset}
-              disabled={!sessionReady}
               className={`w-full rounded-xl py-3 text-lg font-semibold text-white transition-colors 
-                 ${sessionReady ? "bg-[#5a9e3a] hover:bg-[#4a8a2e] cursor-pointer" : "bg-gray-400 cursor-not-allowed"}`}
+                bg-[#5a9e3a] hover:bg-[#4a8a2e] cursor-pointer`}
             >
               Update Password
             </button>
