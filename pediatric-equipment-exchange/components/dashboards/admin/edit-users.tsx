@@ -7,7 +7,6 @@ import Toast from "@/components/popups/toast";
 export default function EditUsers() {
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [isTherapist, setIsTherapist] = useState(false);
   const [fullName, setFullName] = useState("");
@@ -35,7 +34,6 @@ export default function EditUsers() {
       credentials: "include", //  REQUIRED for auth
       body: JSON.stringify({
         email,
-        password,
         fullName,
         role,
       }),
@@ -49,9 +47,9 @@ export default function EditUsers() {
 
       // Clear form
       setEmail("");
-      setPassword("");
       setFullName("");
       setIsAdmin(false);
+      setIsTherapist(false);
 
       // Refresh user list instantly
       setRefreshUsers((prev) => prev + 1);
@@ -75,6 +73,8 @@ export default function EditUsers() {
 
             <h1 className="text-lg md:text-2xl text-center tracking-wide mb-3 mt-2"> Create New User </h1>
 
+            <p className="text-sm"> Upon creating a user's account, they will receive an email prompting them to reset their password. </p>
+
             {/* Full Name */}
             <div className="flex flex-col">
               <label className="text-sm">Full Name:</label>
@@ -94,18 +94,6 @@ export default function EditUsers() {
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="border p-2 rounded"
-              />
-            </div>
-
-            {/* Password */}
-            <div className="flex flex-col">
-              <label className="text-sm">Password:</label>
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 className="border p-2 rounded"
               />
             </div>
@@ -131,7 +119,7 @@ export default function EditUsers() {
             <div className="flex gap-3 items-center">
               <label className="text-sm">Make Therapist?</label>
               <button
-                onClick={() => { setIsTherapist(!isTherapist), setIsAdmin(false)}}
+                onClick={() => { setIsTherapist(!isTherapist); setIsAdmin(false)}}
                 className={`w-12 h-6 flex items-center rounded-full p-1 transition ${
                   isTherapist ? "bg-[#5a9e3a]" : "bg-gray-300"
                 }`}
@@ -148,7 +136,7 @@ export default function EditUsers() {
             {/* Submit */}
             <button
               onClick={handleCreateUser}
-              disabled={!email || !password || !fullName}
+              disabled={!email || !fullName }
               className="bg-[#5a9e3a] disabled:opacity-50 text-black rounded-full px-5 p-2 mt-2"
             >
               Create User

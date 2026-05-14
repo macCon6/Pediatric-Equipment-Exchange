@@ -13,7 +13,11 @@ interface User {
 
 export default function UsersList({ refreshTrigger }: { refreshTrigger: number }) {
   const [users, setUsers] = useState<User[]>([]);
-  const [userToDelete, setUserToDelete] = useState<string | null>(null); // ✅ popup state
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
+
+  // for updating a users role
+  const [userToUpdate, setUserToUpdate] = useState<string | null>(null);
+  const [selectedRole, setSelectedRole] = useState<string>("volunteer");
 
   const[toastMessage, setToastMessage] = useState("");
   const[toastType, setToastType] = useState<"success" | "error">("error");
@@ -58,6 +62,41 @@ export default function UsersList({ refreshTrigger }: { refreshTrigger: number }
     setUserToDelete(null); // close popup
   };
 
+  const updateRole = async () => {
+    if (!userToUpdate) return;
+
+    const res = await fetch("/api/edit-role", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        id: userToUpdate,
+        targetRole: selectedRole
+      }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setUsers(prev =>
+        prev.map(u =>
+          u.id === userToUpdate ? { ...u, role: selectedRole } : u
+        )
+      );
+      setToastType("success");
+      setToastMessage("Role updated successfully!");
+    } else {
+      console.error(data.error);
+      setToastType("error");
+      setToastMessage(data.error || "Failed to update role");
+    }
+
+    setUserToUpdate(null); // close popup
+  };
+
+  const cancelRoleUpdate = () => {
+    setUserToUpdate(null); // close popup
+  };
+
 
   const copyEmails = async (role?: string) => {
     
@@ -99,8 +138,10 @@ export default function UsersList({ refreshTrigger }: { refreshTrigger: number }
       {users.map((user) => (
         <div key={user.id} className="bg-gray-100 p-3 rounded relative">
 
-          {/* still working on this */}
           <button
+            onClick={() => { 
+              setUserToUpdate(user.id); 
+              setSelectedRole(user.role); }}
             className="absolute top-2 right-8 hover:cursor-pointer px-2 rounded-2xl font-bold text-sm bg-red-500 text-white"
           >
             Edit Role
@@ -144,6 +185,47 @@ export default function UsersList({ refreshTrigger }: { refreshTrigger: number }
 
               <button
                 onClick={cancelDelete}
+                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 hover:cursor-pointer"
+              >
+                Cancel
+              </button>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {userToUpdate && (
+        <div className="fixed inset-0 flex items-center justify-center bg-[#FFC94A]/80 backdrop-blur-sm z-50">
+
+          <div className="bg-white p-6 rounded-xl shadow-2xl text-center w-[300px]">
+
+            <p className="text-lg font-semibold mb-4">
+              Edit role for {users.find(u => u.id === userToUpdate)?.full_name}
+            </p>
+
+            <select
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value)}
+              className="w-full border p-2 rounded mb-4"
+            >
+              <option value="volunteer">Volunteer</option>
+              <option value="therapist">Therapist</option>
+              <option value="admin">Admin</option>
+            </select>
+
+
+            <div className="flex gap-4 justify-center">
+
+              <button
+                onClick={updateRole}
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 hover:cursor-pointer"
+              >
+                Save
+              </button>
+
+              <button
+                onClick={cancelRoleUpdate}
                 className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 hover:cursor-pointer"
               >
                 Cancel

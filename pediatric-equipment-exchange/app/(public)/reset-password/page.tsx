@@ -7,39 +7,14 @@ import { useRouter } from "next/navigation";
 export default function ResetPassword() {
   const supabase = createClient();
   const router = useRouter();
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [success, setSuccess] = useState(false);
-  const [sessionReady, setSessionReady] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  const tokenHash = params.get("token_hash");
-  const type = params.get("type") as any;
-
-  if (tokenHash && type) {
-    supabase.auth.verifyOtp({
-      token_hash: tokenHash,
-      type: type,
-    }).then(({ data, error }) => {
-      if (error) {
-        console.error("verifyOtp error:", error);
-        setErrorMessage("Invalid or expired reset link. Please request a new one.");
-      } else {
-        console.log("verifyOtp success:", data);
-        setSessionReady(true);
-      }
-      setLoading(false);
-    });
-  } else {
-    setErrorMessage("Invalid reset link. Please request a new one.");
-    setLoading(false);
-  }
-}, []);
 
   const handleReset = async () => {
     setErrorMessage("");
@@ -67,8 +42,10 @@ useEffect(() => {
     }
 
     setSuccess(true);
+    await supabase.auth.signOut(); 
+
     setTimeout(() => {
-      router.push("/login-page");
+      router.replace("/login-page");
     }, 2000);
   };
 
@@ -80,12 +57,6 @@ useEffect(() => {
           <h1 className="text-3xl font-bold text-gray-800">Set New Password</h1>
           <p className="text-sm text-gray-500 mt-1">Enter your new password below</p>
         </div>
-
-        {loading && (
-          <div className="text-center text-gray-500 text-sm py-4">
-            Verifying your reset link...
-          </div>
-        )}
 
         {success && (
           <div className="bg-green-100 border border-green-400 text-green-700 rounded-lg px-4 py-3 text-sm text-center">
@@ -105,7 +76,7 @@ useEffect(() => {
           </div>
         )}
 
-        {!loading && sessionReady && !success && (
+        { !success && (
           <>
             <div className="flex flex-col gap-1">
               <label className="text-sm font-semibold text-gray-600">New Password</label>
@@ -147,7 +118,8 @@ useEffect(() => {
 
             <button
               onClick={handleReset}
-              className="w-full rounded-xl bg-[#5a9e3a] py-3 text-lg font-semibold text-white transition-colors hover:bg-[#4a8a2e] cursor-pointer"
+              className={`w-full rounded-xl py-3 text-lg font-semibold text-white transition-colors 
+                bg-[#5a9e3a] hover:bg-[#4a8a2e] cursor-pointer`}
             >
               Update Password
             </button>

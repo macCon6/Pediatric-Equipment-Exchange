@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useUI } from "@/app/providers/ui-provider";
 import { useState, useEffect } from "react";
 
@@ -29,6 +29,10 @@ export default function SideBar() {
         router.replace("/login-page");  
     };
 
+    const pathname = usePathname();
+    if (pathname.startsWith("/reset-password") || pathname.startsWith("/auth")) {
+        return null;
+    }
     
     // fetch the user once on mount. this is only to know whether to show
     // the guest or authenticated user sidebar. all role specific UI is checked with the DAL
@@ -143,7 +147,7 @@ export default function SideBar() {
                 </div>
 
                 <div className="mt-auto p-2 flex flex-col gap-4">
-                    <Link href="https://www.camp-horizon.com/">
+                    <Link href="https://www.camp-horizon.com/" target="_blank" rel="noopener noreferrer">
                         <button className="w-full py-2 text-center text-sm rounded-full text-blue-500 hover:cursor-pointer hover:opacity-50 underline">
                             Back to Camp Horizon
                         </button>

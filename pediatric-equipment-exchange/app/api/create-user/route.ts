@@ -15,63 +15,52 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden: Admins only" }, { status: 403 });
     }
 
-    const { email, username, password, fullName, role, sendInvite } = await req.json();
+    const { email, fullName, role } = await req.json();
 
-    if (!email || !fullName) {
+    if (!email || !fullName ) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
-
-    if (!sendInvite && !password) {
-      return NextResponse.json({ error: "Password is required when not sending invite" }, { status: 400 });
-    }
-
     const allowedRoles = ["admin", "therapist", "volunteer"];
     if (!allowedRoles.includes(role)) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
 
-    const cleanUsername = username?.toLowerCase().trim();
-    let userId: string;
+    const { data: authData, error: authError } =
+      await supabaseAdmin.auth.admin.createUser({
+        email: email.trim().toLowerCase(),
+        email_confirm: true,
+        user_metadata: {
+          role,
+          fullName,
+        },
+      });
 
-    if (sendInvite) {
-      const { data: authData, error: authError } =
-        await supabaseAdmin.auth.admin.inviteUserByEmail(email.trim(), {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
-          data: {
-            username: cleanUsername,
-            role,
-            fullName,
-          },
-        });
-
-      if (authError) {
+    if (authError) {
         return NextResponse.json({ error: authError.message }, { status: 400 });
       }
 
-      userId = authData.user?.id;
+    
+    const userId= authData.user?.id;
 
-    } else {
-      const { data: authData, error: authError } =
-        await supabaseAdmin.auth.admin.createUser({
-          email: email.trim(),
-          password,
-          email_confirm: true,
-          user_metadata: {
-            username: cleanUsername,
-            role,
-            fullName,
-          },
-        });
-
-      if (authError) {
-        return NextResponse.json({ error: authError.message }, { status: 400 });
-      }
-
-      userId = authData.user?.id;
-    }
 
     if (!userId) {
       return NextResponse.json({ error: "User ID not returned" }, { status: 500 });
+    }
+
+    // send user email to reset their password 
+    const { error: linkError } =
+      await supabaseAdmin.auth.resetPasswordForEmail(
+      email.trim().toLowerCase(),
+      {
+        redirectTo:
+          "https://beyond-the-horizon-lending-library.vercel.app/auth/callback",
+      }
+    );
+   
+
+    if (linkError) {
+      await supabaseAdmin.auth.admin.deleteUser(userId);
+      return NextResponse.json({ error: linkError.message }, { status: 400 });
     }
 
     const { error: profileInsertError } = await supabaseAdmin
@@ -80,8 +69,7 @@ export async function POST(req: Request) {
         id: userId,
         full_name: fullName,
         role,
-        username: cleanUsername,
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
       });
 
     if (profileInsertError) {

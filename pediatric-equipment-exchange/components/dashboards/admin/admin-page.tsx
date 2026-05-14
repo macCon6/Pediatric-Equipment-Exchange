@@ -41,7 +41,7 @@ export default async function AdminPage({ user, role, full_name, email, searchPa
   if (tab === "allocations") {
     const { data: distributions, error } = await supabase
       .from("readable_distribution")
-      .select(`id, equipment_id, equipment_barcode, equipment_name, equipment_status, reserved_by_name, recipient_name, contact_name, clinic_name, allocated_at, allocated_by_name, signed_waiver_url`)
+      .select(`id, equipment_id, equipment_barcode, equipment_name, equipment_status, reserved_by_name, recipient_name, contact_name, contact_phone, contact_email, clinic_name, allocated_at, allocated_by_name, signed_waiver_url`)
       .not("allocated_at", "is", null)
       .is("returned_at", null)
       .is("cancelled_at", null);
@@ -58,7 +58,7 @@ export default async function AdminPage({ user, role, full_name, email, searchPa
   if (tab === "reservations") {
     const { data: distributions, error } = await supabase
       .from("readable_distribution")
-      .select("id, equipment_id, equipment_barcode, equipment_name, recipient_name, contact_name, clinic_name, therapist_notes, reserved_by_name, reserved_at, signed_waiver_url")
+      .select("id, equipment_id, equipment_barcode, equipment_name, recipient_name, contact_name, contact_email, contact_phone, clinic_name, therapist_notes, reserved_by_name, reserved_at, signed_waiver_url")
       .not("reserved_at", "is", null)
       .is("allocated_at", null)
       .is("returned_at", null)
