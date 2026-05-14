@@ -16,11 +16,15 @@ export default function ResetPassword() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    const clean = async () => {
-      await supabase.auth.signOut();
-    };
-    clean();
-  }, []);
+  const check = async () => {
+    const { data, error } = await supabase.auth.getSession();
+
+    console.log("session:", data.session);
+    console.log("error:", error);
+  };
+
+  check();
+}, []);
 
   const handleReset = async () => {
     setErrorMessage("");
