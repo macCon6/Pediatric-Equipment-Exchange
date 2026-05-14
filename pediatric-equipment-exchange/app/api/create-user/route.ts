@@ -48,13 +48,12 @@ export async function POST(req: Request) {
 
     // send user email to reset their password 
     const { error: resetError } =
-      await supabaseAdmin.auth.admin.generateLink({
-        type: "recovery",
-        email,
-        options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
-        }
-    });
+  await supabaseAdmin.auth.resetPasswordForEmail(
+    email.trim().toLowerCase(),
+    {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
+    }
+  );
     
 
     if (resetError) {
