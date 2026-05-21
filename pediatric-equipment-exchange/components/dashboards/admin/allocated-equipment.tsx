@@ -66,15 +66,6 @@ export default function AllocatedEquipment({allocated_items}:Props) {
   };
   
 
-  if (allocated_items?.length === 0) {
-    return (
-      <div className="flex justify-center items-center h-40 bg-white rounded-xl border">
-        <p className="text-gray-500 text-base lg:text-lg"> No allocated items </p>
-      </div>
-    );
-  }
-
-
   return (
     <div className="w-full px-2">
 
@@ -154,6 +145,18 @@ export default function AllocatedEquipment({allocated_items}:Props) {
         )}
 
       </div>
+
+      {allocated_items === null && 
+        <div className="flex flex-col justify-center items-center h-40 bg-white rounded-xl border">
+          <p className="text-gray-500 text-base lg:text-lg animate-bounce"> Just a minute... </p>
+        </div>
+      }
+
+      {allocated_items?.length === 0 && 
+          <div className="flex justify-center items-center h-40 bg-white rounded-xl border">
+            <p className="text-gray-500 text-base lg:text-lg"> No allocated items </p>
+          </div>
+      }
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
 

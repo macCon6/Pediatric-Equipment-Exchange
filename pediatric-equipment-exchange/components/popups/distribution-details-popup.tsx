@@ -30,6 +30,7 @@ export default function DistributionDetailsPopup({current_status, equipment_id, 
                         <li> <strong> Authorized for Pickup: </strong> {distribution.authorized_for_pickup} </li>
                         <li> <strong> Reserved by: </strong> {distribution.reserved_by_name} </li>
                         <li> <strong> Reserved at: </strong> {distribution.reserved_at? new Date(distribution.reserved_at).toLocaleString() : "--"} </li>
+                        <li> <strong> Therapist Notes: </strong> {distribution.therapist_notes} </li>
                    
 
                     {current_status === "Reserved - Ready for Pickup" && 

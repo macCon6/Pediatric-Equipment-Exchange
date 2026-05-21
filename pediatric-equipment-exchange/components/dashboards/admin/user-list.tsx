@@ -136,24 +136,29 @@ export default function UsersList({ refreshTrigger }: { refreshTrigger: number }
 
       {/* USERS */}
       {users.map((user) => (
-        <div key={user.id} className="bg-gray-100 p-3 rounded relative">
+        <div key={user.id} className="bg-gray-100 p-3 pr-32 rounded relative ">
+
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col gap-2 items-end">
+
+          <button
+            onClick={() => setUserToDelete(user.id)}
+            className="text-red-500 font-bold text-lg hover:cursor-pointer"
+          >
+            ✕
+          </button>
 
           <button
             onClick={() => { 
               setUserToUpdate(user.id); 
               setSelectedRole(user.role); }}
-            className="absolute top-2 right-8 hover:cursor-pointer px-2 rounded-2xl font-bold text-sm bg-red-500 text-white"
+            className="hover:cursor-pointer px-2 py-1 rounded-2xl font-bold text-sm bg-red-500 text-white"
           >
             Edit Role
           </button>
-
-          <button
-            onClick={() => setUserToDelete(user.id)}
-            className="absolute top-1 right-3 text-red-500 font-bold text-lg hover:cursor-pointer"
-          >
-            ✕
-          </button>
   
+  
+          </div>
+
 
           <p><b>Full Name:</b> {user.full_name}</p>
           <p className="break-all"><b>Email:</b> {user.email}</p>

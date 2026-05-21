@@ -95,13 +95,13 @@ export default function GalleryGrid({ items }: Props) {
                     <span className="text-base font-semibold text-[#132540] mr-1">Filter & Sort:</span>
 
                     {/* Category dropdown */}
-                    <div className="relative">
+                    <div className="relative max-w-lg">
                         <select
                             onChange={e => {
                                 if (e.target.value) toggleFilter(e.target.value, selectedCategories, setSelectedCategories);
                                 e.target.value = "";
                             }}
-                            className="border-2 border-[#132540] rounded-2xl px-3 py-2 bg-white text-[#132540] text-sm focus:outline-none cursor-pointer"
+                            className="w-full border-2 border-[#132540] rounded-2xl px-3 py-2 bg-white text-[#132540] text-sm focus:outline-none cursor-pointer"
                         >
                             <option value="">Category {selectedCategories.length > 0 ? `(${selectedCategories.length})` : ""}</option>
                             {categories.map(category => (
@@ -152,7 +152,7 @@ export default function GalleryGrid({ items }: Props) {
                     </div>
 
                      {/* Colors dropdown */}
-                    <div className="relative">
+                    <div className="relative ">
                         <select
                             onChange={e => {
                                 if (e.target.value) toggleFilter(e.target.value, selectedColors, setSelectedColors);
@@ -160,11 +160,11 @@ export default function GalleryGrid({ items }: Props) {
                             }}
                             className="border-2 border-[#132540] rounded-2xl px-3 py-2 bg-white text-[#132540] text-sm focus:outline-none cursor-pointer"
                         >
-                            <option value="">Color {selectedConditions.length > 0 ? `(${selectedColors.length})` : ""}</option>
+                            <option value="">Color {selectedColors.length > 0 ? `(${selectedColors.length})` : ""}</option>
                             {colors.map(color => (
                                 <option key={color} value={color}
                                     style={{ fontWeight: selectedColors.includes(color) ? "bold" : "normal" }}>
-                                    {selectedConditions.includes(color) ? "✓ " : ""}{color}
+                                    {selectedColors.includes(color) ? "✓ " : ""}{color}
                                 </option>
                             ))}
                         </select>
@@ -215,7 +215,6 @@ export default function GalleryGrid({ items }: Props) {
                 {items.length === 0 &&
                     <div className="flex flex-col gap-6 bg-orange-100 border p-6 border-gray-100 shadow-lg rounded-3xl col-span-4 m-10 justify-self-center">
                         <span className="text-orange-700 font-semibold underline text-xl text-center">No Items Found!</span>
-                        <span className="text-orange-700 text-center text-xl tracking-wide">Use the "Add Item" tab to add equipment!</span>
                     </div>
                 }
 

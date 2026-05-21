@@ -92,7 +92,7 @@ npx supabase db reset
 > 
 > One will be in the inner folder for the Nextjs Frontend commands. ( cd Pediatric-Equipment-Exchange-main/pediatric-equipment-exchange )
 
-Extract the project from the .zip. When extracting the ZIP, please extract it into your Downloads folder instead of inside itself to avoid a duplicate wrapping folder.
+Download the project as a .zip, then extract the project from the .zip. When extracting the ZIP, please extract it into your Downloads folder instead of inside itself to avoid a duplicate wrapping folder.
 
 ```bash
 
@@ -101,7 +101,7 @@ cd Pediatric-Equipment-Exchange-main (ROOT FOLDER)
 npx supabase start (IN ROOT FOLDER)
 
 ```
-Leave this terminal OPEN — do NOT close it.
+Leave this terminal open. Please do NOT close it!
 
 - IMPORTANT: Create a .env.local file inside of the inner /pediatric-equipment-exchange folder, and copy and paste the environment variables that show under “Authentication Keys”. See .env.example for an example.
 

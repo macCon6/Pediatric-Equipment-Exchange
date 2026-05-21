@@ -276,7 +276,6 @@ export default function UpdateStatusPopup({equipment_id, distribution_id, curren
             }
 
             {mode === "confirm" && 
-            <div className="flex flex-1 md:h-[20vh]"> 
                 <Confirm title="Status Change"
                     message={`Are you sure you want to set this item's status to ${targetStatus}?`}
                     submessage={null}
@@ -293,7 +292,6 @@ export default function UpdateStatusPopup({equipment_id, distribution_id, curren
                     redButtonText={"Cancel"}
                     onCancel={()=>{setMode("select")}}
                 />
-                </div>
             }
             
 

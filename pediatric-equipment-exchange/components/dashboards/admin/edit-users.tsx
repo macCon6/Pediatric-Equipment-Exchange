@@ -69,11 +69,18 @@ export default function EditUsers() {
       {toastMessage && <Toast message={toastMessage} type={toastType} onClose={() => setToastMessage("")} />}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 min-w-0">
           {/* Create User Box */}
-          <div className="bg-white rounded-lg p-6 flex flex-col gap-3 text-black border-3 border-gray-50 ">
+          <div className="bg-white rounded-lg p-6 flex flex-col gap-3 text-black border-3 border-gray-50">
 
-            <h1 className="text-lg md:text-2xl text-center tracking-wide mb-3 mt-2"> Create New User </h1>
+            <h1 className="text-lg md:text-2xl text-center tracking-wide mb-1"> Create New User </h1>
 
-            <p className="text-sm"> Upon creating a user's account, they will receive an email prompting them to reset their password. </p>
+            <p className="text-sm"> New users will not be sent a confirmation email.  </p>
+
+            <p className="text-sm"> Instead, they must select "Forgot Password" on the login page and enter the email associated with their account. 
+              This will send them an email containing a link to reset their password.
+            </p>
+
+            <p className="text-sm mb-2"> Their email and new password will be their login credentials for the site.
+            </p>
 
             {/* Full Name */}
             <div className="flex flex-col">

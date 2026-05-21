@@ -54,13 +54,14 @@ export default function DistributionHistory({all_distributions, clinics, page, p
     params.delete("searchTerm");
     params.delete("clinic");
     params.delete("status");
+    params.set("tests", "hide"); // hide test hisotry by default
 
     params.set("page", "1");
 
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const hasActiveFilters =  searchParams.get("searchTerm") || searchParams.get("clinic") || searchParams.get("status");
+  const hasActiveFilters =  searchParams.get("searchTerm") || searchParams.get("clinic") || searchParams.get("status") || searchParams.get("tests");
 
   const applySearch = (value?: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -142,6 +143,20 @@ export default function DistributionHistory({all_distributions, clinics, page, p
 
               </select>
             </div>
+
+             {/* Test history dropdown -- allows filtering out of history with "test" or "Test" or "TEST" in therapist reservation notes */}
+            <div className="relative">
+              <select
+                value={searchParams.get("tests") ?? "hide"}
+                onChange={(e) => updateFilter("tests", e.target.value)}
+                className="border-2 border-[#132540] rounded-2xl px-3 py-2 bg-white text-[#132540] text-sm focus:outline-none cursor-pointer"
+              >
+                <option value="hide"> Hide Test History </option>
+                <option value="all"> Show All </option>
+                <option value="tests-only"> Show Only Test History </option>
+
+              </select>
+            </div>
             
            {hasActiveFilters && (
               <button onClick={clearFilters}
@@ -158,6 +173,12 @@ export default function DistributionHistory({all_distributions, clinics, page, p
 
         </div>
       </div>
+
+      {all_distributions === null && 
+        <div className="flex flex-col justify-center items-center h-40 bg-white rounded-xl border">
+          <p className="text-gray-500 text-base lg:text-lg animate-bounce"> Just a minute... </p>
+        </div>
+      }
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
       
@@ -178,7 +199,8 @@ export default function DistributionHistory({all_distributions, clinics, page, p
           <div key={entry.id} className="p-4 hover:scale-105 cursor-pointer hover:shadow-2xl hover:bg-yellow-50 shadow-md border transition duration-100 rounded-3xl bg-white"
             onClick={() => handleNavigation(entry.equipment_id)}>
 
-            <div className="flex flex-col gap-1 text-sm">
+            <div className="flex flex-col gap-1 text-sm break-all">
+
               <p className="font-bold tracking-wide bg-[#D8EBDB] text-center mb-2 py-2 rounded-xl">{entry.equipment_name}</p>
 
               <p><span className="font-semibold"> Barcode:</span> {entry.equipment_barcode}</p>
@@ -197,6 +219,8 @@ export default function DistributionHistory({all_distributions, clinics, page, p
 
               <p><span className="font-semibold"> Reserved At:</span> <span className="text-gray-500"> {entry.reserved_at
                   ? new Date(entry.reserved_at).toLocaleString() : "--"} </span> </p>
+              
+              <p><span className="font-semibold"> Therapist Notes:</span> {entry.therapist_notes? entry.therapist_notes : "--" } </p>
 
               <p><span className="font-semibold"> Allocated By:</span>  {entry.allocated_by_name? entry.allocated_by_name : "--"} </p>
 
