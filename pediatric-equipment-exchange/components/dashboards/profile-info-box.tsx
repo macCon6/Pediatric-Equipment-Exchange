@@ -146,7 +146,7 @@ export default function ProfileInfo({user, full_name, role, email}: Props) {
           <p className="text-center text-tiny italic mt-1"> Scroll the tab bar on mobile! </p>
           <ul className="list-disc p-4 space-y-2 text-base">
             <li> View and update your profile info in the <strong className="text-green-600"> Profile Tab </strong></li>
-            <li> View, add, and delete users in the <strong className="text-green-600">  Users Tab </strong> </li>
+            <li> View, add, delete, and edit role of users in the <strong className="text-green-600">  Users Tab </strong> </li>
             <li> View & filter currently allocated equipment in the <strong className="text-green-600"> Allocations Tab </strong> </li>
             <li> View & filter active reservations in the <strong className="text-green-600"> Reservations Tab </strong> </li>
             <li> View & filter all distribution history in the <strong className="text-green-600"> History Tab </strong> </li>

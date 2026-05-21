@@ -3,7 +3,6 @@
 
 export const CONDITION_OPTIONS = [
     "Excellent",
-    "Good",
     "Acceptable",
     "Needs Cleaning",
     "Broken/Missing Pieces"

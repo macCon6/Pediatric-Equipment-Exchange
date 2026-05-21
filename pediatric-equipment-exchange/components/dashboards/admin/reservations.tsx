@@ -78,13 +78,6 @@ export default function ReservedEquipment({reserved_items}:Props) {
     if (type === "waiver") setSelectedWaiverState("");
   };
 
-  if (reserved_items?.length === 0) {
-    return (
-      <div className="flex justify-center items-center h-40 bg-white rounded-xl border">
-        <p className="text-gray-500 text-base lg:text-lg"> No reserved items </p>
-      </div>
-    );
-  }
 
   return ( 
     <div className="w-full px-2">
@@ -124,8 +117,8 @@ export default function ReservedEquipment({reserved_items}:Props) {
                 <option value=""> Reserver{selectedReservedByStaff.length > 0 ? `(${selectedReservedByStaff.length})` : ""} </option>
                   {reservers.map(reserver => (
                     <option key={reserver} value={reserver}
-                      style={{ fontWeight: selectedClinics.includes(reserver) ? "bold" : "normal" }}>
-                              {selectedClinics.includes(reserver) ? "✓ " : ""}{reserver}
+                      style={{ fontWeight: selectedReservedByStaff.includes(reserver) ? "bold" : "normal" }}>
+                              {selectedReservedByStaff.includes(reserver) ? "✓ " : ""}{reserver}
                     </option>
                   ))}
               </select>
@@ -146,7 +139,7 @@ export default function ReservedEquipment({reserved_items}:Props) {
                   {clinics.map(clinic => (
                     <option key={clinic} value={clinic}
                       style={{ fontWeight: selectedClinics.includes(clinic) ? "bold" : "normal" }}>
-                                    {selectedClinics.includes(clinic) ? "✓ " : ""}{clinic}
+                              {selectedClinics.includes(clinic) ? "✓ " : ""}{clinic}
                     </option>
                   ))}
               </select>
@@ -201,13 +194,25 @@ export default function ReservedEquipment({reserved_items}:Props) {
 
       </div>
 
+      {reserved_items === null && 
+        <div className="flex flex-col justify-center items-center h-40 bg-white rounded-xl border">
+          <p className="text-gray-500 text-base lg:text-lg animate-bounce"> Just a minute... </p>
+        </div>
+      }
+
+      {reserved_items?.length === 0 &&
+        <div className="flex justify-center items-center h-40 bg-white rounded-xl border">
+            <p className="text-gray-500 text-base lg:text-lg"> No reserved items </p>
+        </div>
+      }
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
 
         {itemMatches.map((entry) => (
           <div key={entry.id} className="p-4 hover:scale-105 cursor-pointer hover:shadow-2xl hover:bg-yellow-50 shadow-md border transition duration-100 rounded-3xl bg-white"
             onClick={() => handleNavigation(entry.equipment_id)}>
 
-            <div className="flex flex-col gap-1 text-sm">
+            <div className="flex flex-col gap-1 text-sm break-all">
               <p className="font-bold tracking-wide bg-[#D8EBDB] text-center mb-2 py-2 rounded-xl">{entry.equipment_name}</p>
 
               <p><span className="font-semibold">Barcode:</span> {entry.equipment_barcode}</p>

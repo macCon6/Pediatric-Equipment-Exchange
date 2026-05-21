@@ -144,6 +144,9 @@ export default function ItemIntake() {
       {
         fps: 10,
         qrbox: { width: 220, height: 220 },
+        videoConstraints: {
+          facingMode: "environment",
+        },
         supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
         formatsToSupport: [
           Html5QrcodeSupportedFormats.CODE_128,

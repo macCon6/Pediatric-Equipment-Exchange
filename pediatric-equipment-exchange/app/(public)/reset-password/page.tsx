@@ -1,7 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function ResetPassword() {
@@ -123,6 +123,8 @@ export default function ResetPassword() {
             >
               Update Password
             </button>
+
+            <p className="text-center text-gray-700 text-sm"> If 'Auth Session Missing' error appears, please repeat the 'forgot password' process again! </p>
 
             <button
               onClick={() => router.push("/login-page")}

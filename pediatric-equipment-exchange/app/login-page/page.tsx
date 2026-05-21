@@ -13,6 +13,7 @@ export default function Login() {
   const [forgotMode, setForgotMode] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const[showIInfo, setShowIInfo] = useState(false);
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -101,15 +102,19 @@ export default function Login() {
                   <button
                     type="button"
                     className="w-5 h-5 rounded-full bg-gray-400 hover:bg-gray-500 text-white text-xs font-bold flex items-center justify-center cursor-pointer"
+                    onClick={() => setShowIInfo(!showIInfo)}
                   >
                     i
                   </button>
-                  <div className="absolute bottom-8 right-0 w-64 bg-gray-700 text-white text-xs rounded-xl px-3 py-2 shadow-lg invisible group-hover:visible z-50">
-                   *** <strong>NEW</strong> users must change password after setting up an account with an Administrator. ***     
+                  {showIInfo && 
+                    <div className="absolute bottom-8 right-0 w-64 bg-gray-700 text-white text-xs rounded-xl px-3 py-2 shadow-lg z-50">
+                    *** <strong>NEW</strong> users must change password after setting up an account with an Administrator. ***     
                     
-                   *<strong>IMPORTANT</strong>* The reset email may land in your <strong>spam or junk folder</strong>. If you don't see it in your inbox, please check there and mark it as safe. The email should return to main inbox, click the link in the email to continue reset password. If 'Auth Session Missing' error appears please repeat 'forgot password' process again!
+                      *<strong>IMPORTANT</strong>* The reset email may land in your <strong>spam or junk folder</strong>. If you don't see it in your inbox, please check there and mark it as safe. 
+                      The email should return to main inbox, click the link in the email to continue resetting your password. 
                     <div className="absolute bottom-[-6px] right-2 w-3 h-3 bg-gray-700 rotate-45"></div>
                   </div>
+                  }
                 </div>
               </div>
             )}

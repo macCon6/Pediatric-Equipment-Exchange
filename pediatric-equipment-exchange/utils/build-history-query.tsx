@@ -8,12 +8,16 @@ export interface Props {
     page?: string,
     clinic?: string,
     status?: string,
+    tests?: string,
     searchTerm?: string,
 }
 
 export async function BuildHistoryQuery( searchParams: Props ) {
   
   const supabase = await createClient();
+
+  // hide test history by default
+  const testsFilter = searchParams.tests ?? "hide";
 
   //for pagination
   const page = Number(searchParams?.page ?? 1);
@@ -42,6 +46,14 @@ export async function BuildHistoryQuery( searchParams: Props ) {
 
   if (searchParams.status === "returned") {
     query = query.not("returned_at", "is", null).is("cancelled_at", null);
+  }
+
+  if (testsFilter === "hide") {
+    query = query.not("therapist_notes", "in", '("test", "Test", "TEST")');
+  }
+
+  if (testsFilter === "tests-only") {
+    query = query.in("therapist_notes", ["test", "Test", "TEST"]);
   }
 
   if (searchParams.searchTerm) {

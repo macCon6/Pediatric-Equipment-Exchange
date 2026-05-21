@@ -89,7 +89,7 @@ export default function RecoverEquipment({deleted_items}:Props) {
         handleClose();
       }
    }
-  };      
+  };   
 
   if (deleted_items?.length === 0) {
     return (
