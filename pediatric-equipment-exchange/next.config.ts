@@ -18,6 +18,12 @@ const nextConfig: NextConfig = {
         port: "54321",
         pathname: "/storage/v1/object/public/**",
       },
+      { // for local testing
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "54321",
+        pathname: "/storage/v1/object/public/**",
+      },
     ]
   },
   logging: { // so that client side logs show in terminal instead of needing to open devtools

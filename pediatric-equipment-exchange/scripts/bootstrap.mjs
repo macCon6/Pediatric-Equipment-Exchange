@@ -94,7 +94,6 @@ async function bootstrap() {
     .insert({
       id: admin.id,
       email: admin.email,
-      username: "admin_username",
       role: "admin",
       full_name: "Bootstrap Admin"
     })
@@ -127,7 +126,6 @@ async function bootstrap() {
     .insert({
       id: therapist.id,
       email: therapist.email,
-      username: "therapist_username",
       role: "therapist",
       full_name: "Bootstrap Therapist"
     })
@@ -159,7 +157,6 @@ async function bootstrap() {
     .from('profiles')
     .insert({
       id: volunteer.id,
-      username: "volunteer_username",
       email: volunteer.email,
       role: "volunteer",
       full_name: "Bootstrap Volunteer"
